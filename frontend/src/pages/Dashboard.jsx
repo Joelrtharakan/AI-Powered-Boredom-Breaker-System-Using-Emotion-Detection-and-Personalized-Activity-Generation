@@ -1,20 +1,26 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Zap, Smile, Book, Music, Lock, MessageCircle, BarChart2, Gamepad2 } from 'lucide-react';
+import { Mic, Zap, Smile, Book, Music, Lock, MessageCircle, BarChart2, Gamepad2, Sparkles, Wind, Play, Pause, SkipForward } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Tile = ({ icon: Icon, title, color, onClick }) => (
+const QuickActionTile = ({ icon: Icon, title, desc, onClick, delay }) => (
     <motion.div
-        whileHover={{ scale: 1.05, rotate: 1 }}
-        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: delay * 0.1 }}
+        whileHover={{ scale: 1.05, rotateX: 5, rotateY: 5 }}
         onClick={onClick}
-        className={`glass p-4 md:p-6 rounded-2xl cursor-pointer flex flex-col items-center justify-center gap-4 hover:bg-white/5 transition-all w-full aspect-square`}
+        className="glass-card p-6 cursor-pointer flex flex-col items-center justify-center text-center gap-4 group hover:bg-white/10"
+        style={{ perspective: 1000 }}
     >
-        <div className={`p-4 rounded-full bg-gradient-to-tr ${color} shadow-lg`}>
-            <Icon size={24} className="text-white" />
+        <div className="p-4 rounded-2xl bg-white/5 group-hover:bg-primary/20 transition-colors shadow-lg shadow-black/20">
+            <Icon size={28} className="text-gray-300 group-hover:text-white transition-colors" />
         </div>
-        <span className="font-medium text-gray-200">{title}</span>
+        <div>
+            <span className="block font-bold text-lg text-gray-200 group-hover:text-white">{title}</span>
+            {desc && <span className="text-xs text-gray-500 group-hover:text-gray-400">{desc}</span>}
+        </div>
     </motion.div>
 );
 
@@ -28,16 +34,13 @@ export default function Dashboard() {
         if (!moodText) return;
         setLoading(true);
         try {
-            // 1. Detect Mood
-            const moodRes = await axios.post('http://localhost:8000/api/v1/mood/detect', { text: moodText });
-            const { mood, intensity } = moodRes.data;
-
-            // 2. Get Plan
-            const suggestRes = await axios.post('http://localhost:8000/api/v1/suggest', {
+            const moodRes = await axios.post('http://localhost:8000/api/mood/detect', { text: moodText });
+            const { mood } = moodRes.data;
+            const suggestRes = await axios.post('http://localhost:8000/api/suggest', {
                 mood,
                 time_available_minutes: 60
             });
-            setSuggestion({ mood, plan: suggestRes.data.plan });
+            setSuggestion({ mood, plan: suggestRes.data.plan, intensity: moodRes.data.intensity });
         } catch (e) {
             console.error(e);
         } finally {
@@ -45,79 +48,147 @@ export default function Dashboard() {
         }
     };
 
+    const handleSurprise = async () => {
+        // quick stub for surprise
+        const res = await axios.get('http://localhost:8000/api/surprise');
+        alert(`Surprise! ${res.data.payload?.text || "Enjoy your day!"}`);
+    };
+
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-12 pb-24">
+        <div className="min-h-screen pb-24 px-4 pt-8 md:pt-12 max-w-7xl mx-auto space-y-16">
+
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold">Hello, Friend</h1>
-                <div onClick={() => { localStorage.clear(); navigate('/login') }} className="cursor-pointer h-10 w-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center font-bold">U</div>
+            <div className="flex justify-between items-center px-2">
+                <div>
+                    <h1 className="text-4xl font-black title-gradient mb-1">Dashboard</h1>
+                    <p className="text-gray-400">Welcome back, Traveler.</p>
+                </div>
+                <button onClick={() => { localStorage.clear(); navigate('/') }} className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <UserAvatar />
+                </button>
             </div>
 
-            {/* Mood Input Section */}
-            <section className="glass-card mb-12 relative overflow-hidden">
-                <div className="relative z-10 flex flex-col items-center gap-6 py-8">
-                    <h2 className="text-2xl font-light text-center">How are you feeling right now?</h2>
-                    <div className="w-full max-w-2xl relative">
-                        <textarea
-                            value={moodText}
-                            onChange={(e) => setMoodText(e.target.value)}
-                            placeholder="I'm feeling a bit bored and tired..."
-                            className="input-field h-32 text-lg resize-none pr-12"
-                        />
-                        <button className="absolute bottom-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-                            <Mic size={20} />
-                        </button>
-                    </div>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={handleDetect}
-                            disabled={loading}
-                            className="btn-primary flex items-center gap-2 px-8 py-3 text-lg"
-                        >
-                            {loading ? <Zap className="animate-spin" /> : <Zap />}
-                            {loading ? "Analyzing..." : "Fix My Mood"}
-                        </button>
+            {/* A. Mood Input Section */}
+            <section className="relative">
+                <div className="absolute inset-0 bg-primary/5 blur-[100px] -z-10" />
+                <div className="glass-card p-1 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
+                    <div className="p-8 md:p-12 flex flex-col items-center text-center gap-8">
+                        <h2 className="text-3xl md:text-5xl font-light text-white">How are you feeling?</h2>
+
+                        <div className="w-full max-w-3xl relative group">
+                            <textarea
+                                value={moodText}
+                                onChange={(e) => setMoodText(e.target.value)}
+                                placeholder="I'm feeling a bit bored and tired..."
+                                className="w-full bg-dark/50 border border-white/10 rounded-3xl p-6 md:p-8 text-xl md:text-2xl text-white placeholder-gray-600 focus:outline-none focus:border-primary/50 transition-all resize-none shadow-inner min-h-[160px]"
+                            />
+                            <div className="absolute bottom-6 right-6 flex gap-3">
+                                <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all hover:scale-110">
+                                    <Mic size={24} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-4 justify-center w-full">
+                            <button
+                                onClick={handleDetect}
+                                disabled={loading}
+                                className="btn-primary min-w-[200px] py-4 text-lg shadow-neon-blue/20"
+                            >
+                                {loading ? <Zap className="animate-spin" /> : <Sparkles />}
+                                {loading ? "Analyzing..." : "Detect Mood"}
+                            </button>
+
+                            <button onClick={handleSurprise} className="btn-neon min-w-[200px] py-4 text-lg">
+                                Surprise Me 🎁
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Results Section */}
+            {/* B. Suggested Plan Card */}
             <AnimatePresence>
                 {suggestion && (
                     <motion.section
-                        initial={{ opacity: 0, height: 0, y: 20 }}
-                        animate={{ opacity: 1, height: 'auto', y: 0 }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="glass-card border-none bg-gradient-to-b from-primary/10 to-transparent p-6 mb-12"
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="glass-card border border-primary/30 p-8 md:p-10 relative overflow-hidden"
                     >
-                        <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                            Detected Mood: <span className="text-accent capitalize">{suggestion.mood}</span>
-                        </h3>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {suggestion.plan.map((item, i) => (
-                                <div key={i} className="bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
-                                    <div className="text-xs text-accent uppercase tracking-widest mb-2 font-bold">{item.type}</div>
-                                    <div className="font-medium text-lg leading-snug mb-4">{item.description}</div>
-                                    <div className="text-sm text-gray-500 flex items-center gap-1">
-                                        <Zap size={14} /> {item.time_minutes} min
-                                    </div>
+                        {/* Glow effects */}
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 -z-10" />
+
+                        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 className="text-sm uppercase tracking-widest text-primary-light font-bold mb-2">Analysis Complete</h3>
+                                <div className="text-3xl md:text-4xl font-bold text-white capitalize flex items-center gap-3">
+                                    {suggestion.mood} <span className="text-lg font-normal text-gray-500 bg-white/5 px-3 py-1 rounded-full">{Math.round((suggestion.intensity || 0) * 100)}% Intensity</span>
                                 </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <button className="p-3 rounded-xl hover:bg-white/10 transition-colors"><SkipForward size={24} /></button>
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-4 gap-6">
+                            {suggestion.plan.map((item, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="bg-white/5 border border-white/5 p-6 rounded-2xl hover:bg-white/10 transition-colors flex flex-col gap-3 group"
+                                >
+                                    <div className="p-3 bg-dark rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
+                                        <PlanIcon type={item.type} />
+                                    </div>
+                                    <div className="text-xs text-primary-glow font-bold uppercase tracking-wider">{item.type.replace('_', ' ')}</div>
+                                    <div className="font-medium text-lg leading-snug">{item.description}</div>
+                                    {item.time_minutes && <div className="mt-auto text-sm text-gray-500">{item.time_minutes} min</div>}
+                                </motion.div>
                             ))}
                         </div>
                     </motion.section>
                 )}
             </AnimatePresence>
 
-            {/* Tiles Grid */}
-            <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:gap-6">
-                <Tile icon={Gamepad2} title="Games" color="from-yellow-400 to-orange-500" onClick={() => navigate('/games')} />
-                <Tile icon={Music} title="Music" color="from-green-400 to-emerald-500" onClick={() => navigate('/music')} />
-                <Tile icon={Book} title="Journal" color="from-pink-400 to-rose-500" onClick={() => navigate('/journal')} />
-                <Tile icon={Lock} title="Lockbox" color="from-purple-400 to-indigo-500" onClick={() => navigate('/lockbox')} />
-                <Tile icon={MessageCircle} title="AI Chat" color="from-red-400 to-pink-500" onClick={() => navigate('/chat')} />
-                <Tile icon={Mic} title="Voice Mode" color="from-teal-400 to-blue-500" onClick={() => navigate('/voice')} />
-                <Tile icon={BarChart2} title="History" color="from-blue-400 to-cyan-500" onClick={() => navigate('/history')} />
+            {/* C. Quick Action Tiles */}
+            <section>
+                <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                    <span className="w-2 h-8 bg-primary rounded-full" />
+                    Quick Actions
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <QuickActionTile icon={Gamepad2} title="Mini Games" desc="Arcade Zone" onClick={() => navigate('/games')} delay={1} />
+                    <QuickActionTile icon={Music} title="Music Booster" desc="Sonic Heal" onClick={() => navigate('/music')} delay={2} />
+                    <QuickActionTile icon={Book} title="Journaling" desc="Mind Dump" onClick={() => navigate('/journal')} delay={3} />
+                    <QuickActionTile icon={Wind} title="Breathing" desc="Visualizer" onClick={() => alert('Breathing Visualizer Overlay')} delay={4} />
+                    <QuickActionTile icon={MessageCircle} title="AI Friend" desc="Chat Mode" onClick={() => navigate('/chat')} delay={5} />
+                    <QuickActionTile icon={Lock} title="Mood Lockbox" desc="Secure Notes" onClick={() => navigate('/lockbox')} delay={6} />
+                    <QuickActionTile icon={BarChart2} title="History" desc="Trends" onClick={() => navigate('/history')} delay={7} />
+                    <QuickActionTile icon={Mic} title="Voice Mode" desc="Hands Free" onClick={() => navigate('/voice')} delay={8} />
+                </div>
             </section>
         </div>
     );
+}
+
+// Subcomponents
+const UserAvatar = () => (
+    <div className="w-full h-full rounded-full bg-gradient-to-tr from-primary to-neon-blue p-[2px]">
+        <div className="w-full h-full rounded-full bg-dark flex items-center justify-center font-bold text-sm">
+            ME
+        </div>
+    </div>
+);
+
+const PlanIcon = ({ type }) => {
+    switch (type) {
+        case 'breathing': return <Wind size={20} className="text-cyan-400" />;
+        case 'micro_task': return <Zap size={20} className="text-yellow-400" />;
+        case 'activity': return <Sparkles size={20} className="text-purple-400" />;
+        case 'music': return <Music size={20} className="text-pink-400" />;
+        default: return <Smile size={20} className="text-green-400" />;
+    }
 }

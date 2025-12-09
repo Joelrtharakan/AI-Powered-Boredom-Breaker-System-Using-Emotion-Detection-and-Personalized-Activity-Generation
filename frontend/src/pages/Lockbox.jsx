@@ -1,22 +1,128 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, Unlock, Key, ShieldCheck } from 'lucide-react';
+import axios from 'axios';
+
 export default function Lockbox() {
+    const [isUnlocked, setIsUnlocked] = useState(false);
+    const [pin, setPin] = useState(['', '', '', '']);
+    const [notes, setNotes] = useState([]);
+    const [newNote, setNewNote] = useState('');
+
+    const handlePinChange = (index, value) => {
+        if (value.length > 1) return;
+        const newPin = [...pin];
+        newPin[index] = value;
+        setPin(newPin);
+
+        // Auto focus next
+        if (value && index < 3) {
+            document.getElementById(`pin-${index + 1}`).focus();
+        }
+    };
+
+    const handleUnlock = () => {
+        if (pin.join('') === '1234') { // Mock PIN
+            setIsUnlocked(true);
+            // Fetch mock encrypted notes
+            setNotes([
+                { id: 1, text: "I felt really anxious about the presentation today...", date: "Oct 24" },
+                { id: 2, text: "Secret idea: Build an AI that makes coffee.", date: "Oct 20" }
+            ]);
+        } else {
+            alert('Incorrect PIN');
+            setPin(['', '', '', '']);
+            document.getElementById('pin-0').focus();
+        }
+    };
+
+    const handleSave = () => {
+        if (!newNote) return;
+        setNotes([{ id: Date.now(), text: newNote, date: "Just now" }, ...notes]);
+        setNewNote('');
+    };
+
     return (
-        <div className="p-8 max-w-7xl mx-auto min-h-screen">
-            <div className="mb-12">
-                <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-500 mb-2">Mood Lockbox</h1>
-                <p className="text-gray-300">Encrypted storage for your deepest thoughts.</p>
-            </div>
+        <div className="min-h-screen pt-24 px-4 max-w-5xl mx-auto flex items-center justify-center">
+            <AnimatePresence mode='wait'>
+                {!isUnlocked ? (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.1 }}
+                        className="glass-card p-12 flex flex-col items-center gap-8 max-w-md w-full relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-neon-purple/20 blur-2xl rounded-full" />
 
-            <div className="grid md:grid-cols-2 gap-8">
-                <div className="glass-card flex flex-col items-center justify-center p-12 gap-6">
-                    <div className="text-6xl">🔒</div>
-                    <input type="password" placeholder="Enter PIN" className="input-field text-center text-2xl tracking-widest max-w-[200px]" />
-                    <button className="btn-primary w-full max-w-[200px]">Unlock</button>
-                </div>
+                        <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-2">
+                            <Lock size={32} className="text-gray-300" />
+                        </div>
 
-                <div className="glass-card opacity-50 flex items-center justify-center">
-                    <p>Select a slot to unlock</p>
-                </div>
-            </div>
+                        <div className="text-center">
+                            <h2 className="text-3xl font-bold mb-2">Mood Lockbox</h2>
+                            <p className="text-gray-400 text-sm">Enter your 4-digit PIN to access your encrypted thoughts.</p>
+                        </div>
+
+                        <div className="flex gap-4">
+                            {pin.map((digit, i) => (
+                                <input
+                                    key={i}
+                                    id={`pin-${i}`}
+                                    type="password"
+                                    maxLength={1}
+                                    className="w-14 h-16 rounded-xl bg-dark border border-white/20 text-center text-2xl text-white focus:border-neon-purple focus:ring-1 focus:ring-neon-purple transition-all"
+                                    value={digit}
+                                    onChange={(e) => handlePinChange(i, e.target.value)}
+                                />
+                            ))}
+                        </div>
+
+                        <button onClick={handleUnlock} className="btn-primary w-full py-4 text-lg">
+                            Access Vault
+                        </button>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="w-full h-[80vh] flex flex-col md:flex-row gap-6"
+                    >
+                        <div className="w-full md:w-1/3 glass-card p-6 flex flex-col">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    <Unlock size={20} className="text-green-400" /> Decrypted
+                                </h2>
+                                <button onClick={() => setIsUnlocked(false)} className="text-xs text-gray-500 hover:text-white">Lock</button>
+                            </div>
+
+                            <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+                                {notes.map(note => (
+                                    <div key={note.id} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 cursor-pointer transition-colors">
+                                        <p className="text-gray-300 text-sm mb-2">{note.text}</p>
+                                        <span className="text-[10px] text-gray-600 uppercase font-bold">{note.date}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex-1 glass-card p-8 flex flex-col justify-center items-center text-center">
+                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                                <ShieldCheck size={32} className="text-primary-light" />
+                            </div>
+                            <h3 className="text-2xl font-bold mb-2">Secure Storage</h3>
+                            <p className="text-gray-400 mb-8 max-w-md">Everything you write here is encrypted with AES-256 before it touches our database.</p>
+
+                            <textarea
+                                className="w-full h-32 bg-dark/50 rounded-xl p-4 border border-white/10 focus:border-primary/50 outline-none mb-4 resize-none"
+                                placeholder="Write something secret..."
+                                value={newNote}
+                                onChange={e => setNewNote(e.target.value)}
+                            />
+                            <button onClick={handleSave} className="btn-primary px-8">Encrypt & Save</button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
-    )
+    );
 }
