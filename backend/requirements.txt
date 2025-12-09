@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+pydantic-settings
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+transformers
+torch
+scipy
+chromadb>=0.5.0
+httpx
+requests
+alembic
+email-validator
