@@ -94,19 +94,38 @@ const ReactionGame = () => {
     const [state, setState] = useState('waiting'); // waiting, ready, now, result
     const [startTime, setStartTime] = useState(0);
     const [score, setScore] = useState(0);
+    const timeoutRef = useRef(null); // Added useRef for timeout
 
-    const start = () => {
-        setState('ready');
-        setTimeout(() => {
-            setState('now');
-            setStartTime(Date.now());
-        }, 1000 + Math.random() * 3000);
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const start = async () => {
+        try {
+            await axios.post(`http://localhost:8000/api/v1/games/reaction/start`, { user_id: 1, difficulty: 'normal' });
+            setState('waiting');
+            setStartTime(0);
+            const delay = Math.random() * 2000 + 1000;
+            timeoutRef.current = setTimeout(() => {
+                setState('now');
+                setStartTime(Date.now());
+            }, delay);
+        } catch (e) { console.error(e); }
     };
 
-    const handleClick = () => {
+    const handleClick = async () => {
         if (state === 'now') {
-            setScore(Date.now() - startTime);
+            const time = Date.now() - startTime;
+            setScore(time);
             setState('result');
+            await axios.post(`http://localhost:8000/api/v1/games/reaction/submit`, {
+                user_id: 1,
+                result: { score: time }
+            });
         } else if (state === 'ready') {
             setState('waiting');
             alert("Too early!");
@@ -148,13 +167,19 @@ const NumberGuessGame = () => {
     const [message, setMessage] = useState('Guess a number between 1 and 100');
     const [history, setHistory] = useState([]);
 
-    const handleGuess = (e) => {
+    const handleGuess = async (e) => {
         e.preventDefault();
         const num = parseInt(guess);
         if (!num) return;
 
         let msg = '';
-        if (num === target) msg = '🎉 Correct! You won!';
+        if (num === target) {
+            msg = '🎉 Correct! You won!';
+            await axios.post(`http://localhost:8000/api/v1/games/number_guess/submit`, {
+                user_id: 1,
+                result: { score: 100 - history.length * 5, attempts: history.length + 1 }
+            });
+        }
         else if (num < target) msg = 'Too Low 📉';
         else msg = 'Too High 📈';
 
@@ -211,7 +236,7 @@ const MemoryGame = () => {
         setCards(deck.map((emoji, id) => ({ id, emoji })));
     }, []);
 
-    const handleCardClick = (id) => {
+    const handleCardClick = async (id) => {
         if (flipped.length === 2 || flipped.includes(id) || solved.includes(id)) return;
         const newFlipped = [...flipped, id];
         setFlipped(newFlipped);
@@ -219,8 +244,16 @@ const MemoryGame = () => {
         if (newFlipped.length === 2) {
             const [first, second] = newFlipped;
             if (cards[first].emoji === cards[second].emoji) {
-                setSolved([...solved, first, second]);
+                const newSolved = [...solved, first, second];
+                setSolved(newSolved);
                 setFlipped([]);
+
+                if (newSolved.length === cards.length) {
+                    await axios.post(`http://localhost:8000/api/v1/games/memory/submit`, {
+                        user_id: 1,
+                        result: { score: 500 }
+                    });
+                }
             } else {
                 setTimeout(() => setFlipped([]), 1000);
             }

@@ -1,16 +1,34 @@
+
 import { motion } from 'framer-motion';
 import { Play, Heart, Share2, MoreHorizontal, Disc } from 'lucide-react';
-
-const playlists = [
-    { title: "Lofi Focus", artist: "Chillhop Music", cover: "bg-purple-500", mood: "Productivity" },
-    { title: "Deep Sleep", artist: "Sleepy Time", cover: "bg-blue-900", mood: "Relaxation" },
-    { title: "Gym Phonk", artist: "Aggressive", cover: "bg-red-600", mood: "Fitness" },
-    { title: "Happy Vibes", artist: "Summer Sounds", cover: "bg-yellow-400", mood: "Creativity" },
-    { title: "Sad Hours", artist: "Melancholy", cover: "bg-gray-700", mood: "Boredom" },
-    { title: "Piano Calm", artist: "Classical", cover: "bg-indigo-400", mood: "Bible Reflection" },
-];
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function Music() {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [playlists, setPlaylists] = useState([]);
+    const [currentTrack, setCurrentTrack] = useState(null);
+
+    useEffect(() => {
+        const fetchMusic = async () => {
+            try {
+                // Determine mood from last detection or default
+                const mood = 'chill';
+                const res = await axios.get(`http://localhost:8000/api/v1/music?mood=${mood}`);
+                setPlaylists(res.data.playlists || []);
+                // Optionally set the first track of the first playlist as currentTrack
+                if (res.data.playlists && res.data.playlists.length > 0 && res.data.playlists[0].tracks.length > 0) {
+                    setCurrentTrack(res.data.playlists[0].tracks[0]);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchMusic();
+    }, []);
+
+    const togglePlay = () => setIsPlaying(!isPlaying);
+
     return (
         <div className="min-h-screen pt-20 pb-24 px-4 max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
@@ -80,8 +98,10 @@ export default function Music() {
                         key={i}
                         whileHover={{ y: -10 }}
                         className="group cursor-pointer"
+                        onClick={() => setCurrentTrack(item.tracks[0])}
                     >
-                        <div className={`aspect-square rounded-2xl ${item.cover} mb-4 relative overflow-hidden shadow-lg`}>
+                        <div className={`aspect-square rounded-2xl bg-gradient-to-br from-primary to-neon-purple mb-4 relative overflow-hidden shadow-lg`}>
+                            {item.tracks[0]?.album_art && <img src={item.tracks[0].album_art} alt="art" className="w-full h-full object-cover" />}
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
                             <div className="absolute bottom-4 right-4 translate-y-10 group-hover:translate-y-0 transition-transform duration-300 opacity-0 group-hover:opacity-100">
                                 <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
@@ -90,11 +110,11 @@ export default function Music() {
                             </div>
                             {/* Mood Tag */}
                             <div className="absolute top-2 left-2 px-2 py-1 bg-black/50 backdrop-blur-md rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                                {item.mood}
+                                {item.name.split(' ')[0]}
                             </div>
                         </div>
-                        <h3 className="font-bold truncate">{item.title}</h3>
-                        <p className="text-sm text-gray-500 truncate">{item.artist}</p>
+                        <h3 className="font-bold truncate">{item.name}</h3>
+                        <p className="text-sm text-gray-500 truncate">{item.tracks.length} Tracks</p>
                     </motion.div>
                 ))}
             </div>

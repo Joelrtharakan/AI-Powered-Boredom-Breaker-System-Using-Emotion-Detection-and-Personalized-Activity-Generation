@@ -21,14 +21,25 @@ export default function Lockbox() {
         }
     };
 
-    const handleUnlock = () => {
-        if (pin.join('') === '1234') { // Mock PIN
-            setIsUnlocked(true);
-            // Fetch mock encrypted notes
-            setNotes([
-                { id: 1, text: "I felt really anxious about the presentation today...", date: "Oct 24" },
-                { id: 2, text: "Secret idea: Build an AI that makes coffee.", date: "Oct 20" }
-            ]);
+    const handleUnlock = async () => {
+        if (pin.join('') === '1234') {
+            // In real app, PIN would derive key. Here we just fetch list.
+            try {
+                const res = await axios.get(`http://localhost:8000/api/v1/lockbox/list?user_id=1`);
+                // For this demo, since we don't have real client-side encryption yet, 
+                // we'll just mock the "decryption" of the fetched items or handle the list.
+                // The API returns metadata. To actually "unlock", we'd fetch the blob and decrypt.
+                // Let's just set the metadata as notes for now to prove connection.
+                setNotes(res.data.map(item => ({
+                    id: item.id,
+                    text: `Encrypted Item #${item.id} - ${item.label}`,
+                    date: new Date(item.created_at).toLocaleDateString()
+                })));
+                setIsUnlocked(true);
+            } catch (e) {
+                console.error(e);
+                alert("Failed to fetch lockbox items");
+            }
         } else {
             alert('Incorrect PIN');
             setPin(['', '', '', '']);
@@ -36,10 +47,20 @@ export default function Lockbox() {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!newNote) return;
-        setNotes([{ id: Date.now(), text: newNote, date: "Just now" }, ...notes]);
-        setNewNote('');
+        try {
+            // Mock encryption: Base64 encode
+            const encrypted = btoa(newNote);
+            await axios.post('http://localhost:8000/api/v1/lockbox/save', {
+                user_id: 1,
+                label: "Note",
+                encrypted_data_base64: encrypted
+            });
+            // Refresh list
+            handleUnlock();
+            setNewNote('');
+        } catch (e) { console.error(e); }
     };
 
     return (

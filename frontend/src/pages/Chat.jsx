@@ -1,35 +1,62 @@
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Smile, Paperclip, Bot, User, Sparkles } from 'lucide-react';
 
 export default function Chat() {
-    const [messages, setMessages] = useState([
-        { id: 1, role: 'ai', text: "Hello! I noticed you might be feeling a bit low today. Want to talk about it? I'm here to listen." }
-    ]);
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef(null);
+    const sessionId = useRef(null); // Keep persistent session
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                // Fetch last session if any, or just all history for user 1
+                const res = await axios.get('http://localhost:8000/api/v1/chat/history?user_id=1&limit=20');
+                if (res.data && res.data.length > 0) {
+                    setMessages(res.data.map(m => ({ id: m.id, role: m.role === 'assistant' ? 'ai' : 'user', text: m.message })));
+                    // crude session recovery: use uuid from first msg or just new one if empty
+                } else {
+                    setMessages([{ id: 0, role: 'ai', text: "Hello! I noticed you might be feeling a bit low today. Want to talk about it?" }]);
+                }
+            } catch (e) { console.error(e); }
+        };
+        fetchHistory();
+    }, []);
 
     useEffect(() => {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }, [messages, isTyping]);
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!input.trim()) return;
+
+        // Optimistic UI
         const userMsg = { id: Date.now(), role: 'user', text: input };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setIsTyping(true);
 
-        // Simulate AI thinking
-        setTimeout(() => {
+        try {
+            const res = await axios.post('http://localhost:8000/api/v1/chat/send', {
+                user_id: 1,
+                session_id: sessionId.current,
+                message: userMsg.text
+            });
+            sessionId.current = res.data.session_id; // update session
+
             setIsTyping(false);
             setMessages(prev => [...prev, {
                 id: Date.now() + 1,
                 role: 'ai',
-                text: "That sounds interesting. Tell me more about how that made you feel?"
+                text: res.data.reply
             }]);
-        }, 1500);
+        } catch (e) {
+            console.error(e);
+            setIsTyping(false);
+        }
     };
 
     const handleKeyPress = (e) => {
@@ -68,8 +95,8 @@ export default function Chat() {
                             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                             <div className={`max-w-[80%] md:max-w-[60%] p-4 rounded-2xl shadow-lg relative ${msg.role === 'user'
-                                    ? 'bg-primary text-white rounded-tr-none'
-                                    : 'bg-white/10 text-gray-100 rounded-tl-none border border-white/5'
+                                ? 'bg-primary text-white rounded-tr-none'
+                                : 'bg-white/10 text-gray-100 rounded-tl-none border border-white/5'
                                 }`}>
                                 <p className="text-sm md:text-base leading-relaxed">{msg.text}</p>
                                 <span className="text-[10px] opacity-50 absolute bottom-1 right-3">10:42 AM</span>

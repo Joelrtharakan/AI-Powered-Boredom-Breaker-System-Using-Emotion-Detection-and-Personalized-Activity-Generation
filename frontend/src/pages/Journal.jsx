@@ -1,17 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Save, Calendar, Mic, Sparkles, ChevronRight, PenTool } from 'lucide-react';
 
 export default function Journal() {
-    const [entries, setEntries] = useState([
-        { id: 1, title: "Morning Reflection", date: "Oct 24", preview: "Today I woke up feeling..." },
-        { id: 2, title: "Ideas for Project", date: "Oct 22", preview: "Maybe I should try..." },
-        { id: 3, title: "Anxiety Log", date: "Oct 20", preview: "Just took a deep breath..." },
-    ]);
+    const [entries, setEntries] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [aiPrompt, setAiPrompt] = useState('');
+
+    useEffect(() => {
+        fetchEntries();
+    }, []);
+
+    const fetchEntries = async () => {
+        try {
+            // Mock user id 1
+            const res = await axios.get('http://localhost:8000/api/v1/journal/list?user_id=1');
+            setEntries(res.data.map(e => ({
+                id: e.id,
+                title: e.title,
+                preview: e.content.slice(0, 30) + "...",
+                date: new Date(e.created_at || Date.now()).toLocaleDateString(),
+                content: e.content // store full content
+            })));
+        } catch (e) { console.error(e); }
+    };
 
     const generatePrompt = () => {
         const prompts = [
@@ -23,12 +38,20 @@ export default function Journal() {
         setAiPrompt(prompts[Math.floor(Math.random() * prompts.length)]);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!title && !content) return;
-        setEntries([{ id: Date.now(), title: title || "Untitled", date: "Just now", preview: content.slice(0, 20) + "..." }, ...entries]);
-        setTitle('');
-        setContent('');
-        setSelectedId(null);
+        try {
+            await axios.post('http://localhost:8000/api/v1/journal/create', {
+                user_id: 1,
+                title: title || "Untitled",
+                content: content,
+                is_encrypted: false
+            });
+            fetchEntries(); // reload
+            setTitle('');
+            setContent('');
+            setSelectedId(null);
+        } catch (e) { console.error(e); }
     };
 
     return (
@@ -52,7 +75,11 @@ export default function Journal() {
                     {entries.map(entry => (
                         <div
                             key={entry.id}
-                            onClick={() => setSelectedId(entry.id)}
+                            onClick={() => {
+                                setSelectedId(entry.id);
+                                setTitle(entry.title);
+                                setContent(entry.content);
+                            }}
                             className={`p-4 rounded-xl cursor-pointer transition-colors ${selectedId === entry.id ? 'bg-primary/20 border border-primary/30' : 'hover:bg-white/5 border border-transparent'
                                 }`}
                         >

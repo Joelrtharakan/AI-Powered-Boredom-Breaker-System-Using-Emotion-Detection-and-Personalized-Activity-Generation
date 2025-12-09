@@ -2,23 +2,35 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mic, MicOff, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import axios
 
 export default function Voice() {
     const navigate = useNavigate();
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState("Tap the microphone to speak...");
 
-    const toggleListen = () => {
-        setIsListening(!isListening);
+    const toggleListen = async () => {
         if (!isListening) {
+            setIsListening(true);
             setTranscript("Listening...");
-            // Simulate voice recognition
-            setTimeout(() => {
-                setTranscript("I understand. You said you are bored. Generating a plan...");
-                setTimeout(() => setIsListening(false), 2000);
+            // Simulate recording & API call delay
+            setTimeout(async () => {
+                try {
+                    // Note: FastAPI Form param expects form-data or urlencoded, but let's just send JSON if we changed backend to Body.
+                    // The backend expects Form for transcript.
+                    const formData = new FormData();
+                    formData.append('transcript', "I am feeling a bit bored and tired.");
+
+                    const apiRes = await axios.post('http://localhost:8000/api/v1/voice-input', formData);
+                    setTranscript(`You seem ${apiRes.data.mood}. Suggesting: ${apiRes.data.action}`);
+                } catch (e) {
+                    console.error(e);
+                    setTranscript("Error processing voice.");
+                }
+                setIsListening(false);
             }, 3000);
         } else {
-            setTranscript("Microphone off.");
+            setIsListening(false);
         }
     };
 

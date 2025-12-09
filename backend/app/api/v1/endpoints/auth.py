@@ -1,15 +1,15 @@
-from datetime import timedelta
-from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordRequestForm
+from datetime import timedelta
+from pydantic import BaseModel
 
 from app.db.session import SessionLocal
-from app.core import security
-from app.core.config import settings
+from app.core import security, config
 from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin, Token, UserInDB
+from app.models.token import RefreshToken
+from app.schemas.user import UserCreate, UserLogin, Token
 
+settings = config.settings
 router = APIRouter()
 
 def get_db():
@@ -18,6 +18,12 @@ def get_db():
         yield db
     finally:
         db.close()
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+class LogoutRequest(BaseModel):
+    refresh_token: str
 
 @router.post("/register", response_model=Token)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
@@ -44,10 +50,20 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
     )
     refresh_token = security.create_refresh_token(user.id)
     
+    # Store refresh token in DB
+    db_token = RefreshToken(token_hash=refresh_token, user_id=user.id, expires_at=security.datetime.utcnow() + timedelta(days=7))
+    db.add(db_token)
+    db.commit()
+    
     return {
         "access_token": access_token, 
         "token_type": "bearer",
-        "refresh_token": refresh_token
+        "refresh_token": refresh_token,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email
+        }
     }
 
 @router.post("/login", response_model=Token)
@@ -64,20 +80,51 @@ def login(login_req: UserLogin, db: Session = Depends(get_db)):
         user.id, expires_delta=access_token_expires
     )
     refresh_token = security.create_refresh_token(user.id)
+
+    # Store refresh token
+    # Revoke old ones? For simplicity, just add new one
+    db_token = RefreshToken(token_hash=refresh_token, user_id=user.id, expires_at=security.datetime.utcnow() + timedelta(days=7))
+    db.add(db_token)
+    db.commit()
     
     return {
         "access_token": access_token, 
         "token_type": "bearer",
-        "refresh_token": refresh_token
+        "refresh_token": refresh_token,
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email
+        }
     }
 
-# Simplistic refresh
 @router.post("/refresh", response_model=Token)
-def refresh_token(token_in: str, db: Session = Depends(get_db)):
-    # In real world, verify signature and check DB for revocation
-    # For now, just re-issue
+def refresh_token(req: RefreshRequest, db: Session = Depends(get_db)):
+    # Verify token exists in DB and is valid
+    db_token = db.query(RefreshToken).filter(RefreshToken.token_hash == req.refresh_token).first()
+    if not db_token:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+        
+    # In real app: check expiration
+    
+    user = db.query(User).filter(User.id == db_token.user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = security.create_access_token(
+        user.id, expires_delta=access_token_expires
+    )
+    
     return {
-         "access_token": "new_access_token",
+         "access_token": access_token,
          "token_type": "bearer",
-         "refresh_token": "new_refresh"
+         "refresh_token": req.refresh_token # Return same refresh token
     }
+
+@router.post("/logout")
+def logout(req: LogoutRequest, db: Session = Depends(get_db)):
+    # Revoke token
+    db.query(RefreshToken).filter(RefreshToken.token_hash == req.refresh_token).delete()
+    db.commit()
+    return {"ok": True}

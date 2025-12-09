@@ -1,25 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Zap, Smile, Book, Music, Lock, MessageCircle, BarChart2, Gamepad2, Sparkles, Wind, Play, Pause, SkipForward } from 'lucide-react';
-import axios from 'axios';
+import { Sparkles, Play, Music, Zap, Smile, Lock, Wind, Gamepad2, Mic, Book, BarChart2, MessageCircle, SkipForward } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
+// Component for Quick Action Tiles
 const QuickActionTile = ({ icon: Icon, title, desc, onClick, delay }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: delay * 0.1 }}
-        whileHover={{ scale: 1.05, rotateX: 5, rotateY: 5 }}
+        transition={{ duration: 0.5, delay: delay * 0.1 }}
         onClick={onClick}
-        className="glass-card p-6 cursor-pointer flex flex-col items-center justify-center text-center gap-4 group hover:bg-white/10"
-        style={{ perspective: 1000 }}
+        className="glass-card p-6 flex flex-col items-center justify-center gap-4 cursor-pointer group hover:bg-white/10"
     >
-        <div className="p-4 rounded-2xl bg-white/5 group-hover:bg-primary/20 transition-colors shadow-lg shadow-black/20">
-            <Icon size={28} className="text-gray-300 group-hover:text-white transition-colors" />
+        <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-primary/20">
+            <Icon size={28} className="text-primary-light group-hover:text-white transition-colors" />
         </div>
-        <div>
-            <span className="block font-bold text-lg text-gray-200 group-hover:text-white">{title}</span>
-            {desc && <span className="text-xs text-gray-500 group-hover:text-gray-400">{desc}</span>}
+        <div className="text-center">
+            <h3 className="font-bold text-lg mb-1">{title}</h3>
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{desc}</p>
         </div>
     </motion.div>
 );
@@ -29,39 +28,66 @@ export default function Dashboard() {
     const [moodText, setMoodText] = useState('');
     const [loading, setLoading] = useState(false);
     const [suggestion, setSuggestion] = useState(null);
+    const [user, setUser] = useState({ username: "Traveler" });
+
+    // Mock User Fetch
+    useEffect(() => {
+        const u = localStorage.getItem('user');
+        if (u) setUser(JSON.parse(u));
+    }, []);
 
     const handleDetect = async () => {
         if (!moodText) return;
         setLoading(true);
         try {
-            const moodRes = await axios.post('http://localhost:8000/api/mood/detect', { text: moodText });
-            const { mood } = moodRes.data;
-            const suggestRes = await axios.post('http://localhost:8000/api/suggest', {
-                mood,
-                time_available_minutes: 60
+            // 1. Detect Mood
+            const moodRes = await axios.post('http://localhost:8000/api/v1/mood/detect', { text: moodText });
+            const moodData = moodRes.data;
+
+            // 2. Get Suggestion Plan
+            const planRes = await axios.post('http://localhost:8000/api/v1/suggest/', {
+                user_id: 1, // real app: from auth context
+                mood: moodData.mood,
+                time_available_minutes: 30, // could be input
+                preferences: {}
             });
-            setSuggestion({ mood, plan: suggestRes.data.plan, intensity: moodRes.data.intensity });
+
+            setSuggestion({
+                mood: moodData.mood,
+                intensity: moodData.intensity,
+                plan: planRes.data.plan
+            });
+
+            // 3. Log Mood (Async)
+            await axios.post('http://localhost:8000/api/v1/mood/log?user_id=1', {
+                mood: moodData.mood,
+                intensity: moodData.intensity,
+                activities_used: []
+            });
+
         } catch (e) {
             console.error(e);
+            alert("Failed to analyze mood.");
         } finally {
             setLoading(false);
         }
     };
 
     const handleSurprise = async () => {
-        // quick stub for surprise
-        const res = await axios.get('http://localhost:8000/api/surprise');
-        alert(`Surprise! ${res.data.payload?.text || "Enjoy your day!"}`);
-    };
+        try {
+            const res = await axios.get('http://localhost:8000/api/v1/suggest/surprise');
+            alert(`Surprise! ${res.data.type}: ${JSON.stringify(res.data.payload)}`);
+        } catch (e) { console.error(e); }
+    }
 
     return (
-        <div className="min-h-screen pb-24 px-4 pt-8 md:pt-12 max-w-7xl mx-auto space-y-16">
+        <div className="min-h-screen pt-24 px-4 pb-20 max-w-7xl mx-auto space-y-12">
 
             {/* Header */}
-            <div className="flex justify-between items-center px-2">
+            <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-4xl font-black title-gradient mb-1">Dashboard</h1>
-                    <p className="text-gray-400">Welcome back, Traveler.</p>
+                    <h1 className="text-6xl font-black mb-2 title-gradient">Dashboard</h1>
+                    <p className="text-gray-400">Welcome back, {user.username || 'Traveler'}.</p>
                 </div>
                 <button onClick={() => { localStorage.clear(); navigate('/') }} className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors">
                     <UserAvatar />
