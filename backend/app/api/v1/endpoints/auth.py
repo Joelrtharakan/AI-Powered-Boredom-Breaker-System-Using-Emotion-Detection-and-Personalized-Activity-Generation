@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+# force reload
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from pydantic import BaseModel
@@ -62,7 +63,9 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
         "user": {
             "id": user.id,
             "username": user.username,
-            "email": user.email
+            "email": user.email,
+            "is_active": True,
+            "interests": user_in.interests
         }
     }
 
@@ -94,7 +97,9 @@ def login(login_req: UserLogin, db: Session = Depends(get_db)):
         "user": {
             "id": user.id,
             "username": user.username,
-            "email": user.email
+            "email": user.email,
+            "is_active": True,
+            "interests": []
         }
     }
 

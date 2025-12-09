@@ -24,6 +24,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
     refresh_token: str
+    user: Optional[UserInDB] = None
 
 class TokenRefresh(BaseModel):
     refresh_token: str

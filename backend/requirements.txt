@@ -5,7 +5,8 @@ pydantic
 pydantic-settings
 python-dotenv
 python-jose[cryptography]
-passlib[bcrypt]
+passlib[argon2]
+argon2-cffi
 python-multipart
 transformers
 torch
