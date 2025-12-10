@@ -110,7 +110,7 @@ const ReactionGame = ({ user }) => {
     const start = async () => {
         if (!user) return;
         try {
-            await axios.post(`http://localhost:8000/api/v1/games/reaction/start`, { user_id: user.id, difficulty: 'normal' });
+            await axios.post(`http://localhost:8000/api/games/reaction/start`, { user_id: user.id, difficulty: 'normal' });
             setState('waiting');
             setStartTime(0);
             const delay = Math.random() * 2000 + 1000;
@@ -126,7 +126,7 @@ const ReactionGame = ({ user }) => {
             const time = Date.now() - startTime;
             setScore(time);
             setState('result');
-            await axios.post(`http://localhost:8000/api/v1/games/reaction/submit`, {
+            await axios.post(`http://localhost:8000/api/games/reaction/submit`, {
                 user_id: user.id,
                 result: { score: time }
             });
@@ -180,7 +180,7 @@ const NumberGuessGame = ({ user }) => {
         if (num === target) {
             msg = '🎉 Correct! You won!';
             if (user) {
-                await axios.post(`http://localhost:8000/api/v1/games/number_guess/submit`, {
+                await axios.post(`http://localhost:8000/api/games/number_guess/submit`, {
                     user_id: user.id,
                     result: { score: 100 - history.length * 5, attempts: history.length + 1 }
                 });
@@ -255,7 +255,7 @@ const MemoryGame = ({ user }) => {
                 setFlipped([]);
 
                 if (newSolved.length === cards.length && user) {
-                    await axios.post(`http://localhost:8000/api/v1/games/memory/submit`, {
+                    await axios.post(`http://localhost:8000/api/games/memory/submit`, {
                         user_id: user.id,
                         result: { score: 500 }
                     });

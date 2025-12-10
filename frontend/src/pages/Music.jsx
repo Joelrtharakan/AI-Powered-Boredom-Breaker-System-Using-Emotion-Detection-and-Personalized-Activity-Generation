@@ -14,7 +14,7 @@ export default function Music() {
             try {
                 // Determine mood from last detection or default
                 const mood = 'chill';
-                const res = await axios.get(`http://localhost:8000/api/v1/music?mood=${mood}`);
+                const res = await axios.get(`http://localhost:8000/api/music?mood=${mood}`);
                 setPlaylists(res.data.playlists || []);
                 // Optionally set the first track of the first playlist as currentTrack
                 if (res.data.playlists && res.data.playlists.length > 0 && res.data.playlists[0].tracks.length > 0) {

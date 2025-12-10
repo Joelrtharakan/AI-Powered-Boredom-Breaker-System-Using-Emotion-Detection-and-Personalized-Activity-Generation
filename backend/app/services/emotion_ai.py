@@ -50,6 +50,14 @@ class EmotionAnalyzer:
         elif "anxious" in text_lower or "worried" in text_lower or "nervous" in text_lower:
             emotion = "fear"
             mood = "anxious"
+        elif "frustrat" in text_lower or "annoy" in text_lower or "hate" in text_lower:
+             emotion = "anger"
+             mood = "stressed"
+             score = max(score, 0.85)
+        elif "hope" in text_lower or "hoping" in text_lower:
+             emotion = "optimism"
+             mood = "happy"
+             score = max(score, 0.85)
 
         return {
             "mood": mood,

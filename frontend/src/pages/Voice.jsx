@@ -13,22 +13,27 @@ export default function Voice() {
         if (!isListening) {
             setIsListening(true);
             setTranscript("Listening...");
-            // Simulate recording & API call delay
+
+            // In a real browser implementation, we would use window.SpeechRecognition here.
+            // For now, we simulate the "recording" duration and then send a sample audio file or text.
+            // Since browsers block mic access in non-secure (http) localhost sometimes, 
+            // and we don't have a backend whisper setup fully verified, let's fallback to sending text 
+            // but keep the UI feeling like voice.
+
             setTimeout(async () => {
                 try {
-                    // Note: FastAPI Form param expects form-data or urlencoded, but let's just send JSON if we changed backend to Body.
-                    // The backend expects Form for transcript.
+                    // Send sample text as if valid speech was recognized
                     const formData = new FormData();
-                    formData.append('transcript', "I am feeling a bit bored and tired.");
+                    formData.append('transcript', "I am feeling a bit bored and tired."); // Mocked transcript for stability
 
-                    const apiRes = await axios.post('http://localhost:8000/api/v1/voice-input', formData);
+                    const apiRes = await axios.post('http://localhost:8000/api/voice-input', formData);
                     setTranscript(`You seem ${apiRes.data.mood}. Suggesting: ${apiRes.data.action}`);
                 } catch (e) {
                     console.error(e);
                     setTranscript("Error processing voice.");
                 }
                 setIsListening(false);
-            }, 3000);
+            }, 2000);
         } else {
             setIsListening(false);
         }

@@ -36,11 +36,11 @@ export default function Dashboard() {
         setLoading(true);
         try {
             // 1. Detect Mood
-            const moodRes = await axios.post('http://localhost:8000/api/v1/mood/detect', { text: moodText });
+            const moodRes = await axios.post('http://localhost:8000/api/mood/detect', { text: moodText });
             const moodData = moodRes.data;
 
             // 2. Get Suggestion Plan
-            const planRes = await axios.post('http://localhost:8000/api/v1/suggest/', {
+            const planRes = await axios.post('http://localhost:8000/api/suggest/', {
                 user_id: user.id,
                 mood: moodData.mood,
                 time_available_minutes: 30,
@@ -54,7 +54,7 @@ export default function Dashboard() {
             });
 
             // 3. Log Mood (Async)
-            await axios.post(`http://localhost:8000/api/v1/mood/log?user_id=${user.id}`, {
+            await axios.post(`http://localhost:8000/api/mood/log?user_id=${user.id}`, {
                 mood: moodData.mood,
                 intensity: moodData.intensity,
                 activities_used: []
@@ -70,24 +70,13 @@ export default function Dashboard() {
 
     const handleSurprise = async () => {
         try {
-            const res = await axios.get('http://localhost:8000/api/v1/suggest/surprise');
+            const res = await axios.get('http://localhost:8000/api/suggest/surprise');
             alert(`Surprise! ${res.data.type}: ${JSON.stringify(res.data.payload)}`);
         } catch (e) { console.error(e); }
     }
 
     return (
-        <div className="min-h-screen pt-24 px-4 pb-20 max-w-7xl mx-auto space-y-12">
-
-            {/* Header */}
-            <div className="flex justify-between items-end">
-                <div>
-                    <h1 className="text-6xl font-black mb-2 title-gradient">Dashboard</h1>
-                    <p className="text-gray-400">Welcome back, {user?.username || 'Traveler'}.</p>
-                </div>
-                <button onClick={() => { logout(); navigate('/') }} className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors">
-                    <UserAvatar />
-                </button>
-            </div>
+        <div className="pt-10 px-4 pb-20 max-w-5xl mx-auto space-y-12">
 
             {/* A. Mood Input Section */}
             <section className="relative">
@@ -95,7 +84,10 @@ export default function Dashboard() {
                 <div className="glass-card p-1 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
                     <div className="p-8 md:p-12 flex flex-col items-center text-center gap-8">
-                        <h2 className="text-3xl md:text-5xl font-light text-white">How are you feeling?</h2>
+                        <div>
+                            <h2 className="text-3xl md:text-5xl font-light text-white mb-2">How are you feeling?</h2>
+                            <p className="text-gray-400">Tell me or just click the magic button.</p>
+                        </div>
 
                         <div className="w-full max-w-3xl relative group">
                             <textarea
@@ -121,7 +113,10 @@ export default function Dashboard() {
                                 {loading ? "Analyzing..." : "Detect Mood"}
                             </button>
 
-                            <button onClick={handleSurprise} className="btn-neon min-w-[200px] py-4 text-lg">
+                            <button
+                                onClick={handleSurprise}
+                                className="px-8 py-4 rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 font-medium transition-colors bg-gradient-to-tr from-yellow-400/10 to-orange-500/10 hover:text-white"
+                            >
                                 Surprise Me 🎁
                             </button>
                         </div>
@@ -173,24 +168,6 @@ export default function Dashboard() {
                     </motion.section>
                 )}
             </AnimatePresence>
-
-            {/* C. Quick Action Tiles */}
-            <section>
-                <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
-                    <span className="w-2 h-8 bg-primary rounded-full" />
-                    Quick Actions
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <QuickActionTile icon={Gamepad2} title="Mini Games" desc="Arcade Zone" onClick={() => navigate('/games')} delay={1} />
-                    <QuickActionTile icon={Music} title="Music Booster" desc="Sonic Heal" onClick={() => navigate('/music')} delay={2} />
-                    <QuickActionTile icon={Book} title="Journaling" desc="Mind Dump" onClick={() => navigate('/journal')} delay={3} />
-                    <QuickActionTile icon={Wind} title="Breathing" desc="Visualizer" onClick={() => alert('Breathing Visualizer Overlay')} delay={4} />
-                    <QuickActionTile icon={MessageCircle} title="AI Friend" desc="Chat Mode" onClick={() => navigate('/chat')} delay={5} />
-                    <QuickActionTile icon={Lock} title="Mood Lockbox" desc="Secure Notes" onClick={() => navigate('/lockbox')} delay={6} />
-                    <QuickActionTile icon={BarChart2} title="History" desc="Trends" onClick={() => navigate('/history')} delay={7} />
-                    <QuickActionTile icon={Mic} title="Voice Mode" desc="Hands Free" onClick={() => navigate('/voice')} delay={8} />
-                </div>
-            </section>
         </div>
     );
 }

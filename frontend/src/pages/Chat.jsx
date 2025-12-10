@@ -17,7 +17,7 @@ export default function Chat() {
             if (!user) return;
             try {
                 // Fetch last session if any, or just all history for user
-                const res = await axios.get(`http://localhost:8000/api/v1/chat/history?user_id=${user.id}&limit=20`);
+                const res = await axios.get(`http://localhost:8000/api/chat/history?user_id=${user.id}&limit=20`);
                 if (res.data && res.data.length > 0) {
                     setMessages(res.data.map(m => ({ id: m.id, role: m.role === 'assistant' ? 'ai' : 'user', text: m.message })));
                 } else {
@@ -42,7 +42,7 @@ export default function Chat() {
         setIsTyping(true);
 
         try {
-            const res = await axios.post('http://localhost:8000/api/v1/chat/send', {
+            const res = await axios.post('http://localhost:8000/api/chat/send', {
                 user_id: user.id,
                 session_id: sessionId.current,
                 message: userMsg.text

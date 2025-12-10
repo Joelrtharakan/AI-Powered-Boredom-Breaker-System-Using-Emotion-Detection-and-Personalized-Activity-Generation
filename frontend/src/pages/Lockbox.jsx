@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, Key, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function Lockbox() {
+    const { user } = useAuth();
     const [isUnlocked, setIsUnlocked] = useState(false);
     const [pin, setPin] = useState(['', '', '', '']);
     const [notes, setNotes] = useState([]);
@@ -25,7 +27,7 @@ export default function Lockbox() {
         if (pin.join('') === '1234') {
             // In real app, PIN would derive key. Here we just fetch list.
             try {
-                const res = await axios.get(`http://localhost:8000/api/v1/lockbox/list?user_id=1`);
+                const res = await axios.get(`http://localhost:8000/api/lockbox/list?user_id=${user.id}`);
                 // For this demo, since we don't have real client-side encryption yet, 
                 // we'll just mock the "decryption" of the fetched items or handle the list.
                 // The API returns metadata. To actually "unlock", we'd fetch the blob and decrypt.
@@ -52,8 +54,8 @@ export default function Lockbox() {
         try {
             // Mock encryption: Base64 encode
             const encrypted = btoa(newNote);
-            await axios.post('http://localhost:8000/api/v1/lockbox/save', {
-                user_id: 1,
+            await axios.post('http://localhost:8000/api/lockbox/save', {
+                user_id: user.id,
                 label: "Note",
                 encrypted_data_base64: encrypted
             });

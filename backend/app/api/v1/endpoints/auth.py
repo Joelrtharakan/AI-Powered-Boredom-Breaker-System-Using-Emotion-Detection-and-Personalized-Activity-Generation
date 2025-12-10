@@ -133,3 +133,17 @@ def logout(req: LogoutRequest, db: Session = Depends(get_db)):
     db.query(RefreshToken).filter(RefreshToken.token_hash == req.refresh_token).delete()
     db.commit()
     return {"ok": True}
+
+class PasswordResetRequest(BaseModel):
+    email: str
+    new_password: str
+
+@router.post("/reset-password")
+def reset_password(req: PasswordResetRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == req.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.password_hash = security.get_password_hash(req.new_password)
+    db.commit()
+    return {"message": "Password updated successfully"}

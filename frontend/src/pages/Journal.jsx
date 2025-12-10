@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Save, Calendar, Mic, Sparkles, ChevronRight, PenTool } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Journal() {
+    const { user } = useAuth();
     const [entries, setEntries] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [title, setTitle] = useState('');
@@ -11,13 +13,12 @@ export default function Journal() {
     const [aiPrompt, setAiPrompt] = useState('');
 
     useEffect(() => {
-        fetchEntries();
-    }, []);
+        if (user) fetchEntries();
+    }, [user]);
 
     const fetchEntries = async () => {
         try {
-            // Mock user id 1
-            const res = await axios.get('http://localhost:8000/api/v1/journal/list?user_id=1');
+            const res = await axios.get(`http://localhost:8000/api/journal/list?user_id=${user.id}`);
             setEntries(res.data.map(e => ({
                 id: e.id,
                 title: e.title,
@@ -41,8 +42,8 @@ export default function Journal() {
     const handleSave = async () => {
         if (!title && !content) return;
         try {
-            await axios.post('http://localhost:8000/api/v1/journal/create', {
-                user_id: 1,
+            await axios.post('http://localhost:8000/api/journal/create', {
+                user_id: user.id,
                 title: title || "Untitled",
                 content: content,
                 is_encrypted: false

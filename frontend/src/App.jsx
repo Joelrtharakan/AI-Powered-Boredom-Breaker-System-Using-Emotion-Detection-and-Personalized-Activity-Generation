@@ -12,11 +12,18 @@ import Chat from './pages/Chat';
 import History from './pages/History';
 import Voice from './pages/Voice';
 
+import Layout from './components/Layout';
+
 const ProtectedRoute = ({ children }) => {
   const { token, loading } = useAuth();
   // Don't redirect while loading auth state, ideally
   if (!token && !loading) return <Navigate to="/login" />;
-  return children;
+
+  return (
+    <Layout>
+      {children}
+    </Layout>
+  );
 };
 
 function AppRoutes() {

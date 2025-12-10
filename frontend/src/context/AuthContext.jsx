@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -21,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/auth/login', { email, password });
+            const res = await axios.post(`${API_URL}/auth/login`, { email, password });
             const tk = res.data.access_token;
             const rtk = res.data.refresh_token;
             const usr = res.data.user;
@@ -42,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     const register = async (data) => {
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/auth/register', data);
+            const res = await axios.post(`${API_URL}/auth/register`, data);
             const tk = res.data.access_token;
             const rtk = res.data.refresh_token;
             const usr = res.data.user;
@@ -64,7 +66,7 @@ export const AuthProvider = ({ children }) => {
         try {
             const rtk = localStorage.getItem('refresh_token');
             if (rtk) {
-                await axios.post('http://localhost:8000/api/auth/logout', { refresh_token: rtk });
+                await axios.post(`${API_URL}/auth/logout`, { refresh_token: rtk });
             }
         } catch (e) { console.error("Logout failed on server", e); }
 

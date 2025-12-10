@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function Login() {
@@ -11,16 +12,45 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
+    const [isResetting, setIsResetting] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         // Subtle delay for UX
         await new Promise(r => setTimeout(r, 800));
-        const success = await login(email, password);
+
+        if (isResetting) {
+            try {
+                // Direct call for reset since it's one-off
+                await axios.post('http://localhost:8000/api/auth/reset-password', {
+                    email,
+                    new_password: password
+                });
+                alert("Password reset successfully! Please login with your new password.");
+                setIsResetting(false);
+                setPassword('');
+            } catch (err) {
+                console.error(err);
+                try {
+                    // Fallback to v1 if the above fails (handling inconsistent legacy prefixes)
+                    await axios.post('http://localhost:8000/api/v1/auth/reset-password', {
+                        email,
+                        new_password: password
+                    });
+                    alert("Password reset successfully! Please login with your new password.");
+                    setIsResetting(false);
+                    setPassword('');
+                } catch (e2) {
+                    alert("Failed to reset password. Check if email exists.");
+                }
+            }
+        } else {
+            const success = await login(email, password);
+            if (success) navigate('/dashboard');
+            else alert('Login failed. Please check your credentials.');
+        }
         setLoading(false);
-        if (success) navigate('/dashboard');
-        else alert('Login failed. Please check your credentials.');
     };
 
     return (
@@ -99,8 +129,8 @@ export default function Login() {
                         <div className="w-12 h-12 bg-white rounded-xl mb-6 flex items-center justify-center">
                             <div className="w-6 h-6 bg-black rounded-full" />
                         </div>
-                        <h2 className="text-3xl font-bold tracking-tight">Welcome back</h2>
-                        <p className="text-gray-400">Please enter your details to sign in.</p>
+                        <h2 className="text-3xl font-bold tracking-tight">{isResetting ? "Reset Password" : "Welcome back"}</h2>
+                        <p className="text-gray-400">{isResetting ? "Enter your email and a new password." : "Please enter your details to sign in."}</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,7 +162,7 @@ export default function Login() {
                             animate={focusedField === 'password' ? { scale: 1.02 } : { scale: 1 }}
                             className="space-y-2"
                         >
-                            <label className="text-sm font-medium text-gray-300 ml-1">Password</label>
+                            <label className="text-sm font-medium text-gray-300 ml-1">{isResetting ? "New Password" : "Password"}</label>
                             <div className={`relative transition-all duration-300 rounded-xl bg-white/5 border ${focusedField === 'password' ? 'border-white/40 ring-1 ring-white/10' : 'border-white/10'}`}>
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <Lock className={`h-5 w-5 transition-colors ${focusedField === 'password' ? 'text-white' : 'text-gray-500'}`} />
@@ -140,7 +170,7 @@ export default function Login() {
                                 <input
                                     type="password"
                                     className="block w-full pl-11 pr-4 py-4 bg-transparent text-white placeholder-gray-600 focus:outline-none rounded-xl"
-                                    placeholder="••••••••"
+                                    placeholder={isResetting ? "New secure password" : "••••••••"}
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
                                     onFocus={() => setFocusedField('password')}
@@ -156,26 +186,35 @@ export default function Login() {
                             whileTap={{ scale: 0.99 }}
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-white text-black font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors disabled:opacity-70 disabled:cursor-not-allowed group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] duration-300"
+                            className={`w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] duration-300 ${isResetting ? "bg-red-500 text-white hover:bg-red-600" : "bg-white text-black hover:bg-gray-100"}`}
                         >
                             {loading ? (
                                 <Loader2 className="animate-spin w-5 h-5" />
                             ) : (
                                 <>
-                                    Sign In
+                                    {isResetting ? "Update Password" : "Sign In"}
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </>
                             )}
                         </motion.button>
 
-                        <div className="text-center text-sm">
-                            <span className="text-gray-500">Don't have an account? </span>
+                        <div className="text-center text-sm space-y-2">
+                            <div>
+                                <span className="text-gray-500">Don't have an account? </span>
+                                <button
+                                    type="button"
+                                    onClick={() => navigate('/register')}
+                                    className="text-white font-medium hover:underline underline-offset-4 decoration-gray-500"
+                                >
+                                    Sign up for free
+                                </button>
+                            </div>
                             <button
                                 type="button"
-                                onClick={() => navigate('/register')}
-                                className="text-white font-medium hover:underline underline-offset-4 decoration-gray-500"
+                                onClick={() => setIsResetting(!isResetting)}
+                                className="text-gray-400 text-xs hover:text-white transition-colors"
                             >
-                                Sign up for free
+                                {isResetting ? "Back to Login" : "Forgot Password?"}
                             </button>
                         </div>
                     </form>
