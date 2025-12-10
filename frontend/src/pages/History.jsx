@@ -74,7 +74,11 @@ export default function History() {
                                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
                                 <XAxis dataKey="name" hide />
                                 <YAxis stroke="#94a3b8" />
-                                <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155' }} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
+                                    itemStyle={{ color: '#e2e8f0' }}
+                                    labelStyle={{ color: '#94a3b8' }}
+                                />
                                 <Line type="monotone" dataKey="intensity" stroke="#818cf8" strokeWidth={3} dot={{ fill: '#6366f1' }} />
                             </LineChart>
                         </ResponsiveContainer>
@@ -100,7 +104,10 @@ export default function History() {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155' }} />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}
+                                    itemStyle={{ color: '#e2e8f0' }}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
