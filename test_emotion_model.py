@@ -32,6 +32,7 @@ def test_emotion_model():
         "I am absolutely cooked right now.",              # Exhaustion/Defeat -> Low Energy/Sad
         "This day is mid honestly.",                      # Boredom/Neutral -> Low Energy
         "ScreenShot taken from nobraras discord server",  # Informational -> Neutral (New Case)
+        "great another feature update that breaks everything", # Sarcasm -> Anger/Stress (New Case)
         "No cap I am actually having the best day.",      # Joy -> Happy
         "I'm lowkey stressed about this.",                # Anxiety -> Anxious
         "Bro I am dead, this is too funny.",              # Joy -> Happy (Tricky: 'dead' usually means laughing)

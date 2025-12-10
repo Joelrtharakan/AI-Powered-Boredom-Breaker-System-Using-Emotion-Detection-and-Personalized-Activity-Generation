@@ -22,4 +22,11 @@ def read_root():
     return {"message": "Welcome to Boredom Breaker API"}
 
 from app.api.v1.api import api_router
+from app.services.emotion_ai import emotion_analyzer
+
+@app.on_event("startup")
+async def startup_event():
+    # Preload the emotion model to avoid latency on first request
+    emotion_analyzer.load_model()
+
 app.include_router(api_router, prefix="/api")

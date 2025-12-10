@@ -38,13 +38,31 @@ class EmotionAnalyzer:
         
         # 2. Default Mapping & Low Confidence Handling
         
-        confidence_threshold = 0.65 # Base threshold
+        # Base threshold: Lower it to catch sarcasm/nuance (e.g., "Great, it broke again" -> Anger)
+        confidence_threshold = 0.50 
 
-        # Stricter for short text
-        if len(text) < 30: 
-             confidence_threshold = 0.85
+        # Stricter for VERY short text (prevent random word matching)
+        if len(text) < 15: 
+             confidence_threshold = 0.80
 
-        # Anti-Bias: The model over-predicts 'joy'/'optimism' for neutral text.
+        # Sarcasm Detector: If model sees 'Happy' but text has negative words -> It's Sarcasm/Anger
+        if emotion in ["joy", "optimism"]:
+             negative_context = [
+                 "break", "broke", "fail", "bug", "crash", "stupid", "dumb", "worst", 
+                 "hate", "sucks", "annoy", "problem", "issue", "error", "slow", "lag", "glitch"
+             ]
+             if any(neg in text.lower() for neg in negative_context):
+                  emotion = "anger"
+                  mood = "stressed"
+                  # Trust this sarcasm detection
+                  return {
+                      "mood": mood,
+                      "emotion": emotion,
+                      "intensity": 0.9,
+                      "all_scores": []
+                  }
+
+        # Anti-Bias: The model over-predicts 'joy'/'optimism' for neutral text WITHOUT positive words.
         if emotion in ["joy", "optimism"]:
              positive_keywords = [
                  "happy", "good", "great", "love", "fun", "best", "amazing", "lovely", 
@@ -52,8 +70,11 @@ class EmotionAnalyzer:
                  "wonderful", "perfect", "better", "hope", "optimist", "glad", "enjoy"
              ]
              if not any(pw in text.lower() for pw in positive_keywords):
-                 # No obvious positive words? Require EXTREME confidence (0.92) to avoid false positives like "Screenshot taken..."
-                 confidence_threshold = max(confidence_threshold, 0.92)
+                 # No obvious positive words? Require EXTREME confidence (0.90) to avoid false positives
+                 confidence_threshold = max(confidence_threshold, 0.90)
+             else:
+                 # Has positive word? Standard threshold is fine
+                 confidence_threshold = 0.60
 
         if score < confidence_threshold:
             # If the model is unsure (e.g., random numbers, ambiguous text), default to neutral/boredom

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Play, Music, Zap, Smile, Lock, Wind, Gamepad2, Mic, Book, BarChart2, MessageCircle, SkipForward } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +31,8 @@ export default function Dashboard() {
     const [moodText, setMoodText] = useState('');
     const [loading, setLoading] = useState(false);
     const [suggestion, setSuggestion] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     const handleDetect = async () => {
         if (!moodText || !user) return;
@@ -42,10 +45,18 @@ export default function Dashboard() {
 
             // Check for neutral/ambiguous input
             if (moodData.emotion === 'neutral') {
-                alert("✨ No specific emotion detected. Try describing how you feel in more detail!");
+                setModalMessage("✨ No specific emotion detected. Try describing how you feel in more detail!");
+                setShowModal(true);
                 setLoading(false);
                 return;
             }
+
+            // INSTANT FEEDBACK: Show detected mood while generating plan
+            setSuggestion({
+                mood: moodData.mood,
+                intensity: moodData.intensity,
+                plan: [] // Empty plan serves as loading state
+            });
 
             // 2. Get Suggestion Plan
             const planRes = await axios.post(`${API_URL}/suggest/`, {
@@ -70,7 +81,8 @@ export default function Dashboard() {
 
         } catch (e) {
             console.error(e);
-            alert("Failed to analyze mood.");
+            setModalMessage("Failed to analyze mood. Please try again.");
+            setShowModal(true);
         } finally {
             setLoading(false);
         }
@@ -80,7 +92,8 @@ export default function Dashboard() {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
         try {
             const res = await axios.get(`${API_URL}/suggest/surprise`);
-            alert(`Surprise! ${res.data.type}: ${JSON.stringify(res.data.payload)}`);
+            setModalMessage(`Surprise! ${res.data.type}: ${JSON.stringify(res.data.payload)}`);
+            setShowModal(true);
         } catch (e) { console.error(e); }
     }
 
@@ -157,26 +170,71 @@ export default function Dashboard() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {suggestion.plan.map((item, i) => (
-                                <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    className="bg-white/5 border border-white/5 p-6 rounded-2xl hover:bg-white/10 transition-colors flex flex-col gap-3 group"
-                                >
-                                    <div className="p-3 bg-surface rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
-                                        <PlanIcon type={item.type} />
-                                    </div>
-                                    <div className="text-xs text-primary-glow font-bold uppercase tracking-wider">{item.type.replace('_', ' ')}</div>
-                                    <div className="font-medium text-lg leading-snug">{item.description}</div>
-                                    {item.time_minutes && <div className="mt-auto text-sm text-gray-500">{item.time_minutes} min</div>}
-                                </motion.div>
-                            ))}
+                            {suggestion.plan && suggestion.plan.length > 0 ? (
+                                suggestion.plan.map((item, i) => (
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="bg-white/5 border border-white/5 p-6 rounded-2xl hover:bg-white/10 transition-colors flex flex-col gap-3 group"
+                                    >
+                                        <div className="p-3 bg-surface rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
+                                            <PlanIcon type={item.type} />
+                                        </div>
+                                        <div className="text-xs text-primary-glow font-bold uppercase tracking-wider">{item.type.replace('_', ' ')}</div>
+                                        <div className="font-medium text-lg leading-snug">{item.description}</div>
+                                        {item.time_minutes && <div className="mt-auto text-sm text-gray-500">{item.time_minutes} min</div>}
+                                    </motion.div>
+                                ))
+                            ) : (
+                                <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-400 gap-4">
+                                    <Zap className="animate-spin text-primary-glow" size={32} />
+                                    <p className="animate-pulse">Crafting your perfect boredom cure...</p>
+                                </div>
+                            )}
                         </div>
                     </motion.section>
                 )}
             </AnimatePresence>
+
+            {/* Custom Modal - Portalled to Body */}
+            {createPortal(
+                <AnimatePresence>
+                    {showModal && (
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60"
+                            onClick={() => setShowModal(false)}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.8, opacity: 0, y: 50 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.8, opacity: 0, y: 50 }}
+                                transition={{ type: "spring", damping: 25, stiffness: 400 }}
+                                className="bg-[#1a1a2e] border border-primary/30 p-8 rounded-3xl max-w-md w-full shadow-2xl relative overflow-hidden"
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+                                <div className="flex flex-col items-center text-center gap-4">
+                                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-2">
+                                        <Sparkles size={32} className="text-primary-glow" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white">Hey there!</h3>
+                                    <p className="text-gray-300">{modalMessage}</p>
+                                    <button
+                                        onClick={() => setShowModal(false)}
+                                        className="mt-4 px-8 py-3 rounded-xl bg-primary hover:bg-primary-glow text-white font-medium transition-all w-full"
+                                    >
+                                        Got it
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
     );
 }
