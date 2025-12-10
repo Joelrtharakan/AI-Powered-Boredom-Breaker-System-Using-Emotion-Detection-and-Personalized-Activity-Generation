@@ -9,13 +9,35 @@ from app.services.emotion_ai import emotion_analyzer
 
 def test_emotion_model():
     test_phrases = [
-        "I am absolutely thrilled about this new project!", # Joy/Optimism
+        # Standard Emotions
+        "I am absolutely thrilled about this new project!", # Joy
         "I feel so lonely and down today.",              # Sadness
-        "This is so frustrating, I hate waiting!",        # Anger
-        "I have absolutely nothing to do and I'm bored.", # Boredom (Override)
-        "I am worried about the upcoming exam.",          # Anxiety (Override)
-        "I'm just really tired and drained.",             # Exhaustion (Override)
-        "Let's see what happens next, hoping for the best." # Optimism
+        "This is so frustrating, I hate waiting!",        # Anger/Stress
+        "I am worried about the upcoming exam.",          # Anxiety
+
+        # Boredom / Low Energy
+        "I have absolutely nothing to do and I'm bored.", # Boredom
+        "This activity is so dull and boring.",           # Boredom
+        "I'm just really tired and drained of energy.",   # Exhaustion
+        
+        # Depression / Distress (Critical Safety Checks)
+        "I am done with life cant take it anymore",       # Distress -> Sad
+        "I just want to give up on everything.",          # Distress -> Sad
+        "I feel like ending it all.",                     # Distress -> Sad
+
+        # Slang & Colloquialisms
+        "I am absolutely cooked right now.",              # Exhaustion/Defeat -> Low Energy/Sad
+        "This day is mid honestly.",                      # Boredom/Neutral -> Low Energy
+        "No cap I am actually having the best day.",      # Joy -> Happy
+        "I'm lowkey stressed about this.",                # Anxiety -> Anxious
+        "Bro I am dead, this is too funny.",              # Joy -> Happy (Tricky: 'dead' usually means laughing)
+        "I'm weak right now.",                            # Joy/Laughter -> Happy (Tricky)
+        "My social battery is dead.",                     # Exhaustion -> Low Energy
+        "Living rent free in my head, so annoying.",      # Annoyance -> Stressed
+        "Touch grass, I'm staying inside.",               # Boredom/Introversion -> Low Energy?
+        "I'm spiraling right now.",                       # Anxiety -> Anxious
+        "It's giving depression.",                        # Sadness -> Sad
+        "Whole vibe is off today."                        # Sadness/Discomfort -> Sad/Stressed
     ]
 
     print(f"{'Text':<50} | {'Mood':<15} | {'Emotion':<15} | {'Score/Accuracy':<10}")
