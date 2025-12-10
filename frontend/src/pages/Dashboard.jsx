@@ -34,13 +34,21 @@ export default function Dashboard() {
     const handleDetect = async () => {
         if (!moodText || !user) return;
         setLoading(true);
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
         try {
             // 1. Detect Mood
-            const moodRes = await axios.post('http://localhost:8000/api/mood/detect', { text: moodText });
+            const moodRes = await axios.post(`${API_URL}/mood/detect`, { text: moodText });
             const moodData = moodRes.data;
 
+            // Check for neutral/ambiguous input
+            if (moodData.emotion === 'neutral') {
+                alert("✨ No specific emotion detected. Try describing how you feel in more detail!");
+                setLoading(false);
+                return;
+            }
+
             // 2. Get Suggestion Plan
-            const planRes = await axios.post('http://localhost:8000/api/suggest/', {
+            const planRes = await axios.post(`${API_URL}/suggest/`, {
                 user_id: user.id,
                 mood: moodData.mood,
                 time_available_minutes: 30,
@@ -54,7 +62,7 @@ export default function Dashboard() {
             });
 
             // 3. Log Mood (Async)
-            await axios.post(`http://localhost:8000/api/mood/log?user_id=${user.id}`, {
+            await axios.post(`${API_URL}/mood/log?user_id=${user.id}`, {
                 mood: moodData.mood,
                 intensity: moodData.intensity,
                 activities_used: []
@@ -69,8 +77,9 @@ export default function Dashboard() {
     };
 
     const handleSurprise = async () => {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
         try {
-            const res = await axios.get('http://localhost:8000/api/suggest/surprise');
+            const res = await axios.get(`${API_URL}/suggest/surprise`);
             alert(`Surprise! ${res.data.type}: ${JSON.stringify(res.data.payload)}`);
         } catch (e) { console.error(e); }
     }

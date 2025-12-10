@@ -14,11 +14,11 @@ class OpenRouterService:
     def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
         if not self.api_key:
             self.logger.warning("OPENROUTER_API_KEY not set. Returning mock response.")
-            return "I'm a placeholder AI response because no API key was configured."
+            return self._get_fallback_response(system_prompt)
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",
-            "HTTP-Referer": "http://localhost:8000", # Optional, for including your app on openrouter.ai rankings.
+            "HTTP-Referer": "http://localhost:8000",
             "X-Title": settings.PROJECT_NAME,
             "Content-Type": "application/json"
         }
@@ -31,13 +31,31 @@ class OpenRouterService:
             ]
         }
         
-        try:
-            response = requests.post(self.base_url, headers=headers, json=data)
-            response.raise_for_status()
-            result = response.json()
-            return result['choices'][0]['message']['content'].strip()
-        except Exception as e:
-            self.logger.error(f"OpenRouter generation failed: {e}")
-            return f"Sorry, I couldn't think of a response right now. (Error: {str(e)})"
+        import time
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = requests.post(self.base_url, headers=headers, json=data, timeout=10)
+                response.raise_for_status()
+                result = response.json()
+                return result['choices'][0]['message']['content'].strip()
+            except requests.exceptions.RequestException as e:
+                self.logger.error(f"OpenRouter attempt {attempt+1} failed: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(2) # Wait 2 seconds before retrying
+                else:
+                    return self._get_fallback_response(system_prompt)
+            except Exception as e:
+                self.logger.error(f"Unexpected LLM error: {e}")
+                return self._get_fallback_response(system_prompt)
+    
+    def _get_fallback_response(self, system_prompt):
+        s_lower = system_prompt.lower()
+        if "affirmation" in s_lower:
+            return "You are stronger than you think."
+        if "plan" in s_lower or "activities" in s_lower:
+             # Return a safe minimal JSON for planner
+             return '{"plan": []}' 
+        return "I am currently offline, but I hear you. Take a deep breath."
 
 llm_service = OpenRouterService()

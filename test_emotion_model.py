@@ -21,13 +21,17 @@ def test_emotion_model():
         "I'm just really tired and drained of energy.",   # Exhaustion
         
         # Depression / Distress (Critical Safety Checks)
-        "I am done with life cant take it anymore",       # Distress -> Sad
+        "i am done with life and cant take it anymore",   # User reported case
+        "I am done with life cant take it anymore",       # Previous case
+        "I'm done with this life",                        # Variation
+        "I can't take this anymore",                      # Variation
         "I just want to give up on everything.",          # Distress -> Sad
         "I feel like ending it all.",                     # Distress -> Sad
 
         # Slang & Colloquialisms
         "I am absolutely cooked right now.",              # Exhaustion/Defeat -> Low Energy/Sad
         "This day is mid honestly.",                      # Boredom/Neutral -> Low Energy
+        "ScreenShot taken from nobraras discord server",  # Informational -> Neutral (New Case)
         "No cap I am actually having the best day.",      # Joy -> Happy
         "I'm lowkey stressed about this.",                # Anxiety -> Anxious
         "Bro I am dead, this is too funny.",              # Joy -> Happy (Tricky: 'dead' usually means laughing)
