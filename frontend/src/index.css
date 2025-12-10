@@ -5,20 +5,36 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    @apply bg-background;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+  }
+
   body {
-    @apply bg-background text-txt-main font-sans antialiased selection:bg-primary selection:text-white;
-    /* Subtle grid for tech feel */
+    @apply text-txt-main font-sans antialiased selection:bg-primary selection:text-white relative;
+    /* transform prop removed to reduce layer complexity if it caused issues */
+  }
+
+  /* Fixed background to prevent scroll jitter */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -50;
+    @apply bg-background;
     background-image:
       linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
+    pointer-events: none;
   }
 }
 
 @layer components {
 
   .glass-nav {
-    @apply bg-background/80 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50;
+    @apply bg-background/90 backdrop-blur-sm border-b border-white/10 sticky top-0 z-50;
   }
 
   .glass-card {

@@ -61,7 +61,7 @@ export default function Music() {
                     <p className="text-gray-400 max-w-lg">AI-curated soundscapes to harmonize your current emotional state.</p>
                 </div>
                 <div className="flex gap-2">
-                    {['chill', 'focus', 'energize', 'sad', 'happy'].map((mood) => (
+                    {['chill', 'focus', 'energize', 'sad', 'happy', 'christian'].map((mood) => (
                         <button
                             key={mood}
                             onClick={() => fetchMusic(mood)}
