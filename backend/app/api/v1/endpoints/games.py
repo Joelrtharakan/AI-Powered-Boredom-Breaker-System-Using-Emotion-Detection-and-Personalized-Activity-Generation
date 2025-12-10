@@ -51,3 +51,23 @@ def submit_score(game_name: str, item: ScoreSubmit, db: Session = Depends(get_db
     db.commit()
     db.refresh(gs)
     return {"success": True, "score": score_val}
+
+@router.get("/scores/{user_id}")
+def get_user_scores(user_id: int, db: Session = Depends(get_db)):
+    all_scores = db.query(GameScore).filter(GameScore.user_id == user_id).all()
+    best_scores = {}
+    
+    for s in all_scores:
+        name = s.game_name
+        score = s.score
+        
+        if name == 'reaction':
+            # Lower is better for reaction time
+            if name not in best_scores or score < best_scores[name]:
+                best_scores[name] = score
+        else:
+            # Higher is better for everything else
+            if name not in best_scores or score > best_scores[name]:
+                best_scores[name] = score
+                
+    return best_scores

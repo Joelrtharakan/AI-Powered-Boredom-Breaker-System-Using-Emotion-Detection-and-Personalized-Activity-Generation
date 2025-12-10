@@ -61,7 +61,7 @@ Generate the 3-step JSON plan now.
 
             # 4. Inject Game Recommendation (Bonus for Boredom/Stress)
             if mood in ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral"]:
-                 games = ["Reaction Time Challenge", "Number Guessing Game", "Memory Flip"]
+                 games = ["Reaction Time", "Aim Trainer", "Number Guess", "Chimp Test", "Memory Flip", "Visual Memory"]
                  plan.append({
                      "type": "game",
                      "description": f"Play {random.choice(games)} to reset your focus.",
@@ -79,7 +79,7 @@ Generate the 3-step JSON plan now.
             ]
             
             if mood in ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral"]:
-                 games = ["Reaction Time Challenge", "Number Guessing Game", "Memory Flip"]
+                 games = ["Reaction Time", "Aim Trainer", "Number Guess", "Chimp Test", "Memory Flip", "Visual Memory"]
                  fallback.append({
                      "type": "game",
                      "description": f"Play {random.choice(games)}.",
