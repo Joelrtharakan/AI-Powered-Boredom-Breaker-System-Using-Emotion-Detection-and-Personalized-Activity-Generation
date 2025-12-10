@@ -51,11 +51,11 @@ class OpenRouterService:
     
     def _get_fallback_response(self, system_prompt):
         s_lower = system_prompt.lower()
-        if "affirmation" in s_lower:
-            return "You are stronger than you think."
-        if "plan" in s_lower or "activities" in s_lower:
+        if "plan" in s_lower or "json" in s_lower:
              # Return a safe minimal JSON for planner
              return '{"plan": []}' 
+        if "affirmation" in s_lower:
+            return "You are stronger than you think."
         return "I am currently offline, but I hear you. Take a deep breath."
 
 llm_service = OpenRouterService()

@@ -1,123 +1,159 @@
-
 import { motion } from 'framer-motion';
 import { Play, Heart, Share2, MoreHorizontal, Disc } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+
 export default function Music() {
-    const [isPlaying, setIsPlaying] = useState(false);
     const [playlists, setPlaylists] = useState([]);
-    const [currentTrack, setCurrentTrack] = useState(null);
+    const [currentPlaylist, setCurrentPlaylist] = useState(null);
+    const [activeMood, setActiveMood] = useState('chill');
+    const [loading, setLoading] = useState(false);
+
+    const fetchMusic = async (mood, keepCurrent = false) => {
+        setLoading(true);
+        setActiveMood(mood);
+        try {
+            const res = await axios.get(`${API_URL}/music/?mood=${mood}`);
+            setPlaylists(res.data.playlists || []);
+            if (!keepCurrent && res.data.playlists?.length > 0) {
+                setCurrentPlaylist(res.data.playlists[0]);
+            }
+        } catch (e) {
+            console.error("Failed to fetch music", e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchMusic = async () => {
-            try {
-                // Determine mood from last detection or default
-                const mood = 'chill';
-                const res = await axios.get(`http://localhost:8000/api/music?mood=${mood}`);
-                setPlaylists(res.data.playlists || []);
-                // Optionally set the first track of the first playlist as currentTrack
-                if (res.data.playlists && res.data.playlists.length > 0 && res.data.playlists[0].tracks.length > 0) {
-                    setCurrentTrack(res.data.playlists[0].tracks[0]);
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        };
-        fetchMusic();
-    }, []);
+        const params = new URLSearchParams(window.location.search);
+        const uri = params.get('uri');
+        const mood = params.get('mood');
 
-    const togglePlay = () => setIsPlaying(!isPlaying);
+        if (uri && uri.startsWith('spotify:')) {
+            // Auto-load suggested
+            setCurrentPlaylist({ uri });
+            // Fetch grid items but keep our specific playlist active
+            fetchMusic(mood || 'chill', true);
+        } else {
+            fetchMusic(mood || 'chill');
+        }
+    }, [window.location.search]);
+
+    const getEmbedUrl = (uri) => {
+        if (!uri) return '';
+        const parts = uri.split(':');
+        if (parts.length < 3) return '';
+        const type = parts[1];
+        const id = parts[2];
+        return `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+    };
 
     return (
-        <div className="min-h-screen pt-20 pb-24 px-4 max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div className="min-h-screen pt-20 pb-24 px-4 max-w-7xl mx-auto font-sans">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
                 <div>
-                    <h1 className="text-5xl font-black title-gradient mb-4">Sonic Heal</h1>
+                    <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 drop-shadow-lg mb-4">
+                        Sonic Heal
+                    </h1>
                     <p className="text-gray-400 max-w-lg">AI-curated soundscapes to harmonize your current emotional state.</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-4 py-2 rounded-full border border-white/10 text-sm hover:bg-white/5 active:bg-white/10 transition-colors">Relax</button>
-                    <button className="px-4 py-2 rounded-full border border-white/10 text-sm hover:bg-white/5 active:bg-white/10 transition-colors">Focus</button>
-                    <button className="px-4 py-2 rounded-full border border-white/10 text-sm hover:bg-white/5 active:bg-white/10 transition-colors">Energize</button>
+                    {['chill', 'focus', 'energize', 'sad', 'happy'].map((mood) => (
+                        <button
+                            key={mood}
+                            onClick={() => fetchMusic(mood)}
+                            className={`px-4 py-2 rounded-full border text-sm capitalize transition-all duration-300 ${activeMood === mood
+                                ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30'
+                                : 'border-white/10 text-gray-400 hover:bg-white/5 hover:text-white'
+                                }`}
+                        >
+                            {mood}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Hero Player */}
-            <div className="glass-card p-0 overflow-hidden mb-16 flex flex-col md:flex-row">
-                <div className="w-full md:w-1/3 bg-gradient-to-br from-primary-dark to-black p-8 flex items-center justify-center relative">
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                        className="w-48 h-48 rounded-full border-4 border-white/10 relative z-10 shadow-[0_0_50px_rgba(109,40,217,0.5)] bg-black"
-                    >
-                        <div className="absolute inset-0 rounded-full bg-[url('https://source.unsplash.com/random/400x400/?abstract')] bg-cover opacity-60" />
-                        <div className="absolute inset-[40%] rounded-full bg-black border border-white/20" />
-                    </motion.div>
-                </div>
-                <div className="flex-1 p-8 md:p-12 flex flex-col justify-center bg-black/40">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <h4 className="text-sm uppercase tracking-widest text-primary-light font-bold mb-2">Now Playing</h4>
-                            <h2 className="text-3xl font-bold mb-1">Cosmic Drift</h2>
-                            <p className="text-gray-400">Stellar Frequencies</p>
-                        </div>
-                        <button className="p-2 rounded-full hover:bg-white/10"><Heart size={20} /></button>
+            {/* Hero Player (Embed) */}
+            <div className="glass-card overflow-hidden mb-12 flex flex-col md:flex-row min-h-[300px] shadow-2xl rounded-3xl border border-white/5 bg-black/40">
+                {currentPlaylist ? (
+                    <div className="w-full h-full min-h-[352px]">
+                        <iframe
+                            style={{ borderRadius: "12px" }}
+                            src={getEmbedUrl(currentPlaylist.uri)}
+                            width="100%"
+                            height="352"
+                            frameBorder="0"
+                            allowFullScreen=""
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                            loading="lazy"
+                        ></iframe>
                     </div>
-
-                    {/* Progress */}
-                    <div className="w-full h-1 bg-white/10 rounded-full mb-2 cursor-pointer group">
-                        <div className="w-1/3 h-full bg-white rounded-full relative group-hover:bg-primary-light transition-colors">
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
+                ) : (
+                    <div className="w-full flex items-center justify-center p-12 text-gray-500">
+                        {loading ? 'Loading curated tracks...' : 'Select a mood to start'}
                     </div>
-                    <div className="flex justify-between text-xs text-gray-500 mb-8">
-                        <span>1:24</span>
-                        <span>3:45</span>
-                    </div>
-
-                    <div className="flex items-center gap-6">
-                        <button className="text-gray-400 hover:text-white"><Share2 size={20} /></button>
-                        <div className="flex-1 flex items-center justify-center gap-6">
-                            <button className="text-3xl hover:text-primary-light transition-colors">⏮</button>
-                            <button className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform shadow-lg shadow-white/20">
-                                <Play className="ml-1 fill-black" size={28} />
-                            </button>
-                            <button className="text-3xl hover:text-primary-light transition-colors">⏭</button>
-                        </div>
-                        <button className="text-gray-400 hover:text-white"><MoreHorizontal size={20} /></button>
-                    </div>
-                </div>
+                )}
             </div>
 
             {/* Grid */}
-            <h3 className="text-2xl font-bold mb-6">Recommended for You</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                {playlists.map((item, i) => (
-                    <motion.div
-                        key={i}
-                        whileHover={{ y: -10 }}
-                        className="group cursor-pointer"
-                        onClick={() => setCurrentTrack(item.tracks[0])}
-                    >
-                        <div className={`aspect-square rounded-2xl bg-gradient-to-br from-primary to-neon-purple mb-4 relative overflow-hidden shadow-lg`}>
-                            {item.tracks[0]?.album_art && <img src={item.tracks[0].album_art} alt="art" className="w-full h-full object-cover" />}
-                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-                            <div className="absolute bottom-4 right-4 translate-y-10 group-hover:translate-y-0 transition-transform duration-300 opacity-0 group-hover:opacity-100">
-                                <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg">
-                                    <Play size={16} fill="white" />
+            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2 capitalize">
+                <Disc className="animate-spin-slow" />
+                {activeMood === 'Suggested' ? 'Current Recommendation' : `Recommended for ${activeMood}`}
+            </h3>
+
+            {loading ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className="aspect-square bg-white/5 rounded-2xl animate-pulse" />
+                    ))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {/* If suggested, we accept that the grid shows 'chill' fallback for now, 
+                        or we could filter? For now, showing more options is good. */}
+                    {playlists.map((item, i) => (
+                        <motion.div
+                            key={i}
+                            whileHover={{ y: -8, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`group cursor-pointer bg-white/5 p-3 rounded-2xl hover:bg-white/10 transition-colors border border-white/5 hover:border-white/20 relative ${currentPlaylist?.uri === item.uri ? 'ring-2 ring-primary bg-white/10' : ''
+                                }`}
+                            onClick={() => setCurrentPlaylist(item)}
+                        >
+                            <div className="aspect-square rounded-xl mb-4 relative overflow-hidden shadow-lg bg-black">
+                                <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    onError={(e) => e.target.src = 'https://via.placeholder.com/300?text=Music'}
+                                />
+                                {currentPlaylist?.uri === item.uri && (
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                        <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-xl animate-pulse">
+                                            <div className="w-3 h-3 bg-white rounded-full animate-bounce mx-0.5" />
+                                            <div className="w-3 h-3 bg-white rounded-full animate-bounce mx-0.5" style={{ animationDelay: '0.1s' }} />
+                                            <div className="w-3 h-3 bg-white rounded-full animate-bounce mx-0.5" style={{ animationDelay: '0.2s' }} />
+                                        </div>
+                                    </div>
+                                )}
+                                <div className={`absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center ${currentPlaylist?.uri === item.uri ? 'hidden' : ''}`}>
+                                    <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center shadow-xl translate-y-4 group-hover:translate-y-0 transition-transform">
+                                        <Play size={20} fill="black" className="ml-1 text-black" />
+                                    </div>
                                 </div>
                             </div>
-                            {/* Mood Tag */}
-                            <div className="absolute top-2 left-2 px-2 py-1 bg-black/50 backdrop-blur-md rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                                {item.name.split(' ')[0]}
+                            <h3 className="font-bold truncate text-white mb-1" title={item.name}>{item.name}</h3>
+                            <p className="text-xs text-gray-400 line-clamp-2">{item.description}</p>
+                            <div className="mt-2 text-[10px] text-gray-500 uppercase tracking-wider font-bold">
+                                {item.tracks_count} Tracks
                             </div>
-                        </div>
-                        <h3 className="font-bold truncate">{item.name}</h3>
-                        <p className="text-sm text-gray-500 truncate">{item.tracks.length} Tracks</p>
-                    </motion.div>
-                ))}
-            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }

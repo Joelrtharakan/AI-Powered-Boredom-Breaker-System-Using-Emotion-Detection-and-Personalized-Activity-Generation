@@ -182,8 +182,15 @@ export default function Dashboard() {
                                         onClick={() => {
                                             if (item.type === 'breathing') navigate('/zen');
                                             if (item.type === 'game') navigate('/games');
-                                            if (item.type === 'music') navigate('/music');
-                                            if (item.type === 'micro_task') navigate('/dashboard'); // Keep here?
+                                            if (item.type === 'music') {
+                                                const moodParam = suggestion.mood ? `&mood=${suggestion.mood}` : '';
+                                                if (item.spotify_uri) {
+                                                    navigate(`/music?uri=${encodeURIComponent(item.spotify_uri)}${moodParam}`);
+                                                } else {
+                                                    navigate(`/music${suggestion.mood ? `?mood=${suggestion.mood}` : ''}`);
+                                                }
+                                            }
+                                            if (item.type === 'micro_task') navigate('/dashboard');
                                         }}
                                         className={`bg-white/5 border border-white/5 p-6 rounded-2xl hover:bg-white/10 transition-colors flex flex-col gap-3 group ${['breathing', 'game', 'music'].includes(item.type) ? 'cursor-pointer hover:border-primary/50 ring-1 ring-transparent hover:ring-primary/30' : ''
                                             }`}

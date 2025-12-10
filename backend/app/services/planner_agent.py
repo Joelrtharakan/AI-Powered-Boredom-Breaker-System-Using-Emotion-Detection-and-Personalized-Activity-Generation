@@ -3,6 +3,7 @@ import logging
 import random
 from app.services.llm_service import llm_service
 from app.services.rag_service import rag_service
+from app.services.spotify_service import spotify_service
 
 class PlannerAgent:
     def __init__(self):
@@ -24,11 +25,12 @@ class PlannerAgent:
 Rules:
 1. You MUST return a JSON ARRAY of objects.
 2. Each object must have: "type", "description", "time_minutes".
-3. Valid types: "breathing", "micro_task", "activity", "music", "affirmation".
+3. Valid types: "breathing", "micro_task", "activity", "music", "affirmation", "game".
 4. The plan MUST include exactly 3 items:
    - Item 1: A small Micro-task or Breathing exercise (1-2 mins)
    - Item 2: A main Activity (5-10 mins)
    - Item 3: An Affirmation or Music track
+   * CRITICAL: If mood is 'sad', 'anxious', 'stress', 'depressed', Item 3 MUST be 'music'.
 5. Use the provided Context if relevant, but adapt it to be engaging.
 """
 
@@ -39,10 +41,12 @@ Context from Database:
 
 Generate the 3-step JSON plan now.
 """
+        plan = []
 
         # 3. Call LLM
         try:
             response_text = llm_service.generate(system_prompt, user_prompt)
+            print(f"DEBUG LLM RAW: {response_text}")
             # Clean response to ensure valid JSON
             cleaned_text = response_text
             if "```json" in response_text:
@@ -50,42 +54,49 @@ Generate the 3-step JSON plan now.
             elif "```" in response_text:
                 cleaned_text = response_text.split("```")[1].split("```")[0].strip()
                 
-            plan = json.loads(cleaned_text)
+            parsed = json.loads(cleaned_text)
             
-            # Fix: Handle if LLM (or fallback) returns { "plan": [...] } instead of []
-            if isinstance(plan, dict) and "plan" in plan:
-                plan = plan["plan"]
+            if isinstance(parsed, dict) and "plan" in parsed:
+                parsed = parsed["plan"]
                 
-            if not isinstance(plan, list):
+            if not isinstance(parsed, list):
                 raise ValueError("LLM response is not a list")
+            
+            if len(parsed) == 0:
+                raise ValueError("LLM returned empty plan")
+            
+            plan = parsed
 
-            # 4. Inject Game Recommendation (Bonus for Boredom/Stress)
-            if mood in ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral"]:
-                 games = ["Reaction Time", "Aim Trainer", "Number Guess", "Chimp Test", "Memory Flip", "Visual Memory"]
-                 plan.append({
-                     "type": "game",
-                     "description": f"Play {random.choice(games)} to reset your focus.",
-                     "time_minutes": 5
-                 })
-
-            return plan
         except Exception as e:
             self.logger.error(f"Planner Agent failed: {e}")
-            # Fallback plan if LLM fails
-            fallback = [
+            # Smart Fallback
+            step3_type = "music" if mood in ["sad", "sadness", "depressed", "anxious", "stress", "stressed"] else "affirmation"
+            desc = "Listen to some healing frequencies." if step3_type == "music" else "You are doing your best."
+            
+            plan = [
                 {"type": "breathing", "description": "Take 5 deep breaths.", "time_minutes": 1},
                 {"type": "micro_task", "description": "Look away from the screen for 20 seconds.", "time_minutes": 1},
-                {"type": "affirmation", "description": "You are doing your best.", "time_minutes": 0}
+                {"type": step3_type, "description": desc, "time_minutes": 5 if step3_type == "music" else 0}
             ]
-            
-            if mood in ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral"]:
-                 games = ["Reaction Time", "Aim Trainer", "Number Guess", "Chimp Test", "Memory Flip", "Visual Memory"]
-                 fallback.append({
-                     "type": "game",
-                     "description": f"Play {random.choice(games)}.",
-                     "time_minutes": 5
-                 })
-                 
-            return fallback
+
+        # 4. Inject Game Recommendation (Bonus for Boredom/Stress)
+        if mood in ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral", "sad", "sadness"]:
+                games = ["Reaction Time", "Aim Trainer", "Number Guess", "Chimp Test", "Memory Flip", "Visual Memory"]
+                plan.append({
+                    "type": "game",
+                    "description": f"Play {random.choice(games)} to reset your focus.",
+                    "time_minutes": 5
+                })
+
+        # 5. Inject Music Recommendation (Universal)
+        for step in plan:
+            if step.get("type") == "music":
+                playlists = spotify_service.get_mood_playlists(mood, limit=1)
+                if playlists:
+                    step["spotify_uri"] = playlists[0]["uri"]
+                    step["description"] += f" (Try: {playlists[0]['name']})"
+                    step["image"] = playlists[0].get("image")
+
+        return plan
 
 planner_agent = PlannerAgent()
