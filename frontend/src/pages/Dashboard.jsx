@@ -102,7 +102,7 @@ export default function Dashboard() {
                                 value={moodText}
                                 onChange={(e) => setMoodText(e.target.value)}
                                 placeholder="I'm feeling a bit bored and tired..."
-                                className="w-full bg-dark/50 border border-white/10 rounded-3xl p-6 md:p-8 text-xl md:text-2xl text-white placeholder-gray-600 focus:outline-none focus:border-primary/50 transition-all resize-none shadow-inner min-h-[160px]"
+                                className="w-full bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 text-xl md:text-2xl text-white placeholder-gray-600 focus:outline-none focus:border-primary/50 transition-all resize-none shadow-inner min-h-[160px]"
                             />
                             <div className="absolute bottom-6 right-6 flex gap-3">
                                 <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all hover:scale-110">
@@ -161,7 +161,7 @@ export default function Dashboard() {
                                     transition={{ delay: i * 0.1 }}
                                     className="bg-white/5 border border-white/5 p-6 rounded-2xl hover:bg-white/10 transition-colors flex flex-col gap-3 group"
                                 >
-                                    <div className="p-3 bg-dark rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
+                                    <div className="p-3 bg-surface rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
                                         <PlanIcon type={item.type} />
                                     </div>
                                     <div className="text-xs text-primary-glow font-bold uppercase tracking-wider">{item.type.replace('_', ' ')}</div>
@@ -198,7 +198,7 @@ export default function Dashboard() {
 // Subcomponents
 const UserAvatar = () => (
     <div className="w-full h-full rounded-full bg-gradient-to-tr from-primary to-neon-blue p-[2px]">
-        <div className="w-full h-full rounded-full bg-dark flex items-center justify-center font-bold text-sm">
+        <div className="w-full h-full rounded-full bg-surface flex items-center justify-center font-bold text-sm">
             ME
         </div>
     </div>
