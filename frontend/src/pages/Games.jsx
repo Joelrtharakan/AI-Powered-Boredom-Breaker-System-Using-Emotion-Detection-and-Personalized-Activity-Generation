@@ -1,18 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, RotateCcw, Zap, Hash, Copy } from 'lucide-react';
-
+import { Play, RotateCcw, Zap, Hash, Copy, Trophy, ArrowLeft, Brain } from 'lucide-react';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 export default function Games() {
     const { user } = useAuth();
     const [activeGame, setActiveGame] = useState(null);
 
     return (
-        <div className="min-h-screen pt-20 pb-10 px-4 max-w-7xl mx-auto">
-            <div className="mb-12 text-center">
-                <h1 className="text-5xl font-black title-gradient mb-4">Arcade Zone</h1>
-                <p className="text-gray-400">Boost your dopamine with these quick neural activators.</p>
+        <div className="min-h-screen pt-20 pb-4 px-4 max-w-7xl mx-auto font-sans">
+            {/* Header */}
+            <div className="mb-10 text-center">
+                <motion.div
+                    initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                    className="flex items-center justify-center gap-4 mb-2"
+                >
+                    <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 drop-shadow-xl">
+                        Arcade Zone
+                    </h1>
+                </motion.div>
+                <motion.p
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} delay={0.2}
+                    className="text-gray-400 text-sm max-w-xl mx-auto"
+                >
+                    Boost your dopamine with these quick neural activators. Win to earn points!
+                </motion.p>
             </div>
 
             <AnimatePresence mode="wait">
@@ -29,6 +44,7 @@ export default function Games() {
                             icon={Zap}
                             color="from-rose-500 to-orange-500"
                             onClick={() => setActiveGame('reaction')}
+                            delay={0.1}
                         />
                         <GameCard
                             title="Number Guess"
@@ -36,6 +52,7 @@ export default function Games() {
                             icon={Hash}
                             color="from-cyan-500 to-blue-500"
                             onClick={() => setActiveGame('number')}
+                            delay={0.2}
                         />
                         <GameCard
                             title="Memory Flip"
@@ -43,23 +60,25 @@ export default function Games() {
                             icon={Copy}
                             color="from-purple-500 to-pink-500"
                             onClick={() => setActiveGame('memory')}
+                            delay={0.3}
                         />
                     </motion.div>
                 ) : (
                     <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 50 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
                         className="max-w-4xl mx-auto"
                     >
                         <button
                             onClick={() => setActiveGame(null)}
-                            className="mb-8 text-gray-400 hover:text-white flex items-center gap-2 transition-colors"
+                            className="mb-8 text-white/50 hover:text-white flex items-center gap-2 transition-colors group px-4 py-2 rounded-full hover:bg-white/10 w-fit"
                         >
-                            ← Back to Arcade
+                            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                            Back to Arcade
                         </button>
 
-                        <div className="glass-card p-1 min-h-[500px] flex flex-col relative overflow-hidden">
+                        <div className="glass-card min-h-[500px] flex flex-col relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-black/40 backdrop-blur-xl">
                             {activeGame === 'reaction' && <ReactionGame user={user} />}
                             {activeGame === 'number' && <NumberGuessGame user={user} />}
                             {activeGame === 'memory' && <MemoryGame user={user} />}
@@ -71,22 +90,29 @@ export default function Games() {
     )
 }
 
-const GameCard = ({ title, desc, icon: Icon, color, onClick }) => (
+const GameCard = ({ title, desc, icon: Icon, color, onClick, delay }) => (
     <motion.div
-        whileHover={{ scale: 1.05, translateY: -5 }}
-        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+        whileHover={{ scale: 1.03, y: -5 }}
+        whileTap={{ scale: 0.97 }}
         onClick={onClick}
-        className="glass-card p-8 flex flex-col items-center text-center gap-6 cursor-pointer group hover:bg-white/10"
+        className="glass-card p-1 cursor-pointer group hover:shadow-2xl hover:shadow-primary/20 transition-all duration-300 rounded-3xl"
     >
-        <div className={`w-20 h-20 rounded-3xl bg-gradient-to-tr ${color} flex items-center justify-center shadow-lg group-hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all`}>
-            <Icon size={32} className="text-white" />
-        </div>
-        <div>
-            <h3 className="text-2xl font-bold mb-2">{title}</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
-        </div>
-        <div className="mt-auto pt-4">
-            <span className="text-primary-light font-bold text-sm tracking-wider uppercase group-hover:text-white transition-colors">Play Now</span>
+        <div className="bg-[#1e293b]/80 p-8 h-full rounded-[20px] flex flex-col items-center text-center gap-6 border border-white/5 group-hover:border-white/20 transition-colors">
+            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-tr ${color} flex items-center justify-center shadow-lg group-hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] transition-all duration-500 group-hover:rotate-12`}>
+                <Icon size={32} className="text-white drop-shadow-md" />
+            </div>
+            <div>
+                <h3 className="text-2xl font-bold mb-2 text-white group-hover:text-primary-light transition-colors">{title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+            </div>
+            <div className="mt-auto pt-4 w-full">
+                <div className="w-full py-2 rounded-lg bg-white/5 group-hover:bg-white/10 text-primary-light font-bold text-xs tracking-widest uppercase transition-colors">
+                    Play Now
+                </div>
+            </div>
         </div>
     </motion.div>
 );
@@ -94,71 +120,98 @@ const GameCard = ({ title, desc, icon: Icon, color, onClick }) => (
 // --- Game Components ---
 
 const ReactionGame = ({ user }) => {
-    const [state, setState] = useState('waiting'); // waiting, ready, now, result
-    const [startTime, setStartTime] = useState(0);
+    const [state, setState] = useState('waiting');
     const [score, setScore] = useState(0);
     const timeoutRef = useRef(null);
+    const startTimeRef = useRef(0);
 
     useEffect(() => {
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-        };
+        return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
     }, []);
 
-    const start = async () => {
-        if (!user) return;
-        try {
-            await axios.post(`http://localhost:8000/api/games/reaction/start`, { user_id: user.id, difficulty: 'normal' });
-            setState('waiting');
-            setStartTime(0);
-            const delay = Math.random() * 2000 + 1000;
-            timeoutRef.current = setTimeout(() => {
-                setState('now');
-                setStartTime(Date.now());
-            }, delay);
-        } catch (e) { console.error(e); }
+    const start = () => {
+        setState('waiting');
+        const delay = Math.random() * 2000 + 1000;
+        timeoutRef.current = setTimeout(() => {
+            setState('now');
+            startTimeRef.current = Date.now();
+        }, delay);
+
+        if (user) axios.post(`${API_URL}/games/reaction/start`, { user_id: user.id, difficulty: 'normal' }).catch(() => { });
     };
 
-    const handleClick = async () => {
+    const handleClick = () => {
         if (state === 'now') {
-            const time = Date.now() - startTime;
+            const time = Date.now() - startTimeRef.current;
             setScore(time);
             setState('result');
-            await axios.post(`http://localhost:8000/api/games/reaction/submit`, {
-                user_id: user.id,
-                result: { score: time }
-            });
-        } else if (state === 'ready') {
-            setState('waiting');
-            alert("Too early!");
+            if (user) {
+                axios.post(`${API_URL}/games/reaction/submit`, {
+                    user_id: user.id,
+                    result: { score: time }
+                }).catch(e => console.error(e));
+            }
+        } else if (state === 'waiting' && timeoutRef.current) {
+            // Clicked too early logic would go here if needed
+            // Current waiting UI covers click area with non-clickable if needed, or handle here
+        }
+    };
+
+    // Using onMouseDown on the container for instant reaction
+    const containerClick = () => {
+        if (state === 'now') handleClick();
+        else if (state === 'waiting' && timeoutRef.current) {
+            // Too early
+            clearTimeout(timeoutRef.current);
+            alert("Too early! Wait for GREEN.");
+            setState('waiting'); // Reset state without automatic start or ask to click start again
+            // Actually better to just force restart manually
+            timeoutRef.current = null;
         }
     };
 
     return (
         <div
-            className={`flex-1 flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${state === 'now' ? 'bg-green-500' : state === 'result' ? 'bg-transparent' : 'bg-transparent'
+            className={`flex-1 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 relative select-none ${state === 'now' ? 'bg-emerald-500' : state === 'result' ? 'bg-transparent' : 'bg-transparent'
                 }`}
-            onMouseDown={handleClick}
+            onMouseDown={state !== 'result' ? containerClick : undefined}
         >
-            {state === 'waiting' && (
-                <div className="text-center">
-                    <Zap size={64} className="mx-auto mb-4 text-gray-500" />
-                    <h2 className="text-3xl font-bold mb-4">Reaction Time</h2>
-                    <p className="mb-8 text-gray-400">When the screen turns green, click as fast as you can.</p>
-                    <button onClick={(e) => { e.stopPropagation(); start(); }} className="btn-primary">Start Game</button>
+            {state === 'waiting' && !timeoutRef.current && (
+                /* Initial Start State */
+                <div className="text-center z-10">
+                    <Zap size={80} className="mx-auto mb-6 text-yellow-500 drop-shadow-glow animate-pulse" />
+                    <h2 className="text-4xl font-black mb-4 tracking-tight">Reaction Time</h2>
+                    <p className="mb-8 text-gray-400 text-lg max-w-md mx-auto">Click <span className="text-emerald-400 font-bold">Start Game</span>, then click anywhere when the screen turns GREEN.</p>
+                    <button onClick={(e) => { e.stopPropagation(); start(); }} className="btn-primary px-10 py-4 text-lg shadow-lg shadow-primary/30 hover:scale-105 transition-transform">
+                        Start Game
+                    </button>
                 </div>
             )}
-            {state === 'ready' && <h2 className="text-4xl font-bold text-red-500">Wait for Green...</h2>}
-            {state === 'now' && <h2 className="text-6xl font-black text-white">CLICK!</h2>}
+
+            {state === 'waiting' && timeoutRef.current && (
+                /* Actually waiting for green */
+                <div className="text-center z-10 pointer-events-none">
+                    <h2 className="text-5xl font-bold text-red-500 tracking-widest animate-pulse">WAIT...</h2>
+                </div>
+            )}
+
+            {state === 'now' && (
+                <div className="text-center animate-bounce pointer-events-none">
+                    <h2 className="text-8xl font-black text-white drop-shadow-xl">CLICK!</h2>
+                </div>
+            )}
             {state === 'result' && (
-                <div className="text-center">
-                    <h2 className="text-2xl text-gray-300 mb-2">Your Time</h2>
-                    <h1 className="text-6xl font-black text-white mb-8">{score} ms</h1>
-                    <button onClick={(e) => { e.stopPropagation(); start(); }} className="btn-primary flex items-center gap-2 mx-auto">
-                        <RotateCcw size={18} /> Try Again
-                    </button>
+                <div className="text-center z-10 cursor-default">
+                    <h2 className="text-3xl text-gray-400 mb-2 font-light">Reaction Time</h2>
+                    <h1 className="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 mb-6">{score} <span className="text-4xl text-gray-600">ms</span></h1>
+                    <div className="bg-white/5 inline-block px-6 py-2 rounded-full mb-8 text-gray-400">
+                        {score < 200 ? "Godlike ⚡" : score < 300 ? "Great 🏎️" : "Average 🐢"}
+                    </div>
+                    <div>
+                        <button onClick={(e) => { e.stopPropagation(); start(); }} className="btn-primary flex items-center gap-2 mx-auto px-8 py-3">
+                            <RotateCcw size={20} /> Try Again
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
@@ -169,28 +222,33 @@ const NumberGuessGame = ({ user }) => {
     const [target, setTarget] = useState(Math.floor(Math.random() * 100) + 1);
     const [guess, setGuess] = useState('');
     const [message, setMessage] = useState('Guess a number between 1 and 100');
+    const [status, setStatus] = useState('neutral'); // neutral, low, high, win
     const [history, setHistory] = useState([]);
 
-    const handleGuess = async (e) => {
+    const handleGuess = (e) => {
         e.preventDefault();
         const num = parseInt(guess);
         if (!num) return;
 
         let msg = '';
+        let st = 'neutral';
+
         if (num === target) {
             msg = '🎉 Correct! You won!';
+            st = 'win';
             if (user) {
-                await axios.post(`http://localhost:8000/api/games/number_guess/submit`, {
+                axios.post(`${API_URL}/games/number_guess/submit`, {
                     user_id: user.id,
                     result: { score: 100 - history.length * 5, attempts: history.length + 1 }
-                });
+                }).catch(e => console.error(e));
             }
         }
-        else if (num < target) msg = 'Too Low 📉';
-        else msg = 'Too High 📈';
+        else if (num < target) { msg = 'Too Low 📉 try higher'; st = 'low'; }
+        else { msg = 'Too High 📈 try lower'; st = 'high'; }
 
         setHistory([num, ...history]);
         setMessage(msg);
+        setStatus(st);
         setGuess('');
     };
 
@@ -198,56 +256,87 @@ const NumberGuessGame = ({ user }) => {
         setTarget(Math.floor(Math.random() * 100) + 1);
         setHistory([]);
         setMessage('Guess a number between 1 and 100');
+        setStatus('neutral');
     }
 
     return (
-        <div className="flex-1 flex flex-col items-center justify-center p-8">
-            <h2 className="text-3xl font-bold mb-4">Number Guessing</h2>
-            <div className="bg-white/5 p-4 rounded-xl mb-8 w-full max-w-sm text-center">
-                <p className="text-xl text-primary-light font-medium">{message}</p>
-            </div>
+        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-900/20 to-purple-900/20">
+            <h2 className="text-4xl font-black mb-8">Number Guess</h2>
 
-            <form onSubmit={handleGuess} className="flex gap-4 w-full max-w-xs mb-8">
-                <input
-                    type="number"
-                    className="input-field text-center text-2xl font-bold"
-                    value={guess}
-                    onChange={e => setGuess(e.target.value)}
-                    autoFocus
-                />
-                <button type="submit" className="btn-primary px-6">Go</button>
-            </form>
+            <motion.div
+                key={message}
+                initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                className={`p-6 rounded-2xl mb-8 w-full max-w-sm text-center border transition-colors ${status === 'win' ? 'bg-green-500/20 border-green-500 text-green-200' :
+                    status === 'low' ? 'bg-blue-500/20 border-blue-500 text-blue-200' :
+                        status === 'high' ? 'bg-orange-500/20 border-orange-500 text-orange-200' :
+                            'bg-white/5 border-white/10 text-gray-300'
+                    }`}
+            >
+                <p className="text-xl font-bold">{message}</p>
+            </motion.div>
+
+            {status !== 'win' ? (
+                <form onSubmit={handleGuess} className="flex gap-4 w-full max-w-xs mb-8">
+                    <input
+                        type="number"
+                        className="w-full bg-black/40 border-2 border-white/10 rounded-xl px-4 text-center text-3xl font-bold py-3 focus:outline-none focus:border-primary transition-colors"
+                        value={guess}
+                        onChange={e => setGuess(e.target.value)}
+                        autoFocus
+                        placeholder="#"
+                    />
+                    <button type="submit" className="btn-primary px-6 rounded-xl text-lg">Go</button>
+                </form>
+            ) : (
+                <button onClick={reset} className="btn-primary px-8 py-3 rounded-xl text-lg mb-8 animate-bounce">Play Again</button>
+            )}
 
             {history.length > 0 && (
-                <div className="flex gap-2 justify-center flex-wrap">
-                    {history.map((h, i) => (
-                        <span key={i} className="px-3 py-1 bg-white/5 rounded-full text-sm text-gray-400">{h}</span>
-                    ))}
+                <div className="flex flex-col items-center">
+                    <span className="text-xs uppercase tracking-widest text-gray-500 mb-2">History</span>
+                    <div className="flex gap-2 justify-center flex-wrap max-w-md">
+                        {history.map((h, i) => (
+                            <motion.span
+                                key={i} layout initial={{ scale: 0 }} animate={{ scale: 1 }}
+                                className="px-3 py-1 bg-white/5 border border-white/5 rounded-full text-sm text-gray-400 font-mono"
+                            >
+                                {h}
+                            </motion.span>
+                        ))}
+                    </div>
                 </div>
             )}
-            <button onClick={reset} className="mt-8 text-sm text-gray-500 hover:text-white">Reset Game</button>
         </div>
     );
 };
 
 const MemoryGame = ({ user }) => {
-    // Simple 4x3 grid
-    const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊'];
+    const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼']; // 8 pairs, 16 cards (4x4)
     const [cards, setCards] = useState([]);
     const [flipped, setFlipped] = useState([]);
     const [solved, setSolved] = useState([]);
+    const [attempts, setAttempts] = useState(0);
 
-    useEffect(() => {
+    const initializeGame = () => {
         const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
         setCards(deck.map((emoji, id) => ({ id, emoji })));
+        setFlipped([]);
+        setSolved([]);
+        setAttempts(0);
+    };
+
+    useEffect(() => {
+        initializeGame();
     }, []);
 
-    const handleCardClick = async (id) => {
+    const handleCardClick = (id) => {
         if (flipped.length === 2 || flipped.includes(id) || solved.includes(id)) return;
+
         const newFlipped = [...flipped, id];
         setFlipped(newFlipped);
 
         if (newFlipped.length === 2) {
+            setAttempts(a => a + 1);
             const [first, second] = newFlipped;
             if (cards[first].emoji === cards[second].emoji) {
                 const newSolved = [...solved, first, second];
@@ -255,10 +344,10 @@ const MemoryGame = ({ user }) => {
                 setFlipped([]);
 
                 if (newSolved.length === cards.length && user) {
-                    await axios.post(`http://localhost:8000/api/games/memory/submit`, {
+                    axios.post(`${API_URL}/games/memory/submit`, {
                         user_id: user.id,
-                        result: { score: 500 }
-                    });
+                        result: { score: 1000 - attempts * 10 }
+                    }).catch(e => console.error(e));
                 }
             } else {
                 setTimeout(() => setFlipped([]), 1000);
@@ -268,25 +357,45 @@ const MemoryGame = ({ user }) => {
 
     return (
         <div className="flex-1 flex flex-col items-center justify-center p-8">
-            <h2 className="text-3xl font-bold mb-8">Memory Flip</h2>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="flex items-center justify-between w-full max-w-lg mb-8">
+                <h2 className="text-4xl font-black">Memory Flip</h2>
+                <div className="bg-white/10 px-4 py-2 rounded-full font-mono text-primary-light">
+                    Moves: {attempts}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-3 md:gap-4">
                 {cards.map((card, i) => (
                     <motion.div
                         key={i}
-                        className={`w-16 h-16 md:w-20 md:h-20 rounded-xl cursor-pointer flex items-center justify-center text-3xl transition-all duration-300 ${flipped.includes(i) || solved.includes(i) ? 'bg-white text-black rotate-y-180' : 'bg-primary-dark/50 hover:bg-primary-dark border border-white/10'
+                        className={`w-16 h-16 md:w-20 md:h-20 rounded-xl cursor-pointer flex items-center justify-center text-3xl transition-all duration-300 relative transform-style-3d ${flipped.includes(i) || solved.includes(i) ? 'rotate-y-180' : ''
                             }`}
                         onClick={() => handleCardClick(i)}
                         whileHover={{ scale: 1.05 }}
                     >
-                        {(flipped.includes(i) || solved.includes(i)) ? card.emoji : '?'}
+                        {/* Front (Hidden) */}
+                        <div className={`absolute inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl border-b-4 border-indigo-900/50 flex items-center justify-center backface-hidden ${flipped.includes(i) || solved.includes(i) ? 'opacity-0' : 'opacity-100'}`}>
+                            <Brain size={24} className="text-white/20" />
+                        </div>
+
+                        {/* Back (Symbol) */}
+                        <div className={`absolute inset-0 bg-white rounded-xl flex items-center justify-center backface-hidden border-b-4 border-gray-300 ${flipped.includes(i) || solved.includes(i) ? 'opacity-100' : 'opacity-0'}`}>
+                            <span className="text-4xl">{card.emoji}</span>
+                        </div>
                     </motion.div>
                 ))}
             </div>
+
             {solved.length === cards.length && cards.length > 0 && (
-                <div className="mt-8">
-                    <h3 className="text-2xl font-bold text-green-400 mb-2">You Won!</h3>
-                    <button onClick={() => window.location.reload()} className="btn-primary">Play Again</button>
-                </div>
+                <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                    className="mt-8 text-center bg-black/50 p-6 rounded-2xl backdrop-blur-md border border-green-500/50"
+                >
+                    <Trophy size={48} className="mx-auto text-yellow-400 mb-2 drop-shadow-glow" />
+                    <h3 className="text-2xl font-bold text-white mb-2">Victory!</h3>
+                    <p className="text-gray-400 mb-4">You solved it in {attempts} moves.</p>
+                    <button onClick={initializeGame} className="btn-primary w-full">Play Again</button>
+                </motion.div>
             )}
         </div>
     );
