@@ -179,7 +179,14 @@ export default function Dashboard() {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: i * 0.1 }}
-                                        className="bg-white/5 border border-white/5 p-6 rounded-2xl hover:bg-white/10 transition-colors flex flex-col gap-3 group"
+                                        onClick={() => {
+                                            if (item.type === 'breathing') navigate('/zen');
+                                            if (item.type === 'game') navigate('/games');
+                                            if (item.type === 'music') navigate('/music');
+                                            if (item.type === 'micro_task') navigate('/dashboard'); // Keep here?
+                                        }}
+                                        className={`bg-white/5 border border-white/5 p-6 rounded-2xl hover:bg-white/10 transition-colors flex flex-col gap-3 group ${['breathing', 'game', 'music'].includes(item.type) ? 'cursor-pointer hover:border-primary/50 ring-1 ring-transparent hover:ring-primary/30' : ''
+                                            }`}
                                     >
                                         <div className="p-3 bg-surface rounded-xl w-fit group-hover:scale-110 transition-transform duration-300">
                                             <PlanIcon type={item.type} />
@@ -199,6 +206,45 @@ export default function Dashboard() {
                     </motion.section>
                 )}
             </AnimatePresence>
+
+            {/* C. Explore More Tiles */}
+            <section>
+                <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl text-white font-light">Explore More</h3>
+                    <div className="h-[1px] flex-1 bg-white/10 ml-6" />
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <QuickActionTile
+                        icon={Wind}
+                        title="Zen Mode"
+                        desc="Breathe & Relax"
+                        onClick={() => navigate('/zen')}
+                        delay={0}
+                    />
+                    <QuickActionTile
+                        icon={Gamepad2}
+                        title="Arcade"
+                        desc="Play Games"
+                        onClick={() => navigate('/games')}
+                        delay={1}
+                    />
+                    <QuickActionTile
+                        icon={MessageCircle}
+                        title="AI Friend"
+                        desc="Chat & Vent"
+                        onClick={() => navigate('/chat')}
+                        delay={2}
+                    />
+                    <QuickActionTile
+                        icon={Music}
+                        title="Vibe Check"
+                        desc="Music"
+                        onClick={() => navigate('/music')}
+                        delay={3}
+                    />
+                </div>
+            </section>
 
             {/* Custom Modal - Portalled to Body */}
             {createPortal(

@@ -11,6 +11,7 @@ import Lockbox from './pages/Lockbox';
 import Chat from './pages/Chat';
 import History from './pages/History';
 import Voice from './pages/Voice';
+import ZenMode from './pages/ZenMode';
 
 import Layout from './components/Layout';
 
@@ -40,6 +41,7 @@ function AppRoutes() {
       <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
       <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
       <Route path="/voice" element={<ProtectedRoute><Voice /></ProtectedRoute>} />
+      <Route path="/zen" element={<ProtectedRoute><ZenMode /></ProtectedRoute>} />
     </Routes>
   );
 }

@@ -26,7 +26,7 @@ This document contains the training prompts and instructions for fine-tuning the
 
 ## 3. Planner Agent Fine-tuning Prompt
 
-**Goal**: Train an LLM (e.g., Llama 3, Mistral) to act as the Planner Agent.
+**Goal**: Train an LLM (Mistral) to act as the Planner Agent.
 
 **Input**:
 ```
