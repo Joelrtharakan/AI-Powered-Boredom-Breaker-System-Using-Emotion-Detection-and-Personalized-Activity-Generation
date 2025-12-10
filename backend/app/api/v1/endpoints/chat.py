@@ -7,6 +7,7 @@ import uuid
 
 from app.db.session import SessionLocal
 from app.models.chat import ChatHistory
+from app.services.chat_agent import chat_agent
 
 router = APIRouter()
 
@@ -49,17 +50,9 @@ def send_message(msg: MessageIn, db: Session = Depends(get_db)):
     db.add(user_entry)
     db.commit()
     
-    # 2. Mock AI Logic (In real app, call LLM/Agent)
-    # Simple keyword based logic for demo
-    response_text = "I hear you. Tell me more about that."
-    lower_msg = msg.message.lower()
-    if "bored" in lower_msg:
-        response_text = "Boredom can be a gateway to creativity. Have you checked the dashboard suggestions?"
-    elif "sad" in lower_msg:
-        response_text = "I'm sorry you're feeling down. Maybe some calming music would help?"
-    elif "happy" in lower_msg:
-        response_text = "That's wonderful! Keep that momentum going."
-
+    # 2. Agent Logic
+    response_text = chat_agent.generate_response(msg.message)
+    
     # 3. Save AI message
     ai_entry = ChatHistory(
         user_id=msg.user_id,

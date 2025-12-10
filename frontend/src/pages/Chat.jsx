@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Smile, Paperclip, Bot, User, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Chat() {
+    const { user } = useAuth();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -12,26 +14,26 @@ export default function Chat() {
 
     useEffect(() => {
         const fetchHistory = async () => {
+            if (!user) return;
             try {
-                // Fetch last session if any, or just all history for user 1
-                const res = await axios.get('http://localhost:8000/api/v1/chat/history?user_id=1&limit=20');
+                // Fetch last session if any, or just all history for user
+                const res = await axios.get(`http://localhost:8000/api/v1/chat/history?user_id=${user.id}&limit=20`);
                 if (res.data && res.data.length > 0) {
                     setMessages(res.data.map(m => ({ id: m.id, role: m.role === 'assistant' ? 'ai' : 'user', text: m.message })));
-                    // crude session recovery: use uuid from first msg or just new one if empty
                 } else {
                     setMessages([{ id: 0, role: 'ai', text: "Hello! I noticed you might be feeling a bit low today. Want to talk about it?" }]);
                 }
             } catch (e) { console.error(e); }
         };
         fetchHistory();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }, [messages, isTyping]);
 
     const handleSend = async () => {
-        if (!input.trim()) return;
+        if (!input.trim() || !user) return;
 
         // Optimistic UI
         const userMsg = { id: Date.now(), role: 'user', text: input };
@@ -41,7 +43,7 @@ export default function Chat() {
 
         try {
             const res = await axios.post('http://localhost:8000/api/v1/chat/send', {
-                user_id: 1,
+                user_id: user.id,
                 session_id: sessionId.current,
                 message: userMsg.text
             });

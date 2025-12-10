@@ -16,31 +16,26 @@ def suggest_plan(request: SuggestionRequest):
     )
     return plan_data
 
+from app.services.microtask_agent import microtask_agent
+from app.services.surprise_agent import surprise_agent
+
 @router.get("/micro-task", response_model=MicroTaskResponse)
-def get_micro_task(mood: str):
-    # Query vector db directly
-    results = chroma_service.query_microtasks(query_text=mood, n_results=1)
-    if results['documents'] and results['documents'][0]:
-        doc = results['documents'][0][0]
-        meta = results['metadatas'][0][0]
-        # fake id
-        return {
-            "id": 123, 
-            "micro_task": doc,
-            "estimated_time_sec": meta.get('time_seconds', 120)
-        }
+def get_micro_task(mood: str = "neutral"):
+    result = microtask_agent.generate(mood=mood)
     return {
-        "id": 0,
-        "micro_task": "Take a deep breath and smile.",
-        "estimated_time_sec": 10
+        "id": 123, # mocked ID
+        "micro_task": result['micro_task'],
+        "estimated_time_sec": 60
     }
 
 @router.get("/surprise")
 def surprise_me():
-    # Random content
-    facts = ["Honey never spoils.", "Octopuses have 3 hearts.", "Bananas are berries."]
-    import random
+    result = surprise_agent.generate()
     return {
-        "type": "fact",
-        "payload": {"text": random.choice(facts)}
+        "type": result['type'],
+        "payload": result['surprise'] # Payload usually expects dict? Let's check frontend usage or keep simple.
+        # Frontend alert: alert(`Surprise! ${res.data.type}: ${JSON.stringify(res.data.payload)}`);
+        # So payload can be string or dict. Let's wrap in dict similar to previous to be safe:
+        # "payload": {"text": ...}
     }
+

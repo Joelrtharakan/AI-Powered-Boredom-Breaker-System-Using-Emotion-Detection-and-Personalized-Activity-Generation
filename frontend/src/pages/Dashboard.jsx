@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Play, Music, Zap, Smile, Lock, Wind, Gamepad2, Mic, Book, BarChart2, MessageCircle, SkipForward } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 // Component for Quick Action Tiles
 const QuickActionTile = ({ icon: Icon, title, desc, onClick, delay }) => (
@@ -25,19 +26,13 @@ const QuickActionTile = ({ icon: Icon, title, desc, onClick, delay }) => (
 
 export default function Dashboard() {
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
     const [moodText, setMoodText] = useState('');
     const [loading, setLoading] = useState(false);
     const [suggestion, setSuggestion] = useState(null);
-    const [user, setUser] = useState({ username: "Traveler" });
-
-    // Mock User Fetch
-    useEffect(() => {
-        const u = localStorage.getItem('user');
-        if (u) setUser(JSON.parse(u));
-    }, []);
 
     const handleDetect = async () => {
-        if (!moodText) return;
+        if (!moodText || !user) return;
         setLoading(true);
         try {
             // 1. Detect Mood
@@ -46,9 +41,9 @@ export default function Dashboard() {
 
             // 2. Get Suggestion Plan
             const planRes = await axios.post('http://localhost:8000/api/v1/suggest/', {
-                user_id: 1, // real app: from auth context
+                user_id: user.id,
                 mood: moodData.mood,
-                time_available_minutes: 30, // could be input
+                time_available_minutes: 30,
                 preferences: {}
             });
 
@@ -59,7 +54,7 @@ export default function Dashboard() {
             });
 
             // 3. Log Mood (Async)
-            await axios.post('http://localhost:8000/api/v1/mood/log?user_id=1', {
+            await axios.post(`http://localhost:8000/api/v1/mood/log?user_id=${user.id}`, {
                 mood: moodData.mood,
                 intensity: moodData.intensity,
                 activities_used: []
@@ -87,9 +82,9 @@ export default function Dashboard() {
             <div className="flex justify-between items-end">
                 <div>
                     <h1 className="text-6xl font-black mb-2 title-gradient">Dashboard</h1>
-                    <p className="text-gray-400">Welcome back, {user.username || 'Traveler'}.</p>
+                    <p className="text-gray-400">Welcome back, {user?.username || 'Traveler'}.</p>
                 </div>
-                <button onClick={() => { localStorage.clear(); navigate('/') }} className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors">
+                <button onClick={() => { logout(); navigate('/') }} className="w-12 h-12 rounded-full glass flex items-center justify-center hover:bg-white/10 transition-colors">
                     <UserAvatar />
                 </button>
             </div>
@@ -157,7 +152,7 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        <div className="grid md:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {suggestion.plan.map((item, i) => (
                                 <motion.div
                                     key={i}

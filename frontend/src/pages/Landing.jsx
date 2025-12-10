@@ -33,16 +33,24 @@ export default function Landing() {
             </div>
 
             {/* --- Navigation --- */}
-            <nav className="fixed top-0 w-full z-50 px-6 py-5 glass-nav transition-all">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <nav className="fixed top-0 w-full z-50 px-4 sm:px-6 py-5 glass-nav transition-all">
+                <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
                         <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg" />
                         <span className="font-bold text-lg tracking-tight text-white">Boredom.ai</span>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => navigate('/login')} className="font-medium hover:text-primary transition-colors text-sm text-gray-300">Log in</button>
-                        <button onClick={() => navigate('/register')} className="bg-white text-black px-5 py-2.5 rounded-full font-bold text-sm hover:scale-105 transition-transform shadow-lg shadow-white/10">
+                    <div className="flex items-center gap-3">
+                        {/* Mobile Login Icon */}
+                        <button onClick={() => navigate('/login')} className="sm:hidden p-2 text-gray-300 hover:text-white">
+                            <span className="sr-only">Log in</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" x2="3" y1="12" y2="12" /></svg>
+                        </button>
+
+                        {/* Desktop Login Text */}
+                        <button onClick={() => navigate('/login')} className="hidden sm:block font-medium hover:text-primary transition-colors text-sm text-gray-300">Log in</button>
+
+                        <button onClick={() => navigate('/register')} className="bg-white text-black px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-lg shadow-white/10 whitespace-nowrap">
                             Get Started
                         </button>
                     </div>

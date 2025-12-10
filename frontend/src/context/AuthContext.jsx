@@ -9,22 +9,27 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        const u = localStorage.getItem('user');
+        if (u) {
+            setUser(JSON.parse(u));
+        }
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            // Simulating user load
-            setUser({ name: "User", email: "user@example.com" });
         }
     }, [token]);
 
     const login = async (email, password) => {
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/v1/auth/login', { email, password });
+            const res = await axios.post('http://localhost:8000/api/auth/login', { email, password });
             const tk = res.data.access_token;
             const rtk = res.data.refresh_token;
+            const usr = res.data.user;
             setToken(tk);
+            setUser(usr);
             localStorage.setItem('token', tk);
             localStorage.setItem('refresh_token', rtk);
+            localStorage.setItem('user', JSON.stringify(usr));
             return true;
         } catch (e) {
             console.error(e);
@@ -37,12 +42,15 @@ export const AuthProvider = ({ children }) => {
     const register = async (data) => {
         setLoading(true);
         try {
-            const res = await axios.post('http://localhost:8000/api/v1/auth/register', data);
+            const res = await axios.post('http://localhost:8000/api/auth/register', data);
             const tk = res.data.access_token;
             const rtk = res.data.refresh_token;
+            const usr = res.data.user;
             setToken(tk);
+            setUser(usr);
             localStorage.setItem('token', tk);
             localStorage.setItem('refresh_token', rtk);
+            localStorage.setItem('user', JSON.stringify(usr));
             return true;
         } catch (e) {
             console.error(e);
@@ -56,13 +64,14 @@ export const AuthProvider = ({ children }) => {
         try {
             const rtk = localStorage.getItem('refresh_token');
             if (rtk) {
-                await axios.post('http://localhost:8000/api/v1/auth/logout', { refresh_token: rtk });
+                await axios.post('http://localhost:8000/api/auth/logout', { refresh_token: rtk });
             }
         } catch (e) { console.error("Logout failed on server", e); }
 
         setToken(null);
         localStorage.removeItem('token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user');
         setUser(null);
     };
 

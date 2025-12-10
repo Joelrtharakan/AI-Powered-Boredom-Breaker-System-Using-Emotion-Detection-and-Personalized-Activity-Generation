@@ -24,12 +24,37 @@ class EmotionAnalyzer:
         # find max score
         top_result = max(results, key=lambda x: x['score'])
         
-        # map generic result to app specific valid moods if needed, 
-        # but for now return as is.
+        emotion = top_result['label']
+        score = top_result['score']
+        
+        # Default mapping
+        mood_map = {
+            "joy": "happy",
+            "optimism": "happy",
+            "anger": "stressed",
+            "sadness": "sad"
+        }
+        
+        mood = mood_map.get(emotion, "neutral")
+        
+        # Rule-based overrides for interactions not covered by this specific model
+        text_lower = text.lower()
+        if "bored" in text_lower or "nothing to do" in text_lower or "dull" in text_lower:
+            emotion = "boredom"
+            mood = "low_energy"
+            # Boost score if model was uncertain or classified as sadness
+            score = max(score, 0.85) 
+        elif "tired" in text_lower or "exhausted" in text_lower or "drained" in text_lower:
+            emotion = "exhaustion"
+            mood = "low_energy"
+        elif "anxious" in text_lower or "worried" in text_lower or "nervous" in text_lower:
+            emotion = "fear"
+            mood = "anxious"
+
         return {
-            "mood": top_result['label'], # 'joy', 'optimism', 'anger', 'sadness'
-            "emotion": top_result['label'],
-            "intensity": top_result['score'],
+            "mood": mood,
+            "emotion": emotion,
+            "intensity": score,
             "all_scores": results
         }
 

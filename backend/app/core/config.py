@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     
     # HuggingFace (if using API instead of local)
     HF_API_KEY: Optional[str] = None
+    
+    # OpenRouter
+    OPENROUTER_API_KEY: Optional[str] = None
 
     class Config:
         env_file = ".env"

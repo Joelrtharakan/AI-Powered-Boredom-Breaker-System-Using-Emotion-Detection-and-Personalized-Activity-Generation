@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, RotateCcw, Zap, Hash, Copy } from 'lucide-react';
 
+import { useAuth } from '../context/AuthContext';
+
 export default function Games() {
+    const { user } = useAuth();
     const [activeGame, setActiveGame] = useState(null);
 
     return (
@@ -57,9 +60,9 @@ export default function Games() {
                         </button>
 
                         <div className="glass-card p-1 min-h-[500px] flex flex-col relative overflow-hidden">
-                            {activeGame === 'reaction' && <ReactionGame />}
-                            {activeGame === 'number' && <NumberGuessGame />}
-                            {activeGame === 'memory' && <MemoryGame />}
+                            {activeGame === 'reaction' && <ReactionGame user={user} />}
+                            {activeGame === 'number' && <NumberGuessGame user={user} />}
+                            {activeGame === 'memory' && <MemoryGame user={user} />}
                         </div>
                     </motion.div>
                 )}
@@ -90,11 +93,11 @@ const GameCard = ({ title, desc, icon: Icon, color, onClick }) => (
 
 // --- Game Components ---
 
-const ReactionGame = () => {
+const ReactionGame = ({ user }) => {
     const [state, setState] = useState('waiting'); // waiting, ready, now, result
     const [startTime, setStartTime] = useState(0);
     const [score, setScore] = useState(0);
-    const timeoutRef = useRef(null); // Added useRef for timeout
+    const timeoutRef = useRef(null);
 
     useEffect(() => {
         return () => {
@@ -105,8 +108,9 @@ const ReactionGame = () => {
     }, []);
 
     const start = async () => {
+        if (!user) return;
         try {
-            await axios.post(`http://localhost:8000/api/v1/games/reaction/start`, { user_id: 1, difficulty: 'normal' });
+            await axios.post(`http://localhost:8000/api/v1/games/reaction/start`, { user_id: user.id, difficulty: 'normal' });
             setState('waiting');
             setStartTime(0);
             const delay = Math.random() * 2000 + 1000;
@@ -123,7 +127,7 @@ const ReactionGame = () => {
             setScore(time);
             setState('result');
             await axios.post(`http://localhost:8000/api/v1/games/reaction/submit`, {
-                user_id: 1,
+                user_id: user.id,
                 result: { score: time }
             });
         } else if (state === 'ready') {
@@ -161,7 +165,7 @@ const ReactionGame = () => {
     );
 };
 
-const NumberGuessGame = () => {
+const NumberGuessGame = ({ user }) => {
     const [target, setTarget] = useState(Math.floor(Math.random() * 100) + 1);
     const [guess, setGuess] = useState('');
     const [message, setMessage] = useState('Guess a number between 1 and 100');
@@ -175,10 +179,12 @@ const NumberGuessGame = () => {
         let msg = '';
         if (num === target) {
             msg = '🎉 Correct! You won!';
-            await axios.post(`http://localhost:8000/api/v1/games/number_guess/submit`, {
-                user_id: 1,
-                result: { score: 100 - history.length * 5, attempts: history.length + 1 }
-            });
+            if (user) {
+                await axios.post(`http://localhost:8000/api/v1/games/number_guess/submit`, {
+                    user_id: user.id,
+                    result: { score: 100 - history.length * 5, attempts: history.length + 1 }
+                });
+            }
         }
         else if (num < target) msg = 'Too Low 📉';
         else msg = 'Too High 📈';
@@ -224,7 +230,7 @@ const NumberGuessGame = () => {
     );
 };
 
-const MemoryGame = () => {
+const MemoryGame = ({ user }) => {
     // Simple 4x3 grid
     const emojis = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊'];
     const [cards, setCards] = useState([]);
@@ -248,9 +254,9 @@ const MemoryGame = () => {
                 setSolved(newSolved);
                 setFlipped([]);
 
-                if (newSolved.length === cards.length) {
+                if (newSolved.length === cards.length && user) {
                     await axios.post(`http://localhost:8000/api/v1/games/memory/submit`, {
-                        user_id: 1,
+                        user_id: user.id,
                         result: { score: 500 }
                     });
                 }
