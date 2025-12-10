@@ -1,20 +1,25 @@
 from fastapi import APIRouter, Depends
 from app.schemas.content import SuggestionRequest, SuggestionResponse, MicroTaskResponse
-from app.services.recommendation import planner_agent
-from app.services.chroma_service import chroma_service
+from app.services.router_agent import router_agent
 
 router = APIRouter()
 
 @router.post("/", response_model=SuggestionResponse)
 def suggest_plan(request: SuggestionRequest):
-    # Call the planner agent
-    plan_data = planner_agent.generate_plan(
-        mood=request.mood,
-        intensity=0.8,
-        time_minutes=request.time_available_minutes,
-        preferences=request.preferences
+    # Route the request through the Agent Router logic
+    plan_items = router_agent.route(
+        mood_data={
+            "mood": request.mood,
+            "emotion": request.emotion,
+            "intensity": request.intensity
+        },
+        user_id=request.user_id
     )
-    return plan_data
+    
+    return {
+        "plan": plan_items,
+        "source": "AI_Agent_Router"
+    }
 
 from app.services.microtask_agent import microtask_agent
 from app.services.surprise_agent import surprise_agent

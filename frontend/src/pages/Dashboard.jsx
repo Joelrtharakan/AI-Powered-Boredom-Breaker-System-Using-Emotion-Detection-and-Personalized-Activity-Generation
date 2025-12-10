@@ -62,6 +62,8 @@ export default function Dashboard() {
             const planRes = await axios.post(`${API_URL}/suggest/`, {
                 user_id: user.id,
                 mood: moodData.mood,
+                emotion: moodData.emotion,
+                intensity: moodData.intensity,
                 time_available_minutes: 30,
                 preferences: {}
             });
@@ -254,6 +256,7 @@ const PlanIcon = ({ type }) => {
         case 'micro_task': return <Zap size={20} className="text-yellow-400" />;
         case 'activity': return <Sparkles size={20} className="text-purple-400" />;
         case 'music': return <Music size={20} className="text-pink-400" />;
+        case 'game': return <Gamepad2 size={20} className="text-orange-400" />;
         default: return <Smile size={20} className="text-green-400" />;
     }
 }

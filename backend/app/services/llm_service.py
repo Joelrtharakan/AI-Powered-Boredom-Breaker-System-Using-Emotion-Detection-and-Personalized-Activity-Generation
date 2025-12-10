@@ -8,8 +8,8 @@ class OpenRouterService:
         self.api_key = settings.OPENROUTER_API_KEY
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.logger = logging.getLogger(__name__)
-        # Default model (TinyLlama or similar efficient model)
-        self.model = "openai/gpt-3.5-turbo" # Default fallback, user can change to any openrouter model ID
+        # Default model: Mistral 7B (Free, Fast, Good Instruction Following)
+        self.model = "mistralai/mistral-7b-instruct:free" 
         
     def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
         if not self.api_key:

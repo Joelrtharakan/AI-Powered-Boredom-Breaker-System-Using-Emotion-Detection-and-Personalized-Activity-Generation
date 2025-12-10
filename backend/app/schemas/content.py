@@ -4,6 +4,8 @@ from typing import List, Optional
 class SuggestionRequest(BaseModel):
     user_id: Optional[int] = None
     mood: str
+    emotion: Optional[str] = None
+    intensity: Optional[float] = 0.5
     time_available_minutes: Optional[int] = 30
     preferences: Optional[dict] = {}
 
