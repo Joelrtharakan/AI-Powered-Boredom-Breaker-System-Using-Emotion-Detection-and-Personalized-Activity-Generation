@@ -59,8 +59,9 @@ async def voice_chat(
         
         full_transcript += f"User: {transcript}\nLuno:"
         
+        
         # Call LLM
-        reply = llm_service.generate(system_prompt, full_transcript)
+        reply = await llm_service.generate(system_prompt, full_transcript)
         
         # Clean up response (remove special tokens and action descriptions)
         reply = reply.replace("<s>", "").replace("</s>", "").replace('"', "").replace("['OUT']", "").strip()

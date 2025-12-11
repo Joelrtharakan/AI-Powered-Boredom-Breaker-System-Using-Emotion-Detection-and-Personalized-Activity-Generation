@@ -1,7 +1,8 @@
-import requests
+import httpx
 import json
 from app.core.config import settings
 import logging
+import asyncio
 
 class OpenRouterService:
     def __init__(self):
@@ -11,7 +12,7 @@ class OpenRouterService:
         # Default model: Mistral 7B (Free, Fast, Good Instruction Following)
         self.model = "mistralai/mistral-7b-instruct:free" 
         
-    def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
+    async def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
         if not self.api_key:
             self.logger.warning("OPENROUTER_API_KEY not set. Returning mock response.")
             return self._get_fallback_response(system_prompt)
@@ -31,23 +32,23 @@ class OpenRouterService:
             ]
         }
         
-        import time
         max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                response = requests.post(self.base_url, headers=headers, json=data, timeout=30)
-                response.raise_for_status()
-                result = response.json()
-                return result['choices'][0]['message']['content'].strip()
-            except requests.exceptions.RequestException as e:
-                self.logger.error(f"OpenRouter attempt {attempt+1} failed: {e}")
-                if attempt < max_retries - 1:
-                    time.sleep(2) # Wait 2 seconds before retrying
-                else:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            for attempt in range(max_retries):
+                try:
+                    response = await client.post(self.base_url, headers=headers, json=data)
+                    response.raise_for_status()
+                    result = response.json()
+                    return result['choices'][0]['message']['content'].strip()
+                except httpx.RequestError as e:
+                    self.logger.error(f"OpenRouter attempt {attempt+1} failed: {e}")
+                    if attempt < max_retries - 1:
+                        await asyncio.sleep(2) # Wait 2 seconds before retrying
+                    else:
+                        return self._get_fallback_response(system_prompt)
+                except Exception as e:
+                    self.logger.error(f"Unexpected LLM error: {e}")
                     return self._get_fallback_response(system_prompt)
-            except Exception as e:
-                self.logger.error(f"Unexpected LLM error: {e}")
-                return self._get_fallback_response(system_prompt)
     
     def _get_fallback_response(self, system_prompt):
         s_lower = system_prompt.lower()
