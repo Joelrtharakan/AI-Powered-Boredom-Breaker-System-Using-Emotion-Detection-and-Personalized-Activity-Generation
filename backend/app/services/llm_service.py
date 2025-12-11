@@ -35,7 +35,7 @@ class OpenRouterService:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                response = requests.post(self.base_url, headers=headers, json=data, timeout=10)
+                response = requests.post(self.base_url, headers=headers, json=data, timeout=30)
                 response.raise_for_status()
                 result = response.json()
                 return result['choices'][0]['message']['content'].strip()

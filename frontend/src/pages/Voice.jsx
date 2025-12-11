@@ -16,6 +16,9 @@ export default function Voice() {
     const [response, setResponse] = useState("");
     const recognitionRef = useRef(null);
     const silenceTimer = useRef(null);
+    const utteranceRef = useRef(null); // Keep reference to prevent GC
+    const lastProcessedTextRef = useRef(""); // Deduplication ref
+    const isProcessingRef = useRef(false); // Lock ref
 
     useEffect(() => {
         // Initialize Speech Recognition
@@ -39,7 +42,7 @@ export default function Voice() {
                 if (silenceTimer.current) clearTimeout(silenceTimer.current);
                 silenceTimer.current = setTimeout(() => {
                     if (recognitionRef.current && isListening) recognitionRef.current.stop();
-                }, 2000);
+                }, 4000); // Wait 4 seconds of silence
             };
 
             recognitionRef.current.onend = () => {
@@ -62,27 +65,59 @@ export default function Voice() {
             if (recognitionRef.current) recognitionRef.current.stop();
             window.speechSynthesis.cancel();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const [history, setHistory] = useState([]); // [{role: 'user'|'assistant', content: string}]
+    const historyRef = useRef([]);
+
+    // Sync ref with state
+    useEffect(() => {
+        historyRef.current = history;
+    }, [history]);
 
     const processVoiceInput = async (text) => {
         if (!text || text === "Listening..." || text === "Tap microphone to chat") return;
 
+        const currentHistory = historyRef.current;
+
+        // Stale closure fix: Check against ref, not state
+        if (isProcessingRef.current || lastProcessedTextRef.current === text) {
+            return;
+        }
+
+        // Prevent processing if we just processed this exact text (simple debounce/dedupe)
+        if (currentHistory.length > 0 && currentHistory[currentHistory.length - 1].role === 'user' && currentHistory[currentHistory.length - 1].content === text) {
+            return;
+        }
+
         try {
+            isProcessingRef.current = true;
+            lastProcessedTextRef.current = text;
+
             setResponse("Thinking...");
+            // Optimistically update history
+            const newHistory = [...currentHistory, { role: 'user', content: text }];
+            setHistory(newHistory); // State update triggers ref update eventually, but we use local var for now
+
             // Send to backend
             const formData = new FormData();
             formData.append('transcript', text);
             if (user) formData.append('user_id', user.id);
+            formData.append('history', JSON.stringify(newHistory));
 
             const res = await axios.post(`${API_URL}/chat`, formData);
 
             const aiReply = res.data.reply;
             setResponse(aiReply);
+            setHistory(prev => [...prev, { role: 'assistant', content: aiReply }]);
             speak(aiReply);
         } catch (e) {
             console.error(e);
             setResponse("Sorry, I had trouble connecting.");
             speak("Sorry, I had trouble connecting.");
+        } finally {
+            isProcessingRef.current = false;
         }
     };
 
@@ -92,6 +127,7 @@ export default function Voice() {
 
             const utter = () => {
                 const utterance = new SpeechSynthesisUtterance(text);
+                utteranceRef.current = utterance; // Store ref to prevent GC
                 utterance.rate = 1.0;
                 utterance.pitch = 1.0;
 
@@ -107,7 +143,10 @@ export default function Voice() {
                 if (preferredVoice) utterance.voice = preferredVoice;
 
                 utterance.onstart = () => setIsSpeaking(true);
-                utterance.onend = () => setIsSpeaking(false);
+                utterance.onend = () => {
+                    setIsSpeaking(false);
+                    utteranceRef.current = null; // Clear ref
+                };
                 utterance.onerror = (e) => {
                     console.error("TTS Error:", e);
                     setIsSpeaking(false);
@@ -129,10 +168,14 @@ export default function Voice() {
 
         if (isListening) {
             recognitionRef.current.stop();
+            // Removed manual processVoiceInput call here to prevent double-submit. 
+            // The onend handler will trigger it.
         } else {
             window.speechSynthesis.cancel();
-            setResponse("");
+            // Don't clear response immediately if we want to see previouscontext, but maybe clear for UX?
+            // setResponse(""); 
             setTranscript("Listening...");
+            lastProcessedTextRef.current = ""; // Reset dedupe ref for new session
             recognitionRef.current.start();
         }
     };

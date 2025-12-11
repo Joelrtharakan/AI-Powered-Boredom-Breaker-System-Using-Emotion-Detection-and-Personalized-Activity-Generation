@@ -35,7 +35,10 @@ A sophisticated hybrid classification system that goes beyond simple sentiment a
 *   **Feedback Loop**: User feedback confirms emotion accuracy (showing "No emotion detected" popup for vague inputs).
 
 ### 4. Interactive Modules
-*   **🧠 Games Area**: Implemented Reaction Time, Pattern Memory, and Number Guessing games to engage users.
+*   **🧠 Arcade Zone**: Implemented **Tic-Tac-Toe** (Unbeatable Minimax AI), **Snake** (Classic), and **Rock-Paper-Scissors** to engage users.
+*   **🎙️ Voice Assistant (Luno)**: A real-time, bi-directional conversational AI named **Luno**.
+    *   **Features**: Web Speech API integration for STT/TTS, conversation context memory, and empathetic, concise responses.
+    *   **Persona**: Adaptive and supportive, prioritizing natural flow.
 *   **📝 Mood Journal**: Users can log entries which are analyzed for sentiment, stored in the database, and visualized on the History page.
 *   **💬 AI Friend Chat**: A supportive, context-aware chatbot that adopts a persona (Empathetic Listener or Fun Companion) based on the user's mood.
 *   **🎵 Music**: Framework for mood-based playlist generation.
@@ -47,15 +50,17 @@ A sophisticated hybrid classification system that goes beyond simple sentiment a
 ---
 
 ## 🔧 Recent Major Refinements
-1.  **Emotion Model "Fine-Tuning"**:
+1.  **Voice Assistant Overhaul**:
+    *   Replaced mock voice with real STT/TTS loop.
+    *   Implemented context-aware history to enable multi-turn conversations.
+    *   Solved complex race conditions (double-replies) using React Refs.
+2.  **Emotion Model "Fine-Tuning"**:
     *   Moved from a rigid dictionary map back to a flexible **High-Confidence Rule-Based System**.
     *   Added strict validation to prevent false positives (e.g., informational text being flagged as "Happy").
-2.  **Frontend-Backend Integration**: 
+3.  **Frontend-Backend Integration**: 
     *   Standardized all API calls using `VITE_API_URL`.
     *   Fixed Cross-Origin (CORS) and routing issues.
-3.  **Linting & Quality**: Addressed Tailwind CSS configuration and setup.
 
 ## 🔜 Next Steps / Roadmap
-*   **Voice Integration**: Enhance the `Voice.jsx` module for real-time speech-to-emotion analysis.
 *   **Deep Spotify Integration**: Connect to real Spotify User Accounts for direct playback control.
 *   **Gamification**: Add streaks and badges for consistent journaling and mood management.
