@@ -13,7 +13,7 @@ class EmotionAnalyzer:
             self.classifier = pipeline(
                 "text-classification", 
                 model="cardiffnlp/twitter-roberta-base-emotion", 
-                return_all_scores=True
+                top_k=None
             )
             self.logger.info("Emotion Model loaded.")
 

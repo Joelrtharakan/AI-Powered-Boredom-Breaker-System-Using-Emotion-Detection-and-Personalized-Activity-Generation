@@ -1,82 +1,225 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Mic, MicOff, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mic, MicOff, X, Volume2, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 export default function Voice() {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [isListening, setIsListening] = useState(false);
-    const [transcript, setTranscript] = useState("Tap the microphone to speak...");
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [transcript, setTranscript] = useState("Tap microphone to chat");
+    const [response, setResponse] = useState("");
+    const recognitionRef = useRef(null);
+    const silenceTimer = useRef(null);
 
-    const toggleListen = async () => {
-        if (!isListening) {
-            setIsListening(true);
-            setTranscript("Listening...");
+    useEffect(() => {
+        // Initialize Speech Recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = false; // Stop after one phrase
+            recognitionRef.current.interimResults = true;
 
-            // In a real browser implementation, we would use window.SpeechRecognition here.
-            // For now, we simulate the "recording" duration and then send a sample audio file or text.
-            // Since browsers block mic access in non-secure (http) localhost sometimes, 
-            // and we don't have a backend whisper setup fully verified, let's fallback to sending text 
-            // but keep the UI feeling like voice.
+            recognitionRef.current.onstart = () => {
+                setIsListening(true);
+                setTranscript("Listening...");
+            };
 
-            setTimeout(async () => {
-                try {
-                    // Send sample text as if valid speech was recognized
-                    const formData = new FormData();
-                    formData.append('transcript', "I am feeling a bit bored and tired."); // Mocked transcript for stability
+            recognitionRef.current.onresult = (event) => {
+                const current = event.resultIndex;
+                const transcriptText = event.results[current][0].transcript;
+                setTranscript(transcriptText);
 
-                    const apiRes = await axios.post('http://localhost:8000/api/voice-input', formData);
-                    setTranscript(`You seem ${apiRes.data.mood}. Suggesting: ${apiRes.data.action}`);
-                } catch (e) {
-                    console.error(e);
-                    setTranscript("Error processing voice.");
-                }
+                // Auto-stop detection if silence (optional, but continuous=false handles most)
+                if (silenceTimer.current) clearTimeout(silenceTimer.current);
+                silenceTimer.current = setTimeout(() => {
+                    if (recognitionRef.current && isListening) recognitionRef.current.stop();
+                }, 2000);
+            };
+
+            recognitionRef.current.onend = () => {
                 setIsListening(false);
-            }, 2000);
+                // Auto-submit on end if we have content
+                setTranscript(prev => {
+                    if (prev && prev !== "Listening..." && prev !== "Tap microphone to chat") {
+                        processVoiceInput(prev);
+                    }
+                    return prev;
+                });
+            };
+
+            // Handle actual processing in a separate logic flow triggered by the end event or state
         } else {
-            setIsListening(false);
+            setTranscript("Browser does not support Speech Recognition.");
+        }
+
+        return () => {
+            if (recognitionRef.current) recognitionRef.current.stop();
+            window.speechSynthesis.cancel();
+        };
+    }, []);
+
+    const processVoiceInput = async (text) => {
+        if (!text || text === "Listening..." || text === "Tap microphone to chat") return;
+
+        try {
+            setResponse("Thinking...");
+            // Send to backend
+            const formData = new FormData();
+            formData.append('transcript', text);
+            if (user) formData.append('user_id', user.id);
+
+            const res = await axios.post(`${API_URL}/chat`, formData);
+
+            const aiReply = res.data.reply;
+            setResponse(aiReply);
+            speak(aiReply);
+        } catch (e) {
+            console.error(e);
+            setResponse("Sorry, I had trouble connecting.");
+            speak("Sorry, I had trouble connecting.");
+        }
+    };
+
+    const speak = (text) => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Stop overlap
+
+            const utter = () => {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+
+                // Prefer a specific pleasant voice
+                const voices = window.speechSynthesis.getVoices();
+                // Priority: Google UK English Female -> Any customized female voice -> Google US English -> Default
+                const preferredVoice =
+                    voices.find(v => v.name.includes('Google UK English Female')) ||
+                    voices.find(v => v.name.includes('Google US English')) ||
+                    voices.find(v => v.name.includes('Samantha')) ||
+                    voices.find(v => v.lang.startsWith('en'));
+
+                if (preferredVoice) utterance.voice = preferredVoice;
+
+                utterance.onstart = () => setIsSpeaking(true);
+                utterance.onend = () => setIsSpeaking(false);
+                utterance.onerror = (e) => {
+                    console.error("TTS Error:", e);
+                    setIsSpeaking(false);
+                };
+
+                window.speechSynthesis.speak(utterance);
+            };
+
+            if (window.speechSynthesis.getVoices().length === 0) {
+                window.speechSynthesis.onvoiceschanged = utter;
+            } else {
+                utter();
+            }
+        }
+    };
+
+    const toggleListen = () => {
+        if (!recognitionRef.current) return;
+
+        if (isListening) {
+            recognitionRef.current.stop();
+        } else {
+            window.speechSynthesis.cancel();
+            setResponse("");
+            setTranscript("Listening...");
+            recognitionRef.current.start();
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center overflow-hidden">
-            {/* Background Waves */}
-            {items.map((_, i) => (
+        <div className="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center overflow-hidden font-sans">
+            {/* Ambient Background */}
+            <div className={`absolute inset-0 transition-opacity duration-1000 ${isSpeaking ? 'opacity-30' : 'opacity-10'} bg-gradient-to-tr from-purple-900 to-blue-900`} />
+
+            {/* Visualizer Circles */}
+            {isListening && [...Array(3)].map((_, i) => (
                 <motion.div
                     key={i}
-                    animate={{ scale: isListening ? [1, 2, 1] : 1, opacity: isListening ? [0.5, 0, 0.5] : 0.1 }}
-                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                    initial={{ scale: 1, opacity: 0.5 }}
+                    animate={{ scale: 2, opacity: 0 }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.4 }}
                     className="absolute rounded-full border border-primary/50"
-                    style={{
-                        width: `${(i + 1) * 200}px`,
-                        height: `${(i + 1) * 200}px`,
-                    }}
+                    style={{ width: '200px', height: '200px' }}
                 />
             ))}
 
-            <button onClick={() => navigate('/dashboard')} className="absolute top-8 right-8 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-50">
-                <X size={24} />
+            {isSpeaking && [...Array(3)].map((_, i) => (
+                <motion.div
+                    key={`speak-${i}`}
+                    initial={{ scale: 1, opacity: 0.5 }}
+                    animate={{ scale: 2.5, opacity: 0 }}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                    className="absolute rounded-full border-2 border-cyan-400/30"
+                    style={{ width: '150px', height: '150px' }}
+                />
+            ))}
+
+            <button onClick={() => navigate('/dashboard')} className="absolute top-8 right-8 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-50 backdrop-blur-md">
+                <X size={24} className="text-white" />
             </button>
 
-            <div className="relative z-10 text-center">
+            <div className="relative z-10 flex flex-col items-center w-full max-w-2xl px-6">
+
+                {/* AI Response Area */}
+                <div className="min-h-[120px] flex items-center justify-center mb-12">
+                    <AnimatePresence mode="wait">
+                        {response && (
+                            <motion.div
+                                key="response"
+                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                                className="text-center"
+                            >
+                                <p className="text-2xl md:text-3xl font-light text-cyan-100 leading-relaxed shadow-black drop-shadow-lg">
+                                    "{response}"
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Mic Button */}
                 <motion.button
                     onClick={toggleListen}
-                    animate={{ scale: isListening ? 1.2 : 1 }}
-                    className={`w-32 h-32 rounded-full flex items-center justify-center transition-all duration-500 shadow-[0_0_50px_rgba(139,92,246,0.3)] ${isListening ? 'bg-gradient-to-tr from-primary to-neon-purple' : 'bg-gray-800'
-                        }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                        boxShadow: isListening
+                            ? "0 0 50px rgba(139,92,246,0.5)"
+                            : isSpeaking
+                                ? "0 0 50px rgba(34,211,238,0.5)"
+                                : "0 0 0px rgba(0,0,0,0)"
+                    }}
+                    className={`w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center transition-all duration-300 relative z-20 
+                        ${isListening ? 'bg-gradient-to-tr from-violet-600 to-indigo-600' : isSpeaking ? 'bg-gradient-to-tr from-cyan-600 to-blue-600' : 'bg-slate-800 border border-white/10'}
+                    `}
                 >
-                    {isListening ? <Mic size={48} className="text-white" /> : <MicOff size={48} className="text-gray-400" />}
+                    {isListening ? (
+                        <Mic size={56} className="text-white animate-pulse" />
+                    ) : isSpeaking ? (
+                        <Volume2 size={56} className="text-white animate-pulse" />
+                    ) : (
+                        <MicOff size={48} className="text-gray-400" />
+                    )}
                 </motion.button>
 
-                <div className="mt-12 h-20">
-                    <p className="text-2xl font-light text-gray-300 max-w-lg mx-auto leading-relaxed">
-                        "{transcript}"
+                {/* User Transcript */}
+                <div className="mt-12 h-20 text-center">
+                    <p className={`text-xl font-light transition-colors ${isListening ? 'text-white' : 'text-gray-500'}`}>
+                        {transcript}
                     </p>
                 </div>
             </div>
         </div>
     );
 }
-
-const items = Array.from({ length: 5 });

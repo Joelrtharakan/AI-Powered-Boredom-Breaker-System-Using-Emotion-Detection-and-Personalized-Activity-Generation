@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, RotateCcw, Zap, Hash, Copy, Trophy, ArrowLeft, Brain, Target, Grip, LayoutGrid } from 'lucide-react';
+import { Play, RotateCcw, Zap, Hash, Copy, Trophy, ArrowLeft, Brain, Target, Grip, LayoutGrid, X, Hand, Move, Gamepad2, Ghost } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import TicTacToe from '../components/games/TicTacToe';
+import RockPaperScissors from '../components/games/RockPaperScissors';
+import SnakeGame from '../components/games/SnakeGame';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
@@ -51,7 +54,7 @@ export default function Games() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 h-full content-center p-2"
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 flex-1 overflow-y-auto p-4 content-start pb-24 scrollbar-hide"
                     >
                         <GameCard
                             title="Reaction Time"
@@ -107,6 +110,32 @@ export default function Games() {
                             score={highScores['pattern'] ? `Lvl ${highScores['pattern']}` : null}
                             delay={0.4}
                         />
+
+                        {/* New Games */}
+                        <GameCard
+                            title="Tic-Tac-Toe"
+                            desc="Classic 3x3. Beat the AI!"
+                            icon={X}
+                            color="from-blue-400 to-cyan-400"
+                            onClick={() => setActiveGame('tictactoe')}
+                            delay={0.45}
+                        />
+                        <GameCard
+                            title="Rock Paper Scissors"
+                            desc="Test your luck against the bot."
+                            icon={Hand}
+                            color="from-stone-400 to-stone-600"
+                            onClick={() => setActiveGame('rps')}
+                            delay={0.5}
+                        />
+                        <GameCard
+                            title="Snake"
+                            desc="Eat the food, don't hit the wall."
+                            icon={Move}
+                            color="from-green-500 to-emerald-600"
+                            onClick={() => setActiveGame('snake')}
+                            delay={0.55}
+                        />
                     </motion.div>
                 ) : (
                     <motion.div
@@ -130,6 +159,9 @@ export default function Games() {
                             {activeGame === 'aim' && <AimTrainer user={user} />}
                             {activeGame === 'chimp' && <ChimpTest user={user} />}
                             {activeGame === 'pattern' && <PatternMatrix user={user} />}
+                            {activeGame === 'tictactoe' && <TicTacToe user={user} />}
+                            {activeGame === 'rps' && <RockPaperScissors user={user} />}
+                            {activeGame === 'snake' && <SnakeGame user={user} />}
                         </div>
                     </motion.div>
                 )}
