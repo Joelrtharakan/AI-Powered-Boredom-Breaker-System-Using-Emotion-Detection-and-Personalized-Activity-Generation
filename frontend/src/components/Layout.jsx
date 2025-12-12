@@ -14,11 +14,11 @@ const SidebarItem = ({ icon: Icon, label, to, onClick }) => {
             to={to}
             onClick={onClick}
             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
-                    ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                ? 'bg-primary text-white shadow-lg shadow-primary/25'
+                : 'text-txt-muted hover:bg-slate-100 hover:text-primary'
                 }`}
         >
-            <Icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-white'} />
+            <Icon size={20} className={isActive ? 'text-white' : 'text-txt-muted group-hover:text-primary'} />
             <span className="font-medium">{label}</span>
             {isActive && <motion.div layoutId="active-pill" className="absolute left-0 w-1 h-8 bg-white rounded-r-full" />}
         </NavLink>
@@ -49,12 +49,12 @@ export default function Layout({ children }) {
     ];
 
     return (
-        <div className="min-h-screen bg-background text-white flex">
+        <div className="min-h-screen bg-background text-txt-main flex">
             {/* Mobile Hamburger */}
             <div className="md:hidden fixed top-4 left-4 z-50">
                 <button
                     onClick={toggleSidebar}
-                    className="p-3 rounded-full bg-surface border border-white/10 shadow-lg text-white"
+                    className="p-3 rounded-full bg-surface border border-slate-200 shadow-lg text-primary"
                 >
                     {isOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
@@ -68,14 +68,14 @@ export default function Layout({ children }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setIsOpen(false)}
-                        className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40"
+                        className="md:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40"
                     />
                 )}
             </AnimatePresence>
 
             {/* Sidebar */}
             <motion.aside
-                className={`fixed md:sticky top-0 left-0 h-screen w-72 bg-surface border-r border-white/5 z-40 flex flex-col p-6 overflow-y-auto
+                className={`fixed md:sticky top-0 left-0 h-screen w-72 bg-surface border-r border-slate-200 z-40 flex flex-col p-6 overflow-y-auto
                 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
                 transition-transform duration-300 ease-in-out`}
             >
@@ -94,10 +94,10 @@ export default function Layout({ children }) {
                     ))}
                 </nav>
 
-                <div className="pt-6 mt-6 border-t border-white/5">
+                <div className="pt-6 mt-6 border-t border-slate-200">
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-400 w-full transition-colors"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-txt-muted hover:bg-red-50 hover:text-red-500 w-full transition-colors"
                     >
                         <LogOut size={20} />
                         <span className="font-medium">Sign Out</span>

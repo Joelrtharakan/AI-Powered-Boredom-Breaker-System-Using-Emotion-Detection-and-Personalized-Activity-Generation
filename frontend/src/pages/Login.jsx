@@ -54,7 +54,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex min-h-screen bg-[#050505] text-white overflow-x-hidden relative selection:bg-white/20 flex-col lg:flex-row">
+        <div className="flex min-h-screen bg-slate-50 text-txt-main overflow-x-hidden relative selection:bg-primary/20 flex-col lg:flex-row">
             {/* Split Layout: Left Side (Visuals) */}
             <div className="hidden lg:flex w-full lg:w-1/2 relative items-center justify-center p-12 overflow-hidden min-h-[300px] lg:min-h-screen">
                 {/* Abstract animated shapes */}
@@ -62,12 +62,12 @@ export default function Login() {
                     <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-[50%] -left-[50%] w-[1000px] h-[1000px] rounded-[40%] border border-white/5 opacity-30"
+                        className="absolute -top-[50%] -left-[50%] w-[1000px] h-[1000px] rounded-[40%] border border-slate-900/5 opacity-30"
                     />
                     <motion.div
                         animate={{ rotate: -360 }}
                         transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-                        className="absolute top-[20%] right-[20%] w-[600px] h-[600px] rounded-full border border-white/5 opacity-20"
+                        className="absolute top-[20%] right-[20%] w-[600px] h-[600px] rounded-full border border-slate-900/5 opacity-20"
                     />
                 </div>
 
@@ -77,17 +77,17 @@ export default function Login() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-7xl font-bold tracking-tighter leading-tight"
+                        className="text-7xl font-bold tracking-tighter leading-tight text-slate-900"
                     >
                         Escaping<br />
                         The<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Ordinary.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Ordinary.</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-xl text-gray-400 font-light leading-relaxed"
+                        className="text-xl text-txt-muted font-light leading-relaxed"
                     >
                         Turn idle moments into sparks of joy. Your AI companion for creativity, productivity, and fun.
                     </motion.p>
@@ -97,15 +97,15 @@ export default function Login() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex gap-8 pt-8 border-t border-white/10"
+                        className="flex gap-8 pt-8 border-t border-slate-200"
                     >
                         <div>
-                            <div className="text-3xl font-bold">Zero</div>
-                            <div className="text-sm text-gray-500 uppercase tracking-wider mt-1">Dull Moments</div>
+                            <div className="text-3xl font-bold text-slate-900">Zero</div>
+                            <div className="text-sm text-txt-muted uppercase tracking-wider mt-1">Dull Moments</div>
                         </div>
                         <div>
-                            <div className="text-3xl font-bold">100%</div>
-                            <div className="text-sm text-gray-500 uppercase tracking-wider mt-1">Engagement</div>
+                            <div className="text-3xl font-bold text-slate-900">100%</div>
+                            <div className="text-sm text-txt-muted uppercase tracking-wider mt-1">Engagement</div>
                         </div>
                     </motion.div>
                 </div>
@@ -126,11 +126,11 @@ export default function Login() {
                     className="w-full max-w-md space-y-10 relative z-10"
                 >
                     <div className="space-y-2">
-                        <div className="w-12 h-12 bg-white rounded-xl mb-6 flex items-center justify-center">
-                            <div className="w-6 h-6 bg-black rounded-full" />
+                        <div className="w-12 h-12 bg-slate-900 rounded-xl mb-6 flex items-center justify-center">
+                            <div className="w-6 h-6 bg-white rounded-full" />
                         </div>
-                        <h2 className="text-3xl font-bold tracking-tight">{isResetting ? "Reset Password" : "Welcome back"}</h2>
-                        <p className="text-gray-400">{isResetting ? "Enter your email and a new password." : "Please enter your details to sign in."}</p>
+                        <h2 className="text-3xl font-bold tracking-tight text-slate-900">{isResetting ? "Reset Password" : "Welcome back"}</h2>
+                        <p className="text-txt-muted">{isResetting ? "Enter your email and a new password." : "Please enter your details to sign in."}</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -139,14 +139,14 @@ export default function Login() {
                             animate={focusedField === 'email' ? { scale: 1.02 } : { scale: 1 }}
                             className="space-y-2"
                         >
-                            <label className="text-sm font-medium text-gray-300 ml-1">Email</label>
-                            <div className={`relative transition-all duration-300 rounded-xl bg-white/5 border ${focusedField === 'email' ? 'border-white/40 ring-1 ring-white/10' : 'border-white/10'}`}>
+                            <label className="text-sm font-medium text-txt-muted ml-1">Email</label>
+                            <div className={`relative transition-all duration-300 rounded-xl bg-white border ${focusedField === 'email' ? 'border-primary ring-1 ring-primary/20' : 'border-slate-200'}`}>
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Mail className={`h-5 w-5 transition-colors ${focusedField === 'email' ? 'text-white' : 'text-gray-500'}`} />
+                                    <Mail className={`h-5 w-5 transition-colors ${focusedField === 'email' ? 'text-primary' : 'text-slate-400'}`} />
                                 </div>
                                 <input
                                     type="email"
-                                    className="block w-full pl-11 pr-4 py-4 bg-transparent text-white placeholder-gray-600 focus:outline-none rounded-xl"
+                                    className="block w-full pl-11 pr-4 py-4 bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none rounded-xl"
                                     placeholder="name@company.com"
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
@@ -162,14 +162,14 @@ export default function Login() {
                             animate={focusedField === 'password' ? { scale: 1.02 } : { scale: 1 }}
                             className="space-y-2"
                         >
-                            <label className="text-sm font-medium text-gray-300 ml-1">{isResetting ? "New Password" : "Password"}</label>
-                            <div className={`relative transition-all duration-300 rounded-xl bg-white/5 border ${focusedField === 'password' ? 'border-white/40 ring-1 ring-white/10' : 'border-white/10'}`}>
+                            <label className="text-sm font-medium text-txt-muted ml-1">{isResetting ? "New Password" : "Password"}</label>
+                            <div className={`relative transition-all duration-300 rounded-xl bg-white border ${focusedField === 'password' ? 'border-primary ring-1 ring-primary/20' : 'border-slate-200'}`}>
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <Lock className={`h-5 w-5 transition-colors ${focusedField === 'password' ? 'text-white' : 'text-gray-500'}`} />
+                                    <Lock className={`h-5 w-5 transition-colors ${focusedField === 'password' ? 'text-primary' : 'text-slate-400'}`} />
                                 </div>
                                 <input
                                     type="password"
-                                    className="block w-full pl-11 pr-4 py-4 bg-transparent text-white placeholder-gray-600 focus:outline-none rounded-xl"
+                                    className="block w-full pl-11 pr-4 py-4 bg-transparent text-slate-900 placeholder-slate-400 focus:outline-none rounded-xl"
                                     placeholder={isResetting ? "New secure password" : "••••••••"}
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
@@ -186,7 +186,7 @@ export default function Login() {
                             whileTap={{ scale: 0.99 }}
                             type="submit"
                             disabled={loading}
-                            className={`w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed group shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] duration-300 ${isResetting ? "bg-red-500 text-white hover:bg-red-600" : "bg-white text-black hover:bg-gray-100"}`}
+                            className={`w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed group shadow-lg hover:shadow-xl duration-300 ${isResetting ? "bg-red-500 text-white hover:bg-red-600" : "bg-primary text-white hover:bg-primary-dark"}`}
                         >
                             {loading ? (
                                 <Loader2 className="animate-spin w-5 h-5" />
@@ -204,7 +204,7 @@ export default function Login() {
                                 <button
                                     type="button"
                                     onClick={() => navigate('/register')}
-                                    className="text-white font-medium hover:underline underline-offset-4 decoration-gray-500"
+                                    className="text-primary font-bold hover:underline underline-offset-4 decoration-primary/30"
                                 >
                                     Sign up for free
                                 </button>
@@ -212,7 +212,7 @@ export default function Login() {
                             <button
                                 type="button"
                                 onClick={() => setIsResetting(!isResetting)}
-                                className="text-gray-400 text-xs hover:text-white transition-colors"
+                                className="text-txt-muted text-xs hover:text-primary transition-colors"
                             >
                                 {isResetting ? "Back to Login" : "Forgot Password?"}
                             </button>

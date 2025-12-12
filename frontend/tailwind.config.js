@@ -7,25 +7,25 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Theme: "Midnight Velvet" - Dark, High Contrast, Premium
-                background: '#020617', // Slate 950 - Deepest Blue/Black
-                surface: '#0f172a',    // Slate 900 - Cards
+                // Theme: "Morning Mist" - Light, Airy, Premium
+                background: '#f8fafc', // Slate 50
+                surface: '#ffffff',    // White
                 primary: {
                     DEFAULT: '#6366f1', // Indigo 500
-                    dark: '#4338ca',    // Indigo 700
+                    dark: '#4f46e5',    // Indigo 600
                     light: '#818cf8',   // Indigo 400
                 },
                 secondary: {
                     DEFAULT: '#d946ef', // Fuchsia 500
                 },
                 accent: {
-                    DEFAULT: '#22d3ee', // Cyan 400
+                    DEFAULT: '#06b6d4', // Cyan 500
                 },
                 // Text
                 txt: {
-                    main: '#ffffff',     // Pure White
-                    muted: '#94a3b8',    // Slate 400 - Readable on dark
-                    dim: '#475569',      // Slate 600
+                    main: '#0f172a',     // Slate 900
+                    muted: '#475569',    // Slate 600
+                    dim: '#94a3b8',      // Slate 400
                 }
             },
             fontFamily: {
