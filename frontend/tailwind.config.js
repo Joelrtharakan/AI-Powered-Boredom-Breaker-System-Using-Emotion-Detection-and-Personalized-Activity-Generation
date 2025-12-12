@@ -7,25 +7,25 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Theme: "Morning Mist" - Light, Airy, Premium
-                background: '#f8fafc', // Slate 50
-                surface: '#ffffff',    // White
+                // Theme: "Obsidian Pro" - Dark, Clean, Rose Accents
+                background: '#09090b', // Zinc 950
+                surface: '#18181b',    // Zinc 900
                 primary: {
-                    DEFAULT: '#6366f1', // Indigo 500
-                    dark: '#4f46e5',    // Indigo 600
-                    light: '#818cf8',   // Indigo 400
+                    DEFAULT: '#f43f5e', // Rose 500
+                    dark: '#e11d48',    // Rose 600
+                    light: '#fb7185',   // Rose 400
                 },
                 secondary: {
-                    DEFAULT: '#d946ef', // Fuchsia 500
+                    DEFAULT: '#8b5cf6', // Violet 500
                 },
                 accent: {
                     DEFAULT: '#06b6d4', // Cyan 500
                 },
                 // Text
                 txt: {
-                    main: '#0f172a',     // Slate 900
-                    muted: '#475569',    // Slate 600
-                    dim: '#94a3b8',      // Slate 400
+                    main: '#fafafa',     // Zinc 50
+                    muted: '#a1a1aa',    // Zinc 400
+                    dim: '#52525b',      // Zinc 600
                 }
             },
             fontFamily: {

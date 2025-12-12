@@ -37,7 +37,7 @@ export default function Landing() {
                 <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
                         <img src="/logo.png" alt="Logo" className="w-8 h-8 rounded-lg" />
-                        <span className="font-bold text-lg tracking-tight text-slate-900">Boredom.ai</span>
+                        <span className="font-bold text-lg tracking-tight text-white">Boredom.ai</span>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -50,7 +50,7 @@ export default function Landing() {
                         {/* Desktop Login Text */}
                         <button onClick={() => navigate('/login')} className="hidden sm:block font-medium hover:text-primary transition-colors text-sm text-txt-muted">Log in</button>
 
-                        <button onClick={() => navigate('/register')} className="bg-slate-900 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-lg shadow-slate-200 whitespace-nowrap">
+                        <button onClick={() => navigate('/register')} className="bg-white text-black px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-bold text-xs sm:text-sm hover:scale-105 transition-transform shadow-lg shadow-white/10 whitespace-nowrap">
                             Get Started
                         </button>
                     </div>
@@ -68,7 +68,7 @@ export default function Landing() {
                     variants={staggerContainer}
                     className="max-w-5xl mx-auto"
                 >
-                    <motion.div variants={fadeInUp} className="mb-6 inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white border border-primary/30 shadow-[0_0_15px_rgba(99,102,241,0.2)] backdrop-blur-sm">
+                    <motion.div variants={fadeInUp} className="mb-6 inline-flex items-center gap-2 px-6 py-2 rounded-full bg-surface/50 border border-primary/30 shadow-[0_0_15px_rgba(244,63,94,0.3)] backdrop-blur-sm">
                         <span className="text-sm font-bold uppercase tracking-widest text-primary">Reimagine Your Downtime</span>
                     </motion.div>
 
@@ -226,7 +226,7 @@ export default function Landing() {
             </section>
 
             {/* --- Simple Footer --- */}
-            <footer className="py-12 border-t border-slate-200 bg-white/50 backdrop-blur-sm">
+            <footer className="py-12 border-t border-white/5 bg-background/50 backdrop-blur-sm">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-sm text-txt-muted">
                     <p>&copy; 2025 Boredom Breaker Inc. All rights reserved.</p>
                     <div className="flex gap-6 mt-4 md:mt-0">
