@@ -5,9 +5,9 @@ from app.services.router_agent import router_agent
 router = APIRouter()
 
 @router.post("/", response_model=SuggestionResponse)
-def suggest_plan(request: SuggestionRequest):
+async def suggest_plan(request: SuggestionRequest):
     # Route the request through the Agent Router logic
-    plan_items = router_agent.route(
+    plan_items = await router_agent.route(
         mood_data={
             "mood": request.mood,
             "emotion": request.emotion,

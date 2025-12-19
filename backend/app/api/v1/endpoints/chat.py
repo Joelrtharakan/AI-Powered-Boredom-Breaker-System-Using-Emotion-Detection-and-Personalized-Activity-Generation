@@ -36,7 +36,7 @@ class ChatResponse(BaseModel):
     session_id: str
 
 @router.post("/send", response_model=ChatResponse)
-def send_message(msg: MessageIn, db: Session = Depends(get_db)):
+async def send_message(msg: MessageIn, db: Session = Depends(get_db)):
     sid = msg.session_id or str(uuid.uuid4())
     
     # 1. Save user message
@@ -51,7 +51,7 @@ def send_message(msg: MessageIn, db: Session = Depends(get_db)):
     db.commit()
     
     # 2. Agent Logic
-    response_text = chat_agent.generate_response(msg.message)
+    response_text = await chat_agent.generate_response(msg.message)
     
     # 3. Save AI message
     ai_entry = ChatHistory(
@@ -73,3 +73,31 @@ def get_history(user_id: int, session_id: Optional[str] = None, limit: int = 50,
         query = query.filter(ChatHistory.session_id == session_id)
     
     return query.order_by(ChatHistory.created_at.asc()).limit(limit).all()
+
+class SessionRef(BaseModel):
+    session_id: str
+    preview: str
+    created_at: datetime
+
+@router.get("/sessions", response_model=List[SessionRef])
+def get_sessions(user_id: int, db: Session = Depends(get_db)):
+    # Get distinct sessions. For simplicity, we just fetch all and group in python 
+    # (Not efficient for huge data, but fine for MVP)
+    # Ideally: SELECT session_id, MIN(created_at), (SELECT message FROM chat_history WHERE ...) 
+    
+    # Simple approach: Fetch all user messages, group by session_id
+    all_msgs = db.query(ChatHistory).filter(ChatHistory.user_id == user_id).order_by(ChatHistory.created_at.desc()).all()
+    
+    sessions = {}
+    for msg in all_msgs:
+        if msg.session_id not in sessions:
+            sessions[msg.session_id] = {
+                "session_id": msg.session_id,
+                "preview": msg.message[:30] + "...", # Use latest message as preview or find first? 
+                # Let's use the *first* message as title usually, but here we iterate desc, so let's stick to latest for now or just keys.
+                "created_at": msg.created_at
+            }
+    
+    # Better logic: Find the FIRST user message for the title
+    # But for now, let's just return unique sessions found.
+    return list(sessions.values())

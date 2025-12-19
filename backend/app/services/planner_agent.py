@@ -9,7 +9,7 @@ class PlannerAgent:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def generate_plan(self, mood: str, intensity: float, user_id: int = None):
+    async def generate_plan(self, mood: str, intensity: float, user_id: int = None):
         """
         Generates a 3-step improvement plan using RAG + LLM.
         """
@@ -45,7 +45,7 @@ Generate the 3-step JSON plan now.
 
         # 3. Call LLM
         try:
-            response_text = llm_service.generate(system_prompt, user_prompt)
+            response_text = await llm_service.generate(system_prompt, user_prompt)
             print(f"DEBUG LLM RAW: {response_text}")
             # Clean response to ensure valid JSON
             cleaned_text = response_text
