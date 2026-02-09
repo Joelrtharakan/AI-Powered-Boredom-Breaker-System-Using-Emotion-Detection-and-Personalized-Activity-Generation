@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+.env
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Pods/
+android/.gradle/
+android/captures/
+.pub-cache/
+.pub/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Models & Large Files
+backend/models/
+chroma_db/
+boredom_breaker.db
+
+# Expo
+.expo/
+web-build/

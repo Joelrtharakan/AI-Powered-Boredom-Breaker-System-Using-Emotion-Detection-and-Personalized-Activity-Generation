@@ -19,27 +19,25 @@ class PlannerAgent:
         
         context_str = f"Suggested Activities: {relevant_activities}\nSuggested Micro-tasks: {relevant_micro_tasks}"
         
-        # 2. Construct Prompt
-        system_prompt = """You are an expert Planner Agent. Your goal is to create a personalized, actionable 3-step improvement plan to improve the user's mood.
+        # 2. Construct Prompt (Optimized for Speed)
+        system_prompt = """You are a huge-energy activity planner. Create a 3-step mood plan.
         
 Rules:
-1. You MUST return a JSON ARRAY of objects.
-2. Each object must have: "type", "description", "time_minutes".
-3. Valid types: "breathing", "micro_task", "activity", "music", "affirmation", "game".
-4. The plan MUST include exactly 3 items:
-   - Item 1: A small Micro-task or Breathing exercise (1-2 mins)
-   - Item 2: A main Activity (5-10 mins)
-   - Item 3: An Affirmation or Music track
-   * CRITICAL: If mood is 'sad', 'anxious', 'stress', 'depressed', Item 3 MUST be 'music'.
-5. Use the provided Context if relevant, but adapt it to be engaging.
+1. Return ONLY a JSON ARRAY.
+2. Objects: {"type": "...", "description": "...", "time_minutes": N}
+3. Types: "breathing", "micro_task", "activity", "music", "affirmation", "game".
+4. Structure:
+   - 1: Micro-task/Breathing (1m)
+   - 2: Main Activity (5-10m)
+   - 3: Music/Affirmation (Music MANDATORY if sad/anxious)
+5. Keep descriptions SHORT and PUNCHY.
 """
 
         user_prompt = f"""
-User Mood: {mood} (Intensity: {intensity})
-Context from Database:
-{context_str}
+Mood: {mood} (Intensity: {intensity})
+Context: {context_str}
 
-Generate the 3-step JSON plan now.
+Generate JSON plan:
 """
         plan = []
 
