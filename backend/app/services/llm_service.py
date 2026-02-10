@@ -10,7 +10,7 @@ class OpenRouterService:
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.logger = logging.getLogger(__name__)
         # Default model: Mistral 7B (Free, Fast, Good Instruction Following)
-        self.model = "mistralai/mistral-7b-instruct:free" 
+        self.model = "nvidia/nemotron-3-nano-30b-a3b:free" 
         
     async def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
         if not self.api_key:
@@ -40,14 +40,19 @@ class OpenRouterService:
                     response.raise_for_status()
                     result = response.json()
                     return result['choices'][0]['message']['content'].strip()
+                except httpx.HTTPStatusError as e:
+                    self.logger.error(f"OpenRouter HTTP Error: {e.response.status_code} - {e.response.text}")
+                    return self._get_fallback_response(system_prompt)
                 except httpx.RequestError as e:
-                    self.logger.error(f"OpenRouter attempt {attempt+1} failed: {e}")
+                    self.logger.error(f"OpenRouter Network Error: {e}")
                     if attempt < max_retries - 1:
-                        await asyncio.sleep(2) # Wait 2 seconds before retrying
+                        await asyncio.sleep(2)
                     else:
                         return self._get_fallback_response(system_prompt)
                 except Exception as e:
                     self.logger.error(f"Unexpected LLM error: {e}")
+                    import traceback
+                    self.logger.error(traceback.format_exc())
                     return self._get_fallback_response(system_prompt)
     
     def _get_fallback_response(self, system_prompt):

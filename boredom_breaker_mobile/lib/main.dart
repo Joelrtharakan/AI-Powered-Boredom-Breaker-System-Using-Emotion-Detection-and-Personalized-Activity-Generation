@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'screens/home/dashboard_screen.dart';
+import 'screens/landing_screen.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(child: BoredomBreakerApp()),
-  );
+  runApp(const ProviderScope(child: BoredomBreakerApp()));
 }
 
 class BoredomBreakerApp extends StatelessWidget {
@@ -24,8 +22,13 @@ class BoredomBreakerApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF09090B),
+          elevation: 0,
+          scrolledUnderElevation: 0,
+        ),
       ),
-      home: const DashboardScreen(),
+      home: const LandingScreen(),
     );
   }
 }
