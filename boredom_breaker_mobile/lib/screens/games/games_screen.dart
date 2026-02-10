@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'game_2048_screen.dart';
+import 'snake_game_screen.dart';
+import 'visual_memory_game.dart';
+import 'reaction_time_game.dart';
+import 'number_guess_game.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
@@ -32,28 +37,70 @@ class GamesScreen extends StatelessWidget {
               Icons.grid_4x4,
               Colors.orangeAccent,
               "Combine tiles to reach 2048!",
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Game2048Screen(),
+                  ),
+                );
+              },
             ),
             _buildGameCard(
               "Snake",
               Icons.gesture,
               Colors.greenAccent,
               "Classic snake game.",
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SnakeGameScreen(),
+                  ),
+                );
+              },
             ),
             _buildGameCard(
-              "Memory",
+              "Visual Memory",
               Icons.flip,
               Colors.blueAccent,
               "Test your memory skills.",
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const VisualMemoryGame(),
+                  ),
+                );
+              },
             ),
             _buildGameCard(
-              "Reaction",
+              "Reaction Time",
               Icons.touch_app,
               Colors.redAccent,
               "How fast can you tap?",
-              () {},
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ReactionTimeGame(),
+                  ),
+                );
+              },
+            ),
+            _buildGameCard(
+              "Number Guess",
+              Icons.onetwothree,
+              Colors.purpleAccent,
+              "Guess the number!",
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NumberGuessGame(),
+                  ),
+                );
+              },
             ),
           ],
         ),

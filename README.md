@@ -40,6 +40,7 @@ uvicorn app.main:app --reload
 cd frontend
 npm install
 npm run dev
+flutter run -d EA66F2A1-0EE7-4017-8319-A09259A3E6D3 --no-enable-impeller
 ```
 
 ## 🎮 Features

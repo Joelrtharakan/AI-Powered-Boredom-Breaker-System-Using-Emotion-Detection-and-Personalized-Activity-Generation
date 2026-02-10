@@ -61,14 +61,16 @@ class EmotionAnalyzer:
         # 2. Logic & Mapping
         # Unified Map for both Base and Fine-Tuned Labels
         mood_map = {
-            # Base Model Labels
+            # Base Model Labels (remapped for fine-tuned context)
             "joy": "happy",
             "optimism": "happy",
             "anger": "stressed",
             "sadness": "sad",
             "fear": "anxious",
+            "love": "happy",
+            "surprise": "neutral", # Triggers Surprise Agent
             
-            # Fine-Tuned Labels
+            # Fine-Tuned Labels (Synthetic)
             "low_energy_bored": "low_energy",
             "restless_bored": "restless",
             "stressed": "stressed",
@@ -105,13 +107,16 @@ class EmotionAnalyzer:
         
         # Retain fallback rules if confidence is low AND using base model mapping
         # But if using fine-tuned labels, trust them more unless very low confidence
-        if score < 0.4:
+        if score < 0.6 or emotion in ["neutral", "happy", "joy", "love"]:
              if "bored" in text_lower:
                   mood = "low_energy"
                   emotion = "boredom"
-             elif "tired" in text_lower:
+             
+             # Fatigue / Drained Check
+             elif any(w in text_lower for w in ["tired", "drained", "exhausted", "fatigued", "burnout", "burnt out", "sleepy"]):
                   mood = "low_energy"
                   emotion = "exhaustion"
+                  score = 0.85 # Artificial confidence boost for rule-based match
 
         return {
             "mood": mood,

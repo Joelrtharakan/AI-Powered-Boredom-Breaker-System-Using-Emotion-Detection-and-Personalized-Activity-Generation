@@ -1,51 +1,501 @@
 text,label
-"I've been staring at the wall for an hour just doing nothing","low_energy_bored"
-"doomscrolling tiktok and i cant stop even though i hate it","low_energy_bored"
-"literally just laying in bed rotting","low_energy_bored"
-"brain empty, no thoughts, just bored","low_energy_bored"
-"too tired to do anything fun but too bored to sleep","low_energy_bored"
-"i wanna do something but idk what to do","restless_bored"
-"got so much energy but stuck in this room","restless_bored"
-"need to go out or i will explode","restless_bored"
-"bouncing off the walls rn","restless_bored"
-"itching to start a project but cant focus on one","restless_bored"
-"so many deadlines i'm actually cooked","stressed"
-"this assignment is killing me slowly","stressed"
-"pressure is getting to me i might crash out","stressed"
-"so much work to do and zero time","stressed"
-"my head is pounding from all this stress","stressed"
-"what if i fail this exam i'm scared","anxious"
-"heart beating so fast for no reason","anxious"
-"feeling kinda nervous about tmrw","anxious"
-"spiraling rn can't breathe properly","anxious"
-"got that pit in my stomach feeling","anxious"
-"why did i say that stupid thing earlier","overthinking"
-"replaying that conversation over and over in my head","overthinking"
-"my brain won't shut up about the past","overthinking"
-"thinking about every possible way this could go wrong","overthinking"
-"stuck in a loop of negative thoughts","overthinking"
-"just feeling kinda meh today","emotionally_flat"
-"not happy not sad just existing","emotionally_flat"
-"empty inside ngl","emotionally_flat"
-"don't really care about anything rn","emotionally_flat"
-"emotionally numb just floating","emotionally_flat"
-"just vibing with some music","calm"
-"finally relaxing after a long day","calm"
-"feeling peaceful rn","calm"
-"chilling at home watching movies","calm"
-"zen mode activated","calm"
-"locked in on this project","focused"
-"totally in the zone rn","focused"
-"grinding on this code","focused"
-"studying hard and making progress","focused"
-"laser focused distinct lack of distractions","focused"
-"omg this is amazing let's gooo","positive_engaged"
-"feeling so hyped for tonight","positive_engaged"
-"actually having a good day for once","positive_engaged"
-"this song slaps im happy","positive_engaged"
-"can't wait to see my friends","positive_engaged"
-"ok","neutral"
-"alright","neutral"
-"i guess so","neutral"
-"maybe later","neutral"
-"its fine","neutral"
+Too tired to do anything fun but too bored to sleep.,low_energy_bored
+"Brain empty, no thoughts, just bored.",low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+"Brain empty, no thoughts, just bored.",low_energy_bored
+"Feeling so lethargic, can't even get up to retrieve the remote.",low_energy_bored
+"Feeling so lethargic, can't even get up to retrieve the remote.",low_energy_bored
+"My energy is at zero, just melting into the couch.",low_energy_bored
+Just scrolling aimlessly through my phone.,low_energy_bored
+I have absolutely nothing to do and no motivation to find something.,low_energy_bored
+Watching paint dry would be more exciting than this.,low_energy_bored
+I've been staring at the ceiling for two hours just doing nothing.,low_energy_bored
+"Feeling so lethargic, can't even get up to retrieve the remote.",low_energy_bored
+Doomscrolling tiktok and I can't stop even though I hate it.,low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+Watching paint dry would be more exciting than this.,low_energy_bored
+"Feeling so lethargic, can't even get up to retrieve the remote.",low_energy_bored
+Too tired to do anything fun but too bored to sleep.,low_energy_bored
+I have absolutely nothing to do and no motivation to find something.,low_energy_bored
+Doomscrolling reddit and I can't stop even though I hate it.,low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+"Brain empty, no thoughts, just bored.",low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+Just scrolling aimlessly through my phone.,low_energy_bored
+Doomscrolling reddit and I can't stop even though I hate it.,low_energy_bored
+Just scrolling aimlessly through my phone.,low_energy_bored
+Too tired to do anything fun but too bored to sleep.,low_energy_bored
+Doomscrolling twitter and I can't stop even though I hate it.,low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+Watching paint dry would be more exciting than this.,low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+I have absolutely nothing to do and no motivation to find something.,low_energy_bored
+Watching paint dry would be more exciting than this.,low_energy_bored
+Just scrolling aimlessly through my phone.,low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+Too tired to do anything fun but too bored to sleep.,low_energy_bored
+I've been staring at the ceiling for forever just doing nothing.,low_energy_bored
+Too tired to do anything fun but too bored to sleep.,low_energy_bored
+I have absolutely nothing to do and no motivation to find something.,low_energy_bored
+Doomscrolling youtube and I can't stop even though I hate it.,low_energy_bored
+"Feeling so lethargic, can't even get up to retrieve the remote.",low_energy_bored
+"My energy is at zero, just melting into the couch.",low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+"Brain empty, no thoughts, just bored.",low_energy_bored
+I have absolutely nothing to do and no motivation to find something.,low_energy_bored
+Watching paint dry would be more exciting than this.,low_energy_bored
+Doomscrolling twitter and I can't stop even though I hate it.,low_energy_bored
+"My energy is at zero, just melting into the couch.",low_energy_bored
+"Feeling so lethargic, can't even get up to retrieve the remote.",low_energy_bored
+Literally just laying in bed rotting.,low_energy_bored
+Feel like screaming just to break the silence.,restless_bored
+"My leg won't stop shaking, I need stimulation.",restless_bored
+Bouncing off the walls rn.,restless_bored
+"My leg won't stop shaking, I need stimulation.",restless_bored
+I feel like running a marathon but I'm trapped here.,restless_bored
+"My leg won't stop shaking, I need stimulation.",restless_bored
+I wanna do something but idk what to do!,restless_bored
+Bouncing off the walls rn.,restless_bored
+Need an adventure or something exciting to happen ASAP.,restless_bored
+Need an adventure or something exciting to happen ASAP.,restless_bored
+"So restless, I can't sit still for more than a minute.",restless_bored
+Need to go out or I will explode.,restless_bored
+Bouncing off the walls rn.,restless_bored
+Bouncing off the walls rn.,restless_bored
+"So restless, I can't sit still for more than a minute.",restless_bored
+"So restless, I can't sit still for more than a minute.",restless_bored
+Itching to start a project but can't focus on one.,restless_bored
+Need to go out or I will explode.,restless_bored
+Feel like screaming just to break the silence.,restless_bored
+Need to go out or I will explode.,restless_bored
+Need to go out or I will explode.,restless_bored
+Bouncing off the walls rn.,restless_bored
+"So restless, I can't sit still for more than a minute.",restless_bored
+Itching to start a project but can't focus on one.,restless_bored
+I feel like running a marathon but I'm trapped here.,restless_bored
+I wanna do something but idk what to do!,restless_bored
+Need to go out or I will explode.,restless_bored
+Itching to start a project but can't focus on one.,restless_bored
+Bouncing off the walls rn.,restless_bored
+Feel like screaming just to break the silence.,restless_bored
+"My leg won't stop shaking, I need stimulation.",restless_bored
+I feel like running a marathon but I'm trapped here.,restless_bored
+Feel like screaming just to break the silence.,restless_bored
+Itching to start a project but can't focus on one.,restless_bored
+Feel like screaming just to break the silence.,restless_bored
+"So restless, I can't sit still for more than a minute.",restless_bored
+Got so much energy but stuck in this room.,restless_bored
+Got so much energy but stuck in this room.,restless_bored
+Got so much energy but stuck in this room.,restless_bored
+I feel like running a marathon but I'm trapped here.,restless_bored
+Itching to start a project but can't focus on one.,restless_bored
+I wanna do something but idk what to do!,restless_bored
+Feel like screaming just to break the silence.,restless_bored
+Itching to start a project but can't focus on one.,restless_bored
+I feel like running a marathon but I'm trapped here.,restless_bored
+Bouncing off the walls rn.,restless_bored
+"So restless, I can't sit still for more than a minute.",restless_bored
+"My leg won't stop shaking, I need stimulation.",restless_bored
+I wanna do something but idk what to do!,restless_bored
+Need an adventure or something exciting to happen ASAP.,restless_bored
+"Stress level 100, about to lose it.",stressed
+My head is pounding from all this stress.,stressed
+This assignment is killing me slowly.,stressed
+My head is pounding from all this stress.,stressed
+So much work to do and zero time.,stressed
+"Panic mode initiated, too much to do.",stressed
+Feeling crushed under the weight of expectations.,stressed
+"Panic mode initiated, too much to do.",stressed
+My head is pounding from all this stress.,stressed
+So many deadlines I'm actually cooked.,stressed
+"Panic mode initiated, too much to do.",stressed
+Pressure is getting to me I might crash out.,stressed
+I am overwhelmed by everything on my plate right now.,stressed
+So much work to do and zero time.,stressed
+Feeling crushed under the weight of expectations.,stressed
+"Stress level 100, about to lose it.",stressed
+This assignment is killing me slowly.,stressed
+So much work to do and zero time.,stressed
+Feeling crushed under the weight of expectations.,stressed
+So many deadlines I'm actually cooked.,stressed
+"Panic mode initiated, too much to do.",stressed
+"Panic mode initiated, too much to do.",stressed
+Feeling crushed under the weight of expectations.,stressed
+"Stress level 100, about to lose it.",stressed
+Feeling crushed under the weight of expectations.,stressed
+"Stress level 100, about to lose it.",stressed
+Can't believe how much I have to get done.,stressed
+"Stress level 100, about to lose it.",stressed
+I am overwhelmed by everything on my plate right now.,stressed
+So many deadlines I'm actually cooked.,stressed
+This assignment is killing me slowly.,stressed
+Can't believe how much I have to get done.,stressed
+Pressure is getting to me I might crash out.,stressed
+Feeling crushed under the weight of expectations.,stressed
+My head is pounding from all this stress.,stressed
+My head is pounding from all this stress.,stressed
+This assignment is killing me slowly.,stressed
+Can't believe how much I have to get done.,stressed
+So much work to do and zero time.,stressed
+Pressure is getting to me I might crash out.,stressed
+My head is pounding from all this stress.,stressed
+"Stress level 100, about to lose it.",stressed
+Can't believe how much I have to get done.,stressed
+This assignment is killing me slowly.,stressed
+"Panic mode initiated, too much to do.",stressed
+This assignment is killing me slowly.,stressed
+Can't believe how much I have to get done.,stressed
+This assignment is killing me slowly.,stressed
+This assignment is killing me slowly.,stressed
+Pressure is getting to me I might crash out.,stressed
+Worried that something bad is about to happen.,anxious
+What if I fail this exam I'm scared.,anxious
+Spiraling rn can't breathe properly.,anxious
+What if I fail this exam I'm scared.,anxious
+Feeling jittery and on edge.,anxious
+Spiraling rn can't breathe properly.,anxious
+My hands are shaking and I feel uneasy.,anxious
+Can't shake this feeling of dread.,anxious
+My hands are shaking and I feel uneasy.,anxious
+Spiraling rn can't breathe properly.,anxious
+Got that pit in my stomach feeling.,anxious
+Can't shake this feeling of dread.,anxious
+Feeling kinda nervous about tomorrow.,anxious
+What if I fail this exam I'm scared.,anxious
+Feeling jittery and on edge.,anxious
+Can't shake this feeling of dread.,anxious
+Spiraling rn can't breathe properly.,anxious
+Feeling kinda nervous about tomorrow.,anxious
+Heart beating so fast for no reason.,anxious
+Feeling jittery and on edge.,anxious
+Feeling kinda nervous about tomorrow.,anxious
+Worried that something bad is about to happen.,anxious
+Got that pit in my stomach feeling.,anxious
+Feeling jittery and on edge.,anxious
+Can't shake this feeling of dread.,anxious
+Got that pit in my stomach feeling.,anxious
+What if I fail this exam I'm scared.,anxious
+Heart beating so fast for no reason.,anxious
+My hands are shaking and I feel uneasy.,anxious
+Feeling jittery and on edge.,anxious
+Feeling jittery and on edge.,anxious
+Feeling kinda nervous about tomorrow.,anxious
+Got that pit in my stomach feeling.,anxious
+Worried that something bad is about to happen.,anxious
+Got that pit in my stomach feeling.,anxious
+Heart beating so fast for no reason.,anxious
+Heart beating so fast for no reason.,anxious
+Feeling kinda nervous about tomorrow.,anxious
+My hands are shaking and I feel uneasy.,anxious
+Spiraling rn can't breathe properly.,anxious
+Worried that something bad is about to happen.,anxious
+"Anxiety is high today, hard to focus.",anxious
+Spiraling rn can't breathe properly.,anxious
+My hands are shaking and I feel uneasy.,anxious
+Got that pit in my stomach feeling.,anxious
+Feeling jittery and on edge.,anxious
+What if I fail this exam I'm scared.,anxious
+Feeling jittery and on edge.,anxious
+Feeling kinda nervous about tomorrow.,anxious
+Worried that something bad is about to happen.,anxious
+Wondering if they hate me after what I said.,overthinking
+Replaying that conversation over and over in my head.,overthinking
+Wondering if they hate me after what I said.,overthinking
+Replaying that conversation over and over in my head.,overthinking
+Trapped in my own head right now.,overthinking
+Trapped in my own head right now.,overthinking
+My mind is racing with 'what ifs'.,overthinking
+Why did I say that stupid thing earlier?,overthinking
+My brain won't shut up about the past.,overthinking
+Trapped in my own head right now.,overthinking
+Can't stop analyzing every little detail.,overthinking
+Stuck in a loop of negative thoughts.,overthinking
+Wondering if they hate me after what I said.,overthinking
+Wondering if they hate me after what I said.,overthinking
+Why did I say that stupid thing earlier?,overthinking
+Obsessing over things I can't change.,overthinking
+Trapped in my own head right now.,overthinking
+Why did I say that stupid thing earlier?,overthinking
+Wondering if they hate me after what I said.,overthinking
+Obsessing over things I can't change.,overthinking
+Why did I say that stupid thing earlier?,overthinking
+Stuck in a loop of negative thoughts.,overthinking
+Wondering if they hate me after what I said.,overthinking
+My mind is racing with 'what ifs'.,overthinking
+Can't stop analyzing every little detail.,overthinking
+Obsessing over things I can't change.,overthinking
+Replaying that conversation over and over in my head.,overthinking
+My mind is racing with 'what ifs'.,overthinking
+Wondering if they hate me after what I said.,overthinking
+My mind is racing with 'what ifs'.,overthinking
+Thinking about every possible way this could go wrong.,overthinking
+Stuck in a loop of negative thoughts.,overthinking
+Thinking about every possible way this could go wrong.,overthinking
+My mind is racing with 'what ifs'.,overthinking
+My mind is racing with 'what ifs'.,overthinking
+Trapped in my own head right now.,overthinking
+Wondering if they hate me after what I said.,overthinking
+Stuck in a loop of negative thoughts.,overthinking
+Obsessing over things I can't change.,overthinking
+Thinking about every possible way this could go wrong.,overthinking
+Wondering if they hate me after what I said.,overthinking
+Obsessing over things I can't change.,overthinking
+Wondering if they hate me after what I said.,overthinking
+Thinking about every possible way this could go wrong.,overthinking
+Why did I say that stupid thing earlier?,overthinking
+Can't stop analyzing every little detail.,overthinking
+Thinking about every possible way this could go wrong.,overthinking
+Why did I say that stupid thing earlier?,overthinking
+Trapped in my own head right now.,overthinking
+My brain won't shut up about the past.,overthinking
+"Blank mind, blank feelings.",emotionally_flat
+Apathy is the only thing I feel.,emotionally_flat
+Nothing really matters to me right now.,emotionally_flat
+Empty inside ngl.,emotionally_flat
+Not happy not sad just existing.,emotionally_flat
+Don't really care about anything rn.,emotionally_flat
+Don't really care about anything rn.,emotionally_flat
+Empty inside ngl.,emotionally_flat
+"Feel like a robot, programmed to just be.",emotionally_flat
+Not happy not sad just existing.,emotionally_flat
+Not happy not sad just existing.,emotionally_flat
+"Feel like a robot, programmed to just be.",emotionally_flat
+Emotionally numb just floating.,emotionally_flat
+"Blank mind, blank feelings.",emotionally_flat
+Nothing really matters to me right now.,emotionally_flat
+Just going through the motions.,emotionally_flat
+Just going through the motions.,emotionally_flat
+Apathy is the only thing I feel.,emotionally_flat
+Emotionally numb just floating.,emotionally_flat
+"Feel like a robot, programmed to just be.",emotionally_flat
+Don't really care about anything rn.,emotionally_flat
+"Feel like a robot, programmed to just be.",emotionally_flat
+Emotionally numb just floating.,emotionally_flat
+Not happy not sad just existing.,emotionally_flat
+Just going through the motions.,emotionally_flat
+Emotionally numb just floating.,emotionally_flat
+Not happy not sad just existing.,emotionally_flat
+Just feeling kinda meh today.,emotionally_flat
+Just feeling kinda meh today.,emotionally_flat
+"Feel like a robot, programmed to just be.",emotionally_flat
+Don't really care about anything rn.,emotionally_flat
+Not happy not sad just existing.,emotionally_flat
+"Feel like a robot, programmed to just be.",emotionally_flat
+Don't really care about anything rn.,emotionally_flat
+Empty inside ngl.,emotionally_flat
+Nothing really matters to me right now.,emotionally_flat
+"Feel like a robot, programmed to just be.",emotionally_flat
+"Blank mind, blank feelings.",emotionally_flat
+Just feeling kinda meh today.,emotionally_flat
+Not happy not sad just existing.,emotionally_flat
+Don't really care about anything rn.,emotionally_flat
+Just going through the motions.,emotionally_flat
+"Blank mind, blank feelings.",emotionally_flat
+Just feeling kinda meh today.,emotionally_flat
+Empty inside ngl.,emotionally_flat
+Apathy is the only thing I feel.,emotionally_flat
+Just feeling kinda meh today.,emotionally_flat
+Just feeling kinda meh today.,emotionally_flat
+Just feeling kinda meh today.,emotionally_flat
+Empty inside ngl.,emotionally_flat
+Zen mode activated.,calm
+"Meditation really helped, feeling calm.",calm
+Enjoying the quiet moment.,calm
+Chilling at home watching movies.,calm
+Feeling centered and at peace.,calm
+Enjoying the quiet moment.,calm
+Zen mode activated.,calm
+Finally relaxing after a long day.,calm
+Finally relaxing after a long day.,calm
+Just vibing with some music.,calm
+Feeling centered and at peace.,calm
+Just vibing with some music.,calm
+"Meditation really helped, feeling calm.",calm
+Chilling at home watching movies.,calm
+Feeling centered and at peace.,calm
+Feeling centered and at peace.,calm
+"Meditation really helped, feeling calm.",calm
+Feeling centered and at peace.,calm
+Just vibing with some music.,calm
+Enjoying the quiet moment.,calm
+Chilling at home watching movies.,calm
+Chilling at home watching movies.,calm
+Just vibing with some music.,calm
+Finally relaxing after a long day.,calm
+Feeling peaceful rn.,calm
+"Meditation really helped, feeling calm.",calm
+Finally relaxing after a long day.,calm
+Enjoying the quiet moment.,calm
+Taking a nice warm bath and chilling.,calm
+Taking a nice warm bath and chilling.,calm
+Feeling centered and at peace.,calm
+Taking a nice warm bath and chilling.,calm
+"No stress, just relaxation.",calm
+Just vibing with some music.,calm
+Taking a nice warm bath and chilling.,calm
+Chilling at home watching movies.,calm
+Just vibing with some music.,calm
+Feeling peaceful rn.,calm
+Zen mode activated.,calm
+Zen mode activated.,calm
+Feeling peaceful rn.,calm
+Zen mode activated.,calm
+"Meditation really helped, feeling calm.",calm
+"No stress, just relaxation.",calm
+"No stress, just relaxation.",calm
+Zen mode activated.,calm
+Feeling centered and at peace.,calm
+Chilling at home watching movies.,calm
+"No stress, just relaxation.",calm
+Feeling peaceful rn.,calm
+"Deep work session, feeling good.",focused
+Nothing can distract me right now.,focused
+Studying hard and making progress.,focused
+Locked in on this project.,focused
+Laser focused distinct lack of distractions.,focused
+Hyper-fixated on finishing this task.,focused
+Productivity is through the roof.,focused
+"Coding marathon, fully immersed.",focused
+Nothing can distract me right now.,focused
+"Coding marathon, fully immersed.",focused
+Productivity is through the roof.,focused
+Laser focused distinct lack of distractions.,focused
+Hyper-fixated on finishing this task.,focused
+Productivity is through the roof.,focused
+Locked in on this project.,focused
+Totally in the zone rn.,focused
+"Coding marathon, fully immersed.",focused
+Locked in on this project.,focused
+Hyper-fixated on finishing this task.,focused
+"Coding marathon, fully immersed.",focused
+Hyper-fixated on finishing this task.,focused
+Locked in on this project.,focused
+Totally in the zone rn.,focused
+Laser focused distinct lack of distractions.,focused
+Hyper-fixated on finishing this task.,focused
+Grinding on this code.,focused
+Totally in the zone rn.,focused
+Hyper-fixated on finishing this task.,focused
+"Coding marathon, fully immersed.",focused
+Laser focused distinct lack of distractions.,focused
+Grinding on this code.,focused
+Hyper-fixated on finishing this task.,focused
+"Deep work session, feeling good.",focused
+Grinding on this code.,focused
+"Coding marathon, fully immersed.",focused
+Productivity is through the roof.,focused
+"Deep work session, feeling good.",focused
+Laser focused distinct lack of distractions.,focused
+"Deep work session, feeling good.",focused
+"Deep work session, feeling good.",focused
+Nothing can distract me right now.,focused
+Productivity is through the roof.,focused
+Grinding on this code.,focused
+Totally in the zone rn.,focused
+"Coding marathon, fully immersed.",focused
+Totally in the zone rn.,focused
+Laser focused distinct lack of distractions.,focused
+"Coding marathon, fully immersed.",focused
+Hyper-fixated on finishing this task.,focused
+Locked in on this project.,focused
+Feeling great and full of energy.,positive_engaged
+So excited about the news!,positive_engaged
+Actually having a good day for once.,positive_engaged
+Can't wait to see my friends.,positive_engaged
+Feeling so hyped for tonight.,positive_engaged
+Today is going to be awesome.,positive_engaged
+Can't wait to see my friends.,positive_engaged
+Radiating positive vibes.,positive_engaged
+Today is going to be awesome.,positive_engaged
+Today is going to be awesome.,positive_engaged
+Omg this is amazing let's gooo!,positive_engaged
+Today is going to be awesome.,positive_engaged
+Omg this is amazing let's gooo!,positive_engaged
+Today is going to be awesome.,positive_engaged
+Feeling great and full of energy.,positive_engaged
+Omg this is amazing let's gooo!,positive_engaged
+Actually having a good day for once.,positive_engaged
+Today is going to be awesome.,positive_engaged
+Actually having a good day for once.,positive_engaged
+Feeling great and full of energy.,positive_engaged
+Radiating positive vibes.,positive_engaged
+Today is going to be awesome.,positive_engaged
+This song slaps I'm happy.,positive_engaged
+Radiating positive vibes.,positive_engaged
+Actually having a good day for once.,positive_engaged
+Actually having a good day for once.,positive_engaged
+Omg this is amazing let's gooo!,positive_engaged
+Feeling great and full of energy.,positive_engaged
+Feeling great and full of energy.,positive_engaged
+This song slaps I'm happy.,positive_engaged
+Today is going to be awesome.,positive_engaged
+Today is going to be awesome.,positive_engaged
+Can't wait to see my friends.,positive_engaged
+Today is going to be awesome.,positive_engaged
+Radiating positive vibes.,positive_engaged
+Actually having a good day for once.,positive_engaged
+This song slaps I'm happy.,positive_engaged
+Radiating positive vibes.,positive_engaged
+Omg this is amazing let's gooo!,positive_engaged
+Can't wait to see my friends.,positive_engaged
+So excited about the news!,positive_engaged
+Can't wait to see my friends.,positive_engaged
+Omg this is amazing let's gooo!,positive_engaged
+Loving life right now!,positive_engaged
+Today is going to be awesome.,positive_engaged
+Feeling great and full of energy.,positive_engaged
+Feeling so hyped for tonight.,positive_engaged
+Can't wait to see my friends.,positive_engaged
+Loving life right now!,positive_engaged
+Feeling great and full of energy.,positive_engaged
+Sure.,neutral
+Alright.,neutral
+I guess so.,neutral
+Just normal.,neutral
+Sure.,neutral
+Not much happening.,neutral
+Its fine.,neutral
+Just normal.,neutral
+Sure.,neutral
+Not much happening.,neutral
+Not much happening.,neutral
+Maybe later.,neutral
+Not much happening.,neutral
+Ok.,neutral
+Ok.,neutral
+Its fine.,neutral
+I guess so.,neutral
+Alright.,neutral
+I guess so.,neutral
+Its fine.,neutral
+Maybe later.,neutral
+Maybe later.,neutral
+Whatever.,neutral
+Standard day.,neutral
+Just normal.,neutral
+Sure.,neutral
+Sure.,neutral
+Sure.,neutral
+Ok.,neutral
+I guess so.,neutral
+Not much happening.,neutral
+Whatever.,neutral
+Not much happening.,neutral
+Not much happening.,neutral
+Just normal.,neutral
+Standard day.,neutral
+Alright.,neutral
+Sure.,neutral
+Whatever.,neutral
+Its fine.,neutral
+Maybe later.,neutral
+Whatever.,neutral
+Its fine.,neutral
+Just normal.,neutral
+Standard day.,neutral
+Ok.,neutral
+Just normal.,neutral
+Whatever.,neutral
+Not much happening.,neutral
+Alright.,neutral
