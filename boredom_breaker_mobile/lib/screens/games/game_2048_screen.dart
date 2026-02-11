@@ -101,7 +101,9 @@ class _Game2048ScreenState extends State<Game2048Screen> {
     bool moved = false;
     for (int c = 0; c < 4; c++) {
       List<int> col = [];
-      for (int r = 0; r < 4; r++) col.add(grid[r][c]);
+      for (int r = 0; r < 4; r++) {
+        col.add(grid[r][c]);
+      }
 
       List<int> newCol = _mergeRow(col);
 
@@ -119,7 +121,9 @@ class _Game2048ScreenState extends State<Game2048Screen> {
     bool moved = false;
     for (int c = 0; c < 4; c++) {
       List<int> col = [];
-      for (int r = 0; r < 4; r++) col.add(grid[r][c]);
+      for (int r = 0; r < 4; r++) {
+        col.add(grid[r][c]);
+      }
 
       List<int> reversedCol = List.from(col.reversed);
       List<int> newCol = _mergeRow(reversedCol);
@@ -318,7 +322,7 @@ class _Game2048ScreenState extends State<Game2048Screen> {
       case 2048:
         return const Color(0xFFEDC22E);
       case 0:
-        return Colors.white.withOpacity(0.1);
+        return Colors.white.withValues(alpha: 0.1);
       default:
         return Colors.black;
     }

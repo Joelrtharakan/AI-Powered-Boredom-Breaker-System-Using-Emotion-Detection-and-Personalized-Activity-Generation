@@ -65,7 +65,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white.withOpacity(0.1),
+                fillColor: Colors.white.withValues(alpha: 0.1),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,

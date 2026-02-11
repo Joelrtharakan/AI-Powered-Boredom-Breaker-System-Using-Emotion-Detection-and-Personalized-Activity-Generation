@@ -55,11 +55,11 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
                   height: 150 + (_controller.value * 30),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.blueAccent.withOpacity(
-                      0.2 - (_controller.value * 0.15),
+                    color: Colors.blueAccent.withValues(
+                      alpha: 0.2 - (_controller.value * 0.15),
                     ),
                     border: Border.all(
-                      color: Colors.blueAccent.withOpacity(0.5),
+                      color: Colors.blueAccent.withValues(alpha: 0.5),
                       width: 2,
                     ),
                   ),

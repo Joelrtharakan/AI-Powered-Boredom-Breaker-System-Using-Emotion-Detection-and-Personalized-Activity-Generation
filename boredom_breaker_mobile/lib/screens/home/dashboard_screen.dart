@@ -68,7 +68,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ],
                     ),
                     CircleAvatar(
-                      backgroundColor: Colors.blueAccent.withOpacity(0.2),
+                      backgroundColor: Colors.blueAccent.withValues(alpha: 0.2),
                       radius: 24,
                       child: const Icon(Icons.person, color: Colors.blueAccent),
                     ),
@@ -81,12 +81,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.04),
+                    color: Colors.white.withValues(alpha: 0.04),
                     borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: Colors.white.withOpacity(0.08)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -114,7 +116,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           hintText: "I'm feeling a bit bored and tired...",
                           hintStyle: GoogleFonts.inter(color: Colors.white30),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.05),
+                          fillColor: Colors.white.withValues(alpha: 0.05),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
@@ -156,7 +158,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             foregroundColor: Colors.white,
                             shadowColor: const Color(
                               0xFF3B82F6,
-                            ).withOpacity(0.4),
+                            ).withValues(alpha: 0.4),
                             elevation: 8,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -258,10 +260,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: _getMoodColor(mood).withOpacity(0.2),
+                                color: _getMoodColor(
+                                  mood,
+                                ).withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: _getMoodColor(mood).withOpacity(0.5),
+                                  color: _getMoodColor(
+                                    mood,
+                                  ).withValues(alpha: 0.5),
                                 ),
                               ),
                               child: Text(
@@ -284,7 +290,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   error: (e, _) => Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.redAccent.withOpacity(0.1),
+                      color: Colors.redAccent.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -311,9 +317,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
+          color: Colors.white.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Text(
           label,
@@ -336,9 +342,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
           padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
+            color: Colors.white.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Column(
             children: [
@@ -360,11 +366,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   Color _getMoodColor(String mood) {
-    if (mood.contains('anger') || mood.contains('frust'))
+    if (mood.contains('anger') || mood.contains('frust')) {
       return Colors.redAccent;
-    if (mood.contains('happy') || mood.contains('joy')) return Colors.amber;
-    if (mood.contains('sad')) return Colors.blueGrey;
-    if (mood.contains('anx')) return Colors.orangeAccent;
+    }
+    if (mood.contains('happy') || mood.contains('joy')) {
+      return Colors.amber;
+    }
+    if (mood.contains('sad')) {
+      return Colors.blueGrey;
+    }
+    if (mood.contains('anx')) {
+      return Colors.orangeAccent;
+    }
     return Colors.blueAccent;
   }
 
@@ -399,9 +412,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Row(
         children: [
@@ -409,7 +422,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: color, size: 24),

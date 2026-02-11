@@ -69,11 +69,11 @@ class _LandingScreenState extends State<LandingScreen>
               width: 400,
               height: 400,
               decoration: BoxDecoration(
-                color: Colors.blueAccent.withOpacity(0.15),
+                color: Colors.blueAccent.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blueAccent.withOpacity(0.15),
+                    color: Colors.blueAccent.withValues(alpha: 0.15),
                     blurRadius: 150,
                   ),
                 ],
@@ -101,7 +101,7 @@ class _LandingScreenState extends State<LandingScreen>
                           borderRadius: BorderRadius.circular(40),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blueAccent.withOpacity(0.2),
+                              color: Colors.blueAccent.withValues(alpha: 0.2),
                               blurRadius: 40,
                               offset: const Offset(0, 10),
                             ),
@@ -211,7 +211,7 @@ class _LandingScreenState extends State<LandingScreen>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3B82F6).withOpacity(0.4),
+            color: const Color(0xFF3B82F6).withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

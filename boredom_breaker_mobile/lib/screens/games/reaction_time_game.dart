@@ -94,7 +94,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
       case 'active':
         return "TAP NOW!";
       case 'result':
-        return "${_reactionTime} ms";
+        return "$_reactionTime ms";
       case 'early':
         return "Too soon! Tap to try again.";
       default:

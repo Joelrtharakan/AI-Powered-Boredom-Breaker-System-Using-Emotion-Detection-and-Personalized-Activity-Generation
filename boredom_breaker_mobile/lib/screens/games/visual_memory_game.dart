@@ -231,7 +231,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                     bool isTarget = _targetTiles.contains(index);
                     bool isSelected = _selectedTiles.contains(index);
 
-                    Color color = Colors.white.withOpacity(0.1);
+                    Color color = Colors.white.withValues(alpha: 0.1);
 
                     if (_showingPattern) {
                       if (isTarget) color = Colors.white;
@@ -253,9 +253,9 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                           color: color,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
-                            if (color != Colors.white.withOpacity(0.1))
+                            if (color != Colors.white.withValues(alpha: 0.1))
                               BoxShadow(
-                                color: color.withOpacity(0.4),
+                                color: color.withValues(alpha: 0.4),
                                 blurRadius: 10,
                                 spreadRadius: 2,
                               ),

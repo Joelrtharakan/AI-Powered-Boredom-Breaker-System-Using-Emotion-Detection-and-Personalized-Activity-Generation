@@ -13,7 +13,6 @@ class SnakeGameScreen extends StatefulWidget {
 class _SnakeGameScreenState extends State<SnakeGameScreen> {
   static const int rows = 20;
   static const int columns = 20;
-  static const int squareSize = 20;
   final Random _random = Random();
 
   List<int> _snake = [45, 46, 47];
