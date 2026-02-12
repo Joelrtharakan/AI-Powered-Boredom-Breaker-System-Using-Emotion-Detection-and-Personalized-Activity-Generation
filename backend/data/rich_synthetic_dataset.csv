@@ -1,0 +1,618 @@
+text,label
+im disturbed,sadness
+Its fine,neutral
+I've been staring at the wall for hours doing nothing,low_energy_bored
+something feels off and i'm scared,anxious
+just scrolling aimlessly through my phone,low_energy_bored
+hmm okay,neutral
+the grind never stops and im tired of it,stressed
+Obsessing over things I cant change,overthinking
+Why did I say that stupid thing earlier,overthinking
+Enjoying the quiet moment,calm
+Got that pit in my stomach feeling,anxious
+Hyperfixated on finishing this task,focused
+i need a break from all this,stressed
+flat out bored,low_energy_bored
+im done with life,sadness
+"Stress level 100, about to lose it",stressed
+Alright,neutral
+serene and relaxed,calm
+"i need action, something, anything",restless_bored
+incredible day,positive_engaged
+nothing bothering me right now,calm
+not interested in anything,low_energy_bored
+work is destroying me,stressed
+i cant stop crying,sadness
+i am overwhelmed by everything on my plate right now,stressed
+on a roll and can't stop,focused
+deadline after deadline,stressed
+Just feeling kinda meh today,emotionally_flat
+Actually having a good day for once,positive_engaged
+best day ever,positive_engaged
+everything is falling apart,sadness
+Bouncing off the walls rn,restless_bored
+good vibes only today,positive_engaged
+dying of boredom,low_energy_bored
+mindnumbingly boring,low_energy_bored
+apathy is the only thing i feel,emotionally_flat
+itching to start a project but cant focus on one,restless_bored
+nothing special,neutral
+need something to do,low_energy_bored
+so much work to do and zero time,stressed
+cant stop smiling,positive_engaged
+standard day,neutral
+doomscrolling and i can't stop even though i hate it,low_energy_bored
+feel like im on the edge,anxious
+Thinking about every possible way this could go wrong,overthinking
+bored to tears,low_energy_bored
+everything is piling up,stressed
+Omg this is amazing let's gooo!,positive_engaged
+Spiraling rn can't breathe properly,anxious
+what is the use of trying,sadness
+so many deadlines i'm actually cooked,stressed
+stuck in a loop of negative thoughts,overthinking
+thinking about every possible way this could go wrong,overthinking
+what if they're mad at me,overthinking
+noted,neutral
+i am so done with everything,sadness
+feeling euphoric,positive_engaged
+feel like im going to burst,restless_bored
+sweating and shaking for no reason,anxious
+"cant stop won't stop, making progress",focused
+i wanna do something but idk what to do,restless_bored
+just breathing and being,calm
+alright,neutral
+so much pain,sadness
+understood,neutral
+maybe later,neutral
+"stress level 100, about to lose it",stressed
+So many deadlines Im actually cooked,stressed
+i'm broken,sadness
+totally in the zone rn,focused
+cant sleep because of my thoughts,overthinking
+wondering if they hate me after what i said,overthinking
+my thoughts won't let me rest,overthinking
+letting go of worries,calm
+dull existence,low_energy_bored
+my mind is a mess of thoughts,overthinking
+climbing the walls with boredom,restless_bored
+got it,neutral
+im devastated,sadness
+dont care anymore,emotionally_flat
+My energy is at zero just melting into the couch,low_energy_bored
+feel like i'm going to burst,restless_bored
+Sure,neutral
+literally just laying in bed rotting,low_energy_bored
+Cant wait to see my friends,positive_engaged
+soaking in the calmness,calm
+brain is on overdrive,overthinking
+cant take it anymore,sadness
+i need a break from this boring life,low_energy_bored
+Nothing really matters to me right now,emotionally_flat
+Pressure is getting to me I might crash out,stressed
+feeling great and full of energy,positive_engaged
+tight chest and racing thoughts,anxious
+Cant shake this feeling of dread,anxious
+dont really care about anything rn,emotionally_flat
+Replaying that conversation over and over in my head,overthinking
+at peace with everything,calm
+"So restless, I can't sit still for more than a minute",restless_bored
+so dull,low_energy_bored
+my head is splitting from stress,stressed
+I see,neutral
+my brain is fried from all this work,stressed
+Blank mind blank feelings,emotionally_flat
+i just want it to stop,sadness
+what if i fail this exam i'm scared,anxious
+same old routine,low_energy_bored
+i'm maxed out,stressed
+i'm so happy right now,positive_engaged
+my brain won't shut up about the past,overthinking
+I guess so,neutral
+Apathy is the only thing I feel,emotionally_flat
+on the verge of a breakdown from work,stressed
+uneventful and dull,low_energy_bored
+quiet mind happy heart,calm
+nothing can distract me right now,focused
+this assignment is killing me slowly,stressed
+indifferent to everything,emotionally_flat
+my heart wont stop racing,anxious
+Not happy not sad just existing,emotionally_flat
+i can't do this anymore,sadness
+ive absolutely nothing to do and no motivation,low_energy_bored
+just existing,low_energy_bored
+So restless I cant sit still for more than a minute,restless_bored
+so antsy right now,restless_bored
+actually having a good day for once,positive_engaged
+my thoughts wont let me rest,overthinking
+I am crawling out of my skin,restless_bored
+can't calm down,anxious
+agitated and can't relax,restless_bored
+im on autopilot,emotionally_flat
+constant state of worry,anxious
+emotionally dead inside,emotionally_flat
+Feel like a robot programmed to just be,emotionally_flat
+worried that something bad is about to happen,anxious
+im maxed out,stressed
+need to decompress,stressed
+stress-free moment,calm
+lost all hope,sadness
+watching paint dry,low_energy_bored
+cant wait to see my friends,positive_engaged
+life is boring,low_energy_bored
+whats the use of trying,sadness
+Feel like screaming just to break the silence,restless_bored
+feeling centered and at peace,calm
+This assignment is killing me slowly,stressed
+My brain won't shut up about the past,overthinking
+Ive been staring at the wall for hours doing nothing,low_energy_bored
+spiraling rn can't breathe properly,anxious
+second guessing every decision,overthinking
+yawn,low_energy_bored
+forget about me,sadness
+Can't shake this feeling of dread,anxious
+something feels off and I'm scared,anxious
+Spiraling rn cant breathe properly,anxious
+i'm going to explode from pressure,stressed
+can't shake this feeling of dread,anxious
+why did i say that stupid thing earlier,overthinking
+stuck in a rut,low_energy_bored
+i could run through a wall right now,restless_bored
+Need an adventure or something exciting to happen ASAP,restless_bored
+i am so nervous,anxious
+there is no point,sadness
+so much pent up energy,restless_bored
+"panic mode initiated, too much to do",stressed
+living in constant fear,anxious
+just a regular Tuesday,neutral
+when will this stress end,stressed
+i've been staring at the wall for hours doing nothing,low_energy_bored
+Cant sit still need to move,restless_bored
+loving life right now!,positive_engaged
+I am overwhelmed by everything on my plate right now,stressed
+Ok,neutral
+laser focused distinct lack of distractions,focused
+feeling blessed,positive_engaged
+pressure is getting to me i might crash out,stressed
+I feel like running a marathon but Im trapped here,restless_bored
+monotonous day,low_energy_bored
+"brain empty, no thoughts, just bored",low_energy_bored
+my mind won't stop worrying,anxious
+i am bored,low_energy_bored
+nothing matters anymore,sadness
+hyper but trapped,restless_bored
+constantly questioning myself,overthinking
+Doomscrolling and I cant stop even though I hate it,low_energy_bored
+cranking through tasks,focused
+mind-numbingly boring,low_energy_bored
+can't feel anything,emotionally_flat
+Feeling peaceful rn,calm
+why doesnthing work out for me,sadness
+I am done with life,sadness
+makes sense,neutral
+on top of the world,positive_engaged
+going over it again and again,overthinking
+can't stop thinking about it,overthinking
+No stress just relaxation,calm
+radiating positive vibes,positive_engaged
+im ready to quit,sadness
+this song slaps im happy,positive_engaged
+another boring day,low_energy_bored
+Literally just laying in bed rotting,low_energy_bored
+fidgety and restless,restless_bored
+"Coding marathon, fully immersed",focused
+"Feel like a robot, programmed to just be",emotionally_flat
+i am hopeless,sadness
+bursting with happiness,positive_engaged
+just wondering,neutral
+need to go out or i will explode,restless_bored
+something feels off and Im scared,anxious
+no highs no lows just nothing,emotionally_flat
+everything is going right,positive_engaged
+no highs no lows just... nothing,emotionally_flat
+what if i fail this exam im scared,anxious
+so much pressure it hurts,stressed
+what if theyre mad at me,overthinking
+going through life on mute,emotionally_flat
+Pacing around the house with nothing to do,restless_bored
+i can't stop crying,sadness
+i keep getting panic attacks,anxious
+crying myself to sleep,sadness
+Brain empty no thoughts just bored,low_energy_bored
+i don't feel safe,anxious
+Just scrolling aimlessly through my phone,low_energy_bored
+"anxiety is high today, hard to focus",anxious
+i need to go somewhere now,restless_bored
+fair enough,neutral
+full steam ahead on this project,focused
+thats fine,neutral
+taking a nice warm bath and chilling,calm
+productivity is through the roof,focused
+i cant do this anymore,sadness
+don't care anymore,emotionally_flat
+empty shell,emotionally_flat
+my hands are shaking and i feel uneasy,anxious
+Feeling kinda nervous about tomorrow,anxious
+head down grinding,focused
+im bored,low_energy_bored
+im suffocating under all this work,stressed
+Finally relaxing after a long day,calm
+my heart won't stop racing,anxious
+no time to breathe,stressed
+so much to celebrate,positive_engaged
+heart beating so fast for no reason,anxious
+itching to start a project but can't focus on one,restless_bored
+feel like a zombie,low_energy_bored
+everything is okay right now,calm
+in flow state,focused
+I need action something anything,restless_bored
+my brain wont shut up about the past,overthinking
+i feel like something terrible is coming,anxious
+life is beautiful,positive_engaged
+brain is firing on all cylinders,focused
+that's fine,neutral
+im so done with everything,sadness
+sure,neutral
+feeling so hyped for tonight,positive_engaged
+this made my day,positive_engaged
+hyper-fixated on finishing this task,focused
+Got so much energy but stuck in this room,restless_bored
+im hopeless,sadness
+"can't sit still, need to move",restless_bored
+Laser focused distinct lack of distractions,focused
+studying hard and making progress,focused
+im broken,sadness
+im so happy right now,positive_engaged
+comfortable and at ease,calm
+100 concentration,focused
+Just vibing with some music,calm
+im going to explode from pressure,stressed
+the thought wont leave my head,overthinking
+i feel like running a marathon but i'm trapped here,restless_bored
+utterly bored,low_energy_bored
+its fine,neutral
+nothing to look forward to,low_energy_bored
+"cant sit still, need to move",restless_bored
+i feel worthless,sadness
+this song slaps i'm happy,positive_engaged
+cant believe how much i have to get done,stressed
+the pain never stops,sadness
+feel like i'm on the edge,anxious
+too much is going on,stressed
+grinding on this code,focused
+not much happening,neutral
+"cant focus on one thing, brain is everywhere",restless_bored
+can't stop analyzing every little detail,overthinking
+Feeling great and full of energy,positive_engaged
+"Anxiety is high today, hard to focus",anxious
+Too tired to do anything fun but too bored to sleep,low_energy_bored
+So antsy right now,restless_bored
+"feel like a robot, programmed to just be",emotionally_flat
+i really dont know what to do,overthinking
+obsessing over things i can't change,overthinking
+My brain wont shut up about the past,overthinking
+i give up,sadness
+im so unhappy,sadness
+chilling at home watching movies,calm
+no emotions left,emotionally_flat
+nothing seems to be happening in life right now,emotionally_flat
+i feel like crying,sadness
+i am disturbed,sadness
+its what its,neutral
+Just normal,neutral
+i am done,sadness
+just feeling kinda meh today,emotionally_flat
+in my happy place,calm
+what time is it,neutral
+"quiet mind, happy heart",calm
+Just going through the motions,emotionally_flat
+Feeling crushed under the weight of expectations,stressed
+torn apart inside,sadness
+tranquil evening,calm
+i'm suffocating under all this work,stressed
+life has been so unfair,sadness
+Stress level 100 about to lose it,stressed
+nobody cares about me,sadness
+"so restless, i can't sit still for more than a minute",restless_bored
+drowning in work,stressed
+Standard day,neutral
+Climbing the walls with boredom,restless_bored
+making serious headway,focused
+just a regular tuesday,neutral
+i need to go somewhere NOW,restless_bored
+Can't wait to see my friends,positive_engaged
+the sky is blue,neutral
+it is what it is,neutral
+Omg this is amazing lets gooo,positive_engaged
+this is so boring,low_energy_bored
+Cant stop analyzing every little detail,overthinking
+pacing around the house with nothing to do,restless_bored
+my mind is racing with what ifs,overthinking
+"my leg wont stop shaking, i need stimulation",restless_bored
+anxiety through the roof,anxious
+bouncing off the walls with all this energy,restless_bored
+i feel like running a marathon but im trapped here,restless_bored
+Obsessing over things I can't change,overthinking
+the thought won't leave my head,overthinking
+feeling crushed under the weight of expectations,stressed
+cant stop thinking about it,overthinking
+I have absolutely nothing to do and no motivation,low_energy_bored
+Feeling so hyped for tonight,positive_engaged
+unstimulated,low_energy_bored
+"meditation really helped, feeling calm",calm
+i went to the store,neutral
+i have zero motivation,low_energy_bored
+existing without purpose,emotionally_flat
+Zen mode activated,calm
+Maybe later,neutral
+so many deadlines im actually cooked,stressed
+going in circles in my head,overthinking
+lost in thought and can't escape,overthinking
+spiraling into negative thoughts,overthinking
+finally relaxing after a long day,calm
+leaving this world,sadness
+"blank mind, blank feelings",emotionally_flat
+i just want to disappear,sadness
+I wanna do something but idk what to do,restless_bored
+im spread too thin,stressed
+something feels off and im scared,anxious
+hollow inside,emotionally_flat
+i'm devastated,sadness
+today has been so uneventful,low_energy_bored
+omg this is amazing let's gooo!,positive_engaged
+Dont really care about anything rn,emotionally_flat
+cant stop wont stop making progress,focused
+heavy workload is killing me,stressed
+peak performance mode,focused
+im so nervous,anxious
+Itching to start a project but cant focus on one,restless_bored
+working myself to death,stressed
+This song slaps Im happy,positive_engaged
+overanalyzing everything,overthinking
+Loving life right now,positive_engaged
+i feel so alone,sadness
+"can't stop won't stop, making progress",focused
+i'm terrified of the future,anxious
+cant settle down,restless_bored
+Coding marathon fully immersed,focused
+thinking too much about everything,overthinking
+bouncing off the walls rn,restless_bored
+whatever,neutral
+Today is going to be awesome,positive_engaged
+Itching to start a project but can't focus on one,restless_bored
+"Meditation really helped, feeling calm",calm
+trapped in my own head right now,overthinking
+scared of what's next,anxious
+i'm on autopilot,emotionally_flat
+so understimulated right now,low_energy_bored
+everything is clicking today,focused
+"Feeling so lethargic, can't even get up",low_energy_bored
+Need to go out or I will explode,restless_bored
+under so much pressure right now,stressed
+cant feel anything,emotionally_flat
+"feeling so lethargic, cant even get up",low_energy_bored
+should I have done that differently,overthinking
+everything makes me anxious,anxious
+spiraling rn cant breathe properly,anxious
+Anxiety is high today hard to focus,anxious
+crushing my todo list,focused
+cant be bothered to do anything,low_energy_bored
+"I need action, something, anything",restless_bored
+i need stimulation or ill go crazy,restless_bored
+i dont feel safe,anxious
+burning out at work,stressed
+Taking a nice warm bath and chilling,calm
+feeling peaceful rn,calm
+no distractions allowed,focused
+zen mode activated,calm
+Loving life right now!,positive_engaged
+autopilot mode,emotionally_flat
+dragging through the day,low_energy_bored
+"Blank mind, blank feelings",emotionally_flat
+Radiating positive vibes,positive_engaged
+Feeling centered and at peace,calm
+Cant believe how much I have to get done,stressed
+cant stop analyzing every little detail,overthinking
+feels like the end,sadness
+im overwhelmed by everything on my plate right now,stressed
+staring at the ceiling again,low_energy_bored
+so pumped for this,positive_engaged
+just surviving not living,emotionally_flat
+Grinding on this code,focused
+Not much happening,neutral
+void of emotion,emotionally_flat
+"My energy is at zero, just melting into the couch",low_energy_bored
+just vibing with some music,calm
+empty inside ngl,emotionally_flat
+hello there,neutral
+Feeling jittery and on edge,anxious
+the grind never stops and i'm tired of it,stressed
+"deep work session, feeling good",focused
+"No stress, just relaxation",calm
+bored out of my mind,low_energy_bored
+i am crawling out of my skin,restless_bored
+Meditation really helped feeling calm,calm
+so excited about the news!,positive_engaged
+Studying hard and making progress,focused
+should i have done that differently,overthinking
+restless with fear,anxious
+I feel like running a marathon but I'm trapped here,restless_bored
+"Can't sit still, need to move",restless_bored
+i need a break,stressed
+what if everything goes wrong,anxious
+deep breaths feeling good,calm
+feel like screaming just to break the silence,restless_bored
+my mind wont stop worrying,anxious
+my life is so mundane,low_energy_bored
+numb to everything,emotionally_flat
+can't settle down,restless_bored
+completely absorbed in what im doing,focused
+stress is eating me alive,stressed
+Panic mode initiated too much to do,stressed
+dead inside from boredom,low_energy_bored
+ive zero motivation,low_energy_bored
+feeling balanced and grounded,calm
+completely absorbed in what i'm doing,focused
+analyzing every word they said,overthinking
+not happy not sad just existing,emotionally_flat
+can't believe how much i have to get done,stressed
+just normal,neutral
+Productivity is through the roof,focused
+Trapped in my own head right now,overthinking
+kill me with this boredom,low_energy_bored
+i see,neutral
+"no stress, just relaxation",calm
+Worried that something bad is about to happen,anxious
+feeling alive and grateful,positive_engaged
+why am i even here,sadness
+watching paint dry would be more exciting than this,low_energy_bored
+singular focus right now,focused
+Whatever,neutral
+i am so bored i could cry,low_energy_bored
+enjoying the quiet moment,calm
+heartbroken beyond repair,sadness
+i am so unhappy,sadness
+I need to get out of here,restless_bored
+i feel defeated,sadness
+My hands are shaking and I feel uneasy,anxious
+Doomscrolling and I can't stop even though I hate it,low_energy_bored
+cant handle all this responsibility,stressed
+explosive energy with nowhere to channel it,restless_bored
+scared of whats next,anxious
+"My leg won't stop shaking, I need stimulation",restless_bored
+i hate my life,sadness
+my heart hurts,sadness
+i cant take it anymore,sadness
+i need to get out of here,restless_bored
+got so much energy but stuck in this room,restless_bored
+too much on my plate,stressed
+"coding marathon, fully immersed",focused
+undivided attention on work,focused
+i guess so,neutral
+Can't believe how much I have to get done,stressed
+pure joy right now,positive_engaged
+too tired to do anything fun but too bored to sleep,low_energy_bored
+i feel completely destroyed,sadness
+stressed beyond belief,stressed
+on a roll and cant stop,focused
+obsessing over things i cant change,overthinking
+This song slaps I'm happy,positive_engaged
+im crawling out of my skin,restless_bored
+peaceful state of mind,calm
+So excited about the news,positive_engaged
+im drowning,sadness
+today is a great day to be alive,positive_engaged
+can't wait to see my friends,positive_engaged
+So many deadlines I'm actually cooked,stressed
+emotionally numb just floating,emotionally_flat
+got that pit in my stomach feeling,anxious
+did i make the right choice,overthinking
+nothing really matters to me right now,emotionally_flat
+responsibilities are crushing me,stressed
+dialed in and productive,focused
+my head is pounding from all this stress,stressed
+im done,sadness
+today is going to be awesome,positive_engaged
+"feeling so lethargic, can't even get up",low_energy_bored
+i feel nothing,emotionally_flat
+"head down, grinding",focused
+why is life been like this,sadness
+why does nothing work out for me,sadness
+agitated and cant relax,restless_bored
+im so bored i could cry,low_energy_bored
+i can't take it anymore,sadness
+So excited about the news!,positive_engaged
+"Panic mode initiated, too much to do",stressed
+Nothing can distract me right now,focused
+lost in thought and cant escape,overthinking
+cant shake this feeling of dread,anxious
+disconnected from everything,emotionally_flat
+Emotionally numb just floating,emotionally_flat
+tunnel vision on my work,focused
+everything feels repetitive,low_energy_bored
+life is meaningless,sadness
+tranquility at last,calm
+there is nothing to do,low_energy_bored
+random thoughts,neutral
+in the flow and loving it,focused
+everything is hopeless,sadness
+why is everything so hard,sadness
+"so restless, i cant sit still for more than a minute",restless_bored
+i'm drowning,sadness
+Deep work session feeling good,focused
+mental hamster wheel going nonstop,overthinking
+I could run through a wall right now,restless_bored
+My head is pounding from all this stress,stressed
+everything hurts,sadness
+Stuck in a loop of negative thoughts,overthinking
+feeling jittery and on edge,anxious
+juggling too many things,stressed
+chill vibes only,calm
+"deep breaths, feeling good",calm
+no comment,neutral
+What if I fail this exam I'm scared,anxious
+i need stimulation or i'll go crazy,restless_bored
+My leg wont stop shaking I need stimulation,restless_bored
+just going through the motions,emotionally_flat
+Totally in the zone rn,focused
+i have absolutely nothing to do and no motivation,low_energy_bored
+don't really care about anything rn,emotionally_flat
+i am done with life,sadness
+ok,neutral
+meh,low_energy_bored
+fidgeting like crazy,restless_bored
+feeling empty inside,sadness
+crushing my to-do list,focused
+lost interest in everything,emotionally_flat
+calm and collected,calm
+can't sleep because of my thoughts,overthinking
+"Brain empty, no thoughts, just bored",low_energy_bored
+Can't stop analyzing every little detail,overthinking
+ecstatic about everything,positive_engaged
+My mind is racing with what ifs,overthinking
+can't handle all this responsibility,stressed
+i just want to end it,sadness
+worried sick about everything,anxious
+Don't really care about anything rn,emotionally_flat
+Heart beating so fast for no reason,anxious
+need an adventure or something exciting to happen asap,restless_bored
+cool,neutral
+Hyper-fixated on finishing this task,focused
+average day,neutral
+100% concentration,focused
+so overwhelmed right now,stressed
+living my best life,positive_engaged
+heart is full,positive_engaged
+"can't focus on one thing, brain is everywhere",restless_bored
+locked in on this project,focused
+focused like a laser beam,focused
+no reason to go on,sadness
+Locked in on this project,focused
+can't stop smiling,positive_engaged
+i'm spread too thin,stressed
+i'm ready to quit,sadness
+cant calm down,anxious
+unwinding nicely,calm
+"my leg won't stop shaking, i need stimulation",restless_bored
+feeling kinda nervous about tomorrow,anxious
+cant focus on one thing brain is everywhere,restless_bored
+Empty inside ngl,emotionally_flat
+flatlined emotionally,emotionally_flat
+"Deep work session, feeling good",focused
+Wondering if they hate me after what I said,overthinking
+im terrified of the future,anxious
+this day is going nowhere,low_energy_bored
+Feeling so lethargic cant even get up,low_energy_bored
+should ive done that differently,overthinking
+doomscrolling and i cant stop even though i hate it,low_energy_bored
+relaxed and content,calm
+replaying that conversation over and over in my head,overthinking
+So much work to do and zero time,stressed
+stressfree moment,calm
+can't be bothered to do anything,low_energy_bored
+darkness is consuming me,sadness
+nothing exciting ever happens,low_energy_bored
+Watching paint dry would be more exciting than this,low_energy_bored
+What if I fail this exam Im scared,anxious
+Chilling at home watching movies,calm
+"my energy is at zero, just melting into the couch",low_energy_bored

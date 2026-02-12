@@ -9,22 +9,22 @@ logging.basicConfig(level=logging.ERROR) # Only show errors to keep CLI clean
 
 def interact_with_model():
     # --- Path Configuration ---
-    # Try models in order: V3 -> V2 -> V1
-    model_v3 = os.path.abspath("models/fine_tuned_roberta_v3")
-    model_v2 = os.path.abspath("models/fine_tuned_roberta_v2")
-    model_v1 = os.path.abspath("models/fine_tuned_roberta")
+    # Try models in order: V6 -> V5 -> V4 -> V1
+    models = [
+        ("V6", os.path.abspath("models/fine_tuned_roberta_v6")),
+        ("V5", os.path.abspath("models/fine_tuned_roberta_v5")),
+        ("V4", os.path.abspath("models/fine_tuned_roberta_v4")),
+        ("V1", os.path.abspath("models/fine_tuned_roberta")),
+    ]
     
     model_path = None
-    if os.path.exists(model_v3) and os.path.exists(os.path.join(model_v3, "config.json")):
-        model_path = model_v3
-        print(f"✨ Loading Latest Model (V3) from: {model_path}")
-    elif os.path.exists(model_v2) and os.path.exists(os.path.join(model_v2, "config.json")):
-        model_path = model_v2
-        print(f"✨ Loading Model (V2) from: {model_path}")
-    elif os.path.exists(model_v1) and os.path.exists(os.path.join(model_v1, "config.json")):
-        model_path = model_v1
-        print(f"✨ Loading Model (V1) from: {model_path}")
-    else:
+    for version, path in models:
+        if os.path.exists(path) and os.path.exists(os.path.join(path, "config.json")):
+            model_path = path
+            print(f"✨ Loading Latest Model ({version}) from: {model_path}")
+            break
+    
+    if not model_path:
         print("❌ No fine-tuned model found in 'models/' directory.")
         return
 
