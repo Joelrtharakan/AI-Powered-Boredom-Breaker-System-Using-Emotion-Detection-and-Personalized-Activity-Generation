@@ -251,7 +251,15 @@ print(f"   LR: {LEARNING_RATE} | Warmup: {WARMUP_RATIO}")
 print(f"   Targeted mult: {TARGETED_SYNTH_MULT}x | General mult: {GENERAL_SYNTH_MULT}x")
 print(f"{'='*60}\n")
 
-trainer.train()
+# Resume from checkpoint if available
+checkpoint = None
+if os.path.isdir(OUTPUT_DIR):
+    checkpoints = [os.path.join(OUTPUT_DIR, d) for d in os.listdir(OUTPUT_DIR) if d.startswith("checkpoint-")]
+    if checkpoints:
+        checkpoint = max(checkpoints, key=os.path.getmtime)
+        print(f"   ⏩ Resuming from: {checkpoint}")
+
+trainer.train(resume_from_checkpoint=checkpoint)
 
 # ============================
 # Save & Evaluate
