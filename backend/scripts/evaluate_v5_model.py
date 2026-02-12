@@ -1,20 +1,22 @@
 """
-V5 Model Evaluation Script
-============================
-Tests 8 consolidated labels: sadness, joy, love, anger, fear, surprise, bored, neutral
-60 balanced sentences — natural, conversational, includes ambiguous edge cases.
+Emotion Model Evaluation Script
+=================================
+Tests model accuracy on:
+  Section 1: Standard 60-sentence balanced test (target: 92%+)
+  Section 2: Real-world edge cases (the exact failures from V6 testing)
 """
 
 import os
+import sys
 import logging
 from transformers import pipeline
 
 logging.basicConfig(level=logging.ERROR)
 
 # ============================================================
-# TEST DATASET: 60 sentences, ~7-8 per emotion
+# SECTION 1: Standard balanced test (60 sentences)
 # ============================================================
-test_data = [
+standard_test = [
     # SADNESS (8)
     ("I keep reaching for my phone to text her before I remember she's gone.", "sadness"),
     ("The house feels too quiet now.", "sadness"),
@@ -93,25 +95,61 @@ test_data = [
 ]
 
 # ============================================================
-# EVALUATION
+# SECTION 2: Real-world edge cases (V6 failures + tricky inputs)
 # ============================================================
-def evaluate_model(model_dir="models/fine_tuned_roberta_v5"):
-    model_path = os.path.abspath(model_dir)
+edge_cases = [
+    # --- Crisis language (MUST be sadness) ---
+    ("i want to die", "sadness"),
+    ("i don't want to live anymore", "sadness"),
+    ("what's the point of going on", "sadness"),
+    ("i think there is no point of me living", "sadness"),
+    ("nobody would care if i was gone", "sadness"),
 
-    if not os.path.exists(os.path.join(model_path, "config.json")):
-        print(f"❌ Model not found at: {model_path}")
-        return None, None
+    # --- Pain/distress single words (sadness) ---
+    ("pain", "sadness"),
+    ("suffering", "sadness"),
+    ("heartbroken", "sadness"),
+    ("devastated", "sadness"),
+    ("broken", "sadness"),
 
-    print(f"🧠 Loading model from: {model_path}")
-    classifier = pipeline(
-        "text-classification",
-        model=model_path,
-        tokenizer=model_path,
-        top_k=None,
-        truncation=True
-    )
-    print("✅ Model loaded!\n")
+    # --- Alarm/fear single words ---
+    ("shaken", "fear"),
+    ("troubled", "fear"),
+    ("terrified", "fear"),
+    ("panicking", "fear"),
+    ("anxious", "fear"),
 
+    # --- Lethargy/boredom ---
+    ("lethargic", "bored"),
+    ("i am lazy", "bored"),
+    ("i dont have energy", "bored"),
+    ("i have become lethargic", "bored"),
+    ("feeling sleepy", "bored"),
+    ("zero motivation", "bored"),
+    ("sluggish", "bored"),
+
+    # --- Anger short phrases ---
+    ("sick of fake people", "anger"),
+    ("i'm so pissed right now", "anger"),
+    ("this makes my blood boil", "anger"),
+
+    # --- Joy that shouldn't be confused ---
+    ("best day ever", "joy"),
+    ("i'm so happy right now", "joy"),
+
+    # --- Neutral/calm ---
+    ("i'm okay", "neutral"),
+    ("fine", "neutral"),
+    ("not bad", "neutral"),
+
+    # --- Tricky ambiguous ---
+    ("lost my time my life its moving", "sadness"),
+    ("i feel nothing", "bored"),
+    ("everything feels pointless", "sadness"),
+]
+
+
+def run_eval(test_name, test_data, classifier):
     total = len(test_data)
     correct = 0
     wrong = []
@@ -139,9 +177,9 @@ def evaluate_model(model_dir="models/fine_tuned_roberta_v5"):
 
     accuracy = correct / total * 100
 
-    print("=" * 70)
-    print(f"📊 EVALUATION RESULTS — {os.path.basename(model_dir)}")
-    print("=" * 70)
+    print(f"\n{'='*70}")
+    print(f"📊 {test_name}")
+    print(f"{'='*70}")
     print(f"\n   Overall Accuracy: {correct}/{total} ({accuracy:.1f}%)\n")
 
     print("   Per-Class Accuracy:")
@@ -155,20 +193,44 @@ def evaluate_model(model_dir="models/fine_tuned_roberta_v5"):
         print(f"   {status} {label:12s} {c}/{t}  {bar} {pct:.0f}%")
 
     if wrong:
-        print(f"\n\n❌ MISCLASSIFICATIONS ({len(wrong)}):")
+        print(f"\n\n   ❌ MISCLASSIFICATIONS ({len(wrong)}):")
         print("   " + "-" * 65)
         for w in wrong:
             print(f"\n   Text: \"{w['text'][:70]}\"")
             print(f"   Expected: {w['expected']}  →  Got: {w['predicted']} ({w['confidence']:.3f})")
             print(f"   Top 3: {w['top3']}")
     else:
-        print("\n\n🎉 PERFECT SCORE — No misclassifications!")
+        print("\n\n   🎉 PERFECT SCORE — No misclassifications!")
 
-    print("\n" + "=" * 70)
     return accuracy, wrong
 
 
+def evaluate_model(model_dir="models/fine_tuned_roberta_v7"):
+    model_path = os.path.abspath(model_dir)
+
+    if not os.path.exists(os.path.join(model_path, "config.json")):
+        print(f"❌ Model not found at: {model_path}")
+        return
+
+    print(f"🧠 Loading model from: {model_path}")
+    classifier = pipeline(
+        "text-classification", model=model_path, tokenizer=model_path,
+        top_k=None, truncation=True
+    )
+    print("✅ Model loaded!")
+
+    # Run both tests
+    acc1, _ = run_eval("SECTION 1: Standard Test (60 sentences)", standard_test, classifier)
+    acc2, _ = run_eval("SECTION 2: Real-World Edge Cases", edge_cases, classifier)
+
+    print(f"\n{'='*70}")
+    print(f"📋 SUMMARY")
+    print(f"{'='*70}")
+    print(f"   Standard test:    {acc1:.1f}%  {'✅ PASS' if acc1 >= 92 else '❌ BELOW 92%'}")
+    print(f"   Edge cases:       {acc2:.1f}%  {'✅ PASS' if acc2 >= 85 else '⚠️ NEEDS WORK'}")
+    print(f"{'='*70}\n")
+
+
 if __name__ == "__main__":
-    import sys
-    model = sys.argv[1] if len(sys.argv) > 1 else "models/fine_tuned_roberta_v5"
+    model = sys.argv[1] if len(sys.argv) > 1 else "models/fine_tuned_roberta_v7"
     evaluate_model(model)
