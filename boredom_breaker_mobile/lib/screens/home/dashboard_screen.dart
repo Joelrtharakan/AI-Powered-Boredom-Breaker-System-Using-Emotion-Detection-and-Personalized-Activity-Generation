@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../providers/mood_provider.dart';
+import '../../services/session_manager.dart';
 import '../chat/chat_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -13,6 +14,25 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   final TextEditingController _controller = TextEditingController();
+  int _userId = 1;
+  String _userName = "Joel";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final id = await SessionManager.getUserId();
+    final name = await SessionManager.getUserName();
+    if (mounted) {
+      setState(() {
+        if (id != null) _userId = id;
+        if (name != null) _userName = name;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +78,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ),
                         ),
                         Text(
-                          "Joel",
+                          _userName,
                           style: GoogleFonts.outfit(
                             color: Colors.white,
                             fontSize: 30,
@@ -68,7 +88,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ],
                     ),
                     CircleAvatar(
-                      backgroundColor: Colors.blueAccent.withValues(alpha: 0.2),
+                      backgroundColor: Colors.blueAccent.withOpacity(0.2),
                       radius: 24,
                       child: const Icon(Icons.person, color: Colors.blueAccent),
                     ),
@@ -150,7 +170,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   if (_controller.text.isNotEmpty) {
                                     ref
                                         .read(moodProvider.notifier)
-                                        .analyzeMood(_controller.text, 1);
+                                        .analyzeMood(_controller.text, _userId);
                                   }
                                 },
                           style: ElevatedButton.styleFrom(

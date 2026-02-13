@@ -91,9 +91,12 @@ Generate JSON plan:
             if step.get("type") == "music":
                 playlists = spotify_service.get_mood_playlists(mood, limit=1)
                 if playlists:
-                    step["spotify_uri"] = playlists[0]["uri"]
+                    if "metadata" not in step:
+                        step["metadata"] = {}
+                    step["metadata"]["spotify_uri"] = playlists[0]["uri"]
+                    step["metadata"]["playlist_name"] = playlists[0]["name"]
+                    step["metadata"]["image"] = playlists[0].get("image")
                     step["description"] += f" (Try: {playlists[0]['name']})"
-                    step["image"] = playlists[0].get("image")
 
         return plan
 

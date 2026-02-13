@@ -4,14 +4,104 @@ Emotion Model Evaluation Script
 Tests model accuracy on:
   Section 1: Standard 60-sentence balanced test (target: 92%+)
   Section 2: Real-world edge cases (the exact failures from V6 testing)
+  Section 3: Edge cases WITH rule-based override (end-to-end system test)
 """
 
 import os
+import re
 import sys
 import logging
+from typing import Optional
 from transformers import pipeline
 
 logging.basicConfig(level=logging.ERROR)
+
+# ============================================================
+# RULE-BASED SAFETY OVERRIDE (same as cli_emotion_test.py)
+# ============================================================
+OVERRIDE_RULES = {
+    "sadness": [
+        # Crisis / suicidal language (SAFETY CRITICAL)
+        r"\bwant\s+to\s+die\b",
+        r"\bwanna\s+die\b",
+        r"\bdon'?t\s+want\s+to\s+live\b",
+        r"\bwish\s+i\s+was(n'?t)?\s+(here|alive)\b",
+        r"\bend\s+(it|my\s+life|everything)\b",
+        r"\bkill\s+(my\s*self|myself)\b",
+        r"\bsuicid",
+        r"\bno\s+(point|reason)\s+(in\s+)?(living|going\s+on|to\s+(live|continue|go\s+on))\b",
+        r"\bgive\s+up\s+on\s+(life|everything|living)\b",
+        r"\btired\s+of\s+(existing|living|being\s+alive)\b",
+        r"\bstop\s+existing\b",
+        r"\bdisappear\s+forever\b",
+        r"\bbetter\s+off\s+(without\s+me|dead)\b",
+        r"\bdon'?t\s+want\s+to\s+wake\s+up\b",
+        # Physical/emotional pain
+        r"^pain$",
+        r"^in\s+pain$",
+        r"^suffering$",
+        r"^heartbroken$",
+        r"^devastated$",
+        r"^shattered$",
+        r"^crushed$",
+        r"^broken$",
+        # Hopelessness / despair
+        r"\bpointless\b",
+        r"\bwhat'?s\s+the\s+point\b",
+        r"\bnobody\s+(would\s+)?care",
+        r"\blost\s+my\s+(time|life)",
+    ],
+    "fear": [
+        # Alarm / disturbance single words
+        r"^shaken$",
+        r"^troubled$",
+        r"^terrified$",
+        r"^panicking$",
+        r"^trembling$",
+        r"^alarmed$",
+        r"^frightened$",
+        r"^petrified$",
+        r"^horrified$",
+        r"^rattled$",
+        r"^distressed$",
+        r"^anxious$",
+    ],
+    "bored": [
+        # Lethargy / laziness
+        r"^lethargic$",
+        r"^sluggish$",
+        r"^unmotivated$",
+        r"^listless$",
+        r"\b(i\s+(am|'?m)\s+)?(so\s+)?lazy\b",
+        r"\b(feel(ing)?|i'?m|become)\s+(so\s+)?lethargic\b",
+        r"\b(no|don'?t\s+have|zero)\s+energy\b",
+        r"\bcan'?t\s+be\s+bothered\b",
+        r"\bzero\s+motivation\b",
+        r"\bfeeling\s+sleepy\b",
+        r"\bi\s+feel\s+nothing\b",
+    ],
+    "anger": [
+        r"\bsick\s+of\b",
+        r"\bblood\s+boil",
+        r"\bso\s+pissed\b",
+    ],
+}
+
+# Compile all patterns
+_compiled_overrides = {}
+for label, patterns in OVERRIDE_RULES.items():
+    _compiled_overrides[label] = [re.compile(p, re.IGNORECASE) for p in patterns]
+
+
+def check_override(text: str) -> Optional[str]:
+    """Check if text matches any rule-based override. Returns label or None."""
+    text_clean = text.strip()
+    for label, patterns in _compiled_overrides.items():
+        for pattern in patterns:
+            if pattern.search(text_clean):
+                return label
+    return None
+
 
 # ============================================================
 # SECTION 1: Standard balanced test (60 sentences)
@@ -149,17 +239,28 @@ edge_cases = [
 ]
 
 
-def run_eval(test_name, test_data, classifier):
+def run_eval(test_name, test_data, classifier, use_override=False):
     total = len(test_data)
     correct = 0
     wrong = []
+    overridden = 0
     per_class_correct = {}
     per_class_total = {}
 
     for text, expected in test_data:
-        results = classifier(text)[0]
-        predicted = results[0]["label"]
-        confidence = results[0]["score"]
+        # Check override first if enabled
+        override_label = check_override(text) if use_override else None
+
+        if override_label:
+            predicted = override_label
+            confidence = 1.0
+            overridden += 1
+            top3 = [(override_label, 1.0)]
+        else:
+            results = classifier(text)[0]
+            predicted = results[0]["label"]
+            confidence = results[0]["score"]
+            top3 = [(r["label"], round(r["score"], 4)) for r in results[:3]]
 
         per_class_total[expected] = per_class_total.get(expected, 0) + 1
 
@@ -172,7 +273,8 @@ def run_eval(test_name, test_data, classifier):
                 "expected": expected,
                 "predicted": predicted,
                 "confidence": confidence,
-                "top3": [(r["label"], round(r["score"], 4)) for r in results[:3]]
+                "top3": top3,
+                "was_override": override_label is not None,
             })
 
     accuracy = correct / total * 100
@@ -180,7 +282,10 @@ def run_eval(test_name, test_data, classifier):
     print(f"\n{'='*70}")
     print(f"📊 {test_name}")
     print(f"{'='*70}")
-    print(f"\n   Overall Accuracy: {correct}/{total} ({accuracy:.1f}%)\n")
+    print(f"\n   Overall Accuracy: {correct}/{total} ({accuracy:.1f}%)")
+    if use_override:
+        print(f"   🛡️  Overrides applied: {overridden}/{total}")
+    print()
 
     print("   Per-Class Accuracy:")
     print("   " + "-" * 50)
@@ -197,7 +302,8 @@ def run_eval(test_name, test_data, classifier):
         print("   " + "-" * 65)
         for w in wrong:
             print(f"\n   Text: \"{w['text'][:70]}\"")
-            print(f"   Expected: {w['expected']}  →  Got: {w['predicted']} ({w['confidence']:.3f})")
+            tag = " 🛡️" if w.get("was_override") else ""
+            print(f"   Expected: {w['expected']}  →  Got: {w['predicted']} ({w['confidence']:.3f}){tag}")
             print(f"   Top 3: {w['top3']}")
     else:
         print("\n\n   🎉 PERFECT SCORE — No misclassifications!")
@@ -205,7 +311,7 @@ def run_eval(test_name, test_data, classifier):
     return accuracy, wrong
 
 
-def evaluate_model(model_dir="models/fine_tuned_roberta_v7"):
+def evaluate_model(model_dir="models/fine_tuned_roberta_v9"):
     model_path = os.path.abspath(model_dir)
 
     if not os.path.exists(os.path.join(model_path, "config.json")):
@@ -219,18 +325,20 @@ def evaluate_model(model_dir="models/fine_tuned_roberta_v7"):
     )
     print("✅ Model loaded!")
 
-    # Run both tests
-    acc1, _ = run_eval("SECTION 1: Standard Test (60 sentences)", standard_test, classifier)
-    acc2, _ = run_eval("SECTION 2: Real-World Edge Cases", edge_cases, classifier)
+    # Run all tests
+    acc1, _ = run_eval("SECTION 1: Standard Test (60 sentences)", standard_test, classifier, use_override=False)
+    acc2, _ = run_eval("SECTION 2: Edge Cases (Model Only)", edge_cases, classifier, use_override=False)
+    acc3, _ = run_eval("SECTION 3: Edge Cases (Model + Override Layer)", edge_cases, classifier, use_override=True)
 
     print(f"\n{'='*70}")
     print(f"📋 SUMMARY")
     print(f"{'='*70}")
-    print(f"   Standard test:    {acc1:.1f}%  {'✅ PASS' if acc1 >= 92 else '❌ BELOW 92%'}")
-    print(f"   Edge cases:       {acc2:.1f}%  {'✅ PASS' if acc2 >= 85 else '⚠️ NEEDS WORK'}")
+    print(f"   Standard test:         {acc1:.1f}%  {'✅ PASS' if acc1 >= 92 else '❌ BELOW 92%'}")
+    print(f"   Edge cases (model):    {acc2:.1f}%  {'✅ PASS' if acc2 >= 85 else '⚠️ NEEDS WORK'}")
+    print(f"   Edge cases (system):   {acc3:.1f}%  {'✅ PASS' if acc3 >= 85 else '⚠️ NEEDS WORK'}")
     print(f"{'='*70}\n")
 
 
 if __name__ == "__main__":
-    model = sys.argv[1] if len(sys.argv) > 1 else "models/fine_tuned_roberta_v7"
+    model = sys.argv[1] if len(sys.argv) > 1 else "models/fine_tuned_roberta_v9"
     evaluate_model(model)

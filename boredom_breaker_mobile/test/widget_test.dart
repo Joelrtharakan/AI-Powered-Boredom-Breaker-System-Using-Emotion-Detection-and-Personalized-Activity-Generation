@@ -10,7 +10,7 @@ void main() {
     WidgetTester tester,
   ) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const BoredomBreakerApp());
+    await tester.pumpWidget(const BoredomBreakerApp(initialScreen: SizedBox()));
 
     // Verify that the app renders successfully
     expect(find.byType(MaterialApp), findsOneWidget);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../services/api_client.dart';
+import '../services/session_manager.dart';
 import 'main_layout.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -58,8 +59,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         // Success
-        if (response.data['access_token'] != null) {
-          ApiClient.token = response.data['access_token'];
+        final accessToken = response.data['access_token'];
+        final userData = response.data['user'];
+        final userName = userData?['username'] ?? 'User';
+        final userEmail = userData?['email'] ?? _emailController.text;
+        final userId = userData?['id'] ?? 1;
+
+        if (accessToken != null) {
+          ApiClient.setToken(accessToken);
+          await SessionManager.saveSession(
+            accessToken,
+            userEmail,
+            userName,
+            userId,
+          );
         }
 
         if (mounted) {

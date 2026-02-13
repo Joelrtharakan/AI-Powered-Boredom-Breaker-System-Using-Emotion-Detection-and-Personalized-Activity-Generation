@@ -8,7 +8,10 @@ import 'music/music_screen.dart';
 import 'journal/journal_screen.dart';
 import 'history/history_screen.dart';
 import 'lockbox/lockbox_screen.dart';
-import 'voice/voice_mode_screen.dart'; // Ensure this file exists or crate it
+import 'voice/voice_mode_screen.dart';
+import '../services/api_client.dart';
+import '../services/session_manager.dart';
+import 'landing_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -106,10 +109,17 @@ class _MainLayoutState extends State<MainLayout> {
               () => _navigateTo(const HistoryScreen()),
             ),
             const Divider(color: Colors.white10),
-            _buildDrawerItem(Icons.logout, "Logout", () {
+            _buildDrawerItem(Icons.logout, "Logout", () async {
               // Implement Logout
-              Navigator.pop(context);
-              Navigator.pop(context);
+              await SessionManager.clearSession();
+              ApiClient.setToken(null);
+              if (mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LandingScreen()),
+                  (route) => false,
+                );
+              }
             }),
           ],
         ),
@@ -132,7 +142,9 @@ class _MainLayoutState extends State<MainLayout> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+          border: Border(
+            top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          ),
           color: const Color(0xFF09090B),
         ),
         child: BottomNavigationBar(

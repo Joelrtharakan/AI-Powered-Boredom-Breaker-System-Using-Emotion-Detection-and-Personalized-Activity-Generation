@@ -3,6 +3,7 @@ import os
 import sys
 import re
 import logging
+from typing import Optional
 from transformers import pipeline
 
 # Configure logging
@@ -38,6 +39,11 @@ OVERRIDE_RULES = {
         r"^shattered$",
         r"^crushed$",
         r"^broken$",
+        # Hopelessness / despair
+        r"\bpointless\b",
+        r"\bwhat'?s\s+the\s+point\b",
+        r"\bnobody\s+(would\s+)?care",
+        r"\blost\s+my\s+(time|life)",
     ],
     "fear": [
         # Alarm / disturbance single words
@@ -52,6 +58,7 @@ OVERRIDE_RULES = {
         r"^horrified$",
         r"^rattled$",
         r"^distressed$",
+        r"^anxious$",
     ],
     "bored": [
         # Lethargy / laziness
@@ -65,6 +72,12 @@ OVERRIDE_RULES = {
         r"\bcan'?t\s+be\s+bothered\b",
         r"\bzero\s+motivation\b",
         r"\bfeeling\s+sleepy\b",
+        r"\bi\s+feel\s+nothing\b",
+    ],
+    "anger": [
+        r"\bsick\s+of\b",
+        r"\bblood\s+boil",
+        r"\bso\s+pissed\b",
     ],
 }
 
@@ -74,7 +87,7 @@ for label, patterns in OVERRIDE_RULES.items():
     _compiled_overrides[label] = [re.compile(p, re.IGNORECASE) for p in patterns]
 
 
-def check_override(text: str) -> str | None:
+def check_override(text: str) -> Optional[str]:
     """Check if text matches any rule-based override. Returns label or None."""
     text_clean = text.strip()
     for label, patterns in _compiled_overrides.items():
@@ -89,8 +102,10 @@ def check_override(text: str) -> str | None:
 # ============================================================
 def interact_with_model():
     # --- Path Configuration ---
-    # Try models in order: V7 -> V6 -> V5 -> V4 -> V1
+    # Try models in order: V9 -> V8 -> V7 -> V6 -> V5 -> V4 -> V1
     models = [
+        ("V9", os.path.abspath("models/fine_tuned_roberta_v9")),
+        ("V8", os.path.abspath("models/fine_tuned_roberta_v8")),
         ("V7", os.path.abspath("models/fine_tuned_roberta_v7")),
         ("V6", os.path.abspath("models/fine_tuned_roberta_v6")),
         ("V5", os.path.abspath("models/fine_tuned_roberta_v5")),

@@ -6,6 +6,11 @@ class ApiClient {
 
   static String? token;
 
+  // Method to update the token globally for all Dio requests
+  static void setToken(String? newToken) {
+    token = newToken;
+  }
+
   ApiClient() {
     _dio.options.baseUrl = ApiConfig.baseUrl; // Dynamically sets URL
     _dio.options.connectTimeout = const Duration(seconds: 10);
