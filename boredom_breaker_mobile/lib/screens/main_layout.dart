@@ -11,6 +11,7 @@ import 'lockbox/lockbox_screen.dart';
 import 'voice/voice_mode_screen.dart';
 import '../services/api_client.dart';
 import '../services/session_manager.dart';
+import '../theme/app_theme.dart';
 import 'landing_screen.dart';
 
 class MainLayout extends StatefulWidget {
@@ -28,11 +29,11 @@ class _MainLayoutState extends State<MainLayout> {
     const DashboardScreen(),
     const GamesScreen(),
     const MusicScreen(),
-    const ChatScreen(), // AI Friend
+    const ChatScreen(),
   ];
 
   void _navigateTo(Widget screen) {
-    Navigator.pop(context); // Close drawer
+    Navigator.pop(context);
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
@@ -40,148 +41,187 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
-        backgroundColor: const Color(0xFF09090B),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF18181B), Color(0xFF09090B)],
-                ),
+      extendBody: true, // For modern floating nav bar effect
+      drawer: _buildDrawer(),
+      body: Stack(
+        children: [
+          // Global Background Gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: AppColors.darkGradient,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.blueAccent.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    child: const Icon(
-                      Icons.person,
-                      color: Colors.blueAccent,
-                      size: 30,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Joel",
-                    style: GoogleFonts.outfit(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "Premium Member",
-                    style: GoogleFonts.inter(
-                      color: Colors.white54,
-                      fontSize: 12,
-                    ),
+            ),
+          ),
+
+          // Subtle Ambient Glow
+          Positioned(
+            top: -100,
+            right: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.05),
+                    blurRadius: 150,
+                    spreadRadius: 50,
                   ),
                 ],
               ),
             ),
-            _buildDrawerItem(
-              Icons.book_outlined,
-              "Journal",
-              () => _navigateTo(const JournalScreen()),
-            ),
-            _buildDrawerItem(
-              Icons.mic_none_outlined,
-              "Voice Mode",
-              () => _navigateTo(const VoiceModeScreen()),
-            ),
-            _buildDrawerItem(
-              Icons.lock_outline,
-              "Lockbox",
-              () => _navigateTo(const LockboxScreen()),
-            ),
-            _buildDrawerItem(
-              Icons.history,
-              "History",
-              () => _navigateTo(const HistoryScreen()),
-            ),
-            const Divider(color: Colors.white10),
-            _buildDrawerItem(Icons.logout, "Logout", () async {
-              // Implement Logout
-              await SessionManager.clearSession();
-              ApiClient.setToken(null);
-              if (mounted) {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => const LandingScreen()),
-                  (route) => false,
-                );
-              }
-            }),
-          ],
-        ),
-      ),
-      body: Stack(
-        children: [
-          _screens[_currentIndex],
-          // Custom Menu Button to open Drawer
+          ),
+
+          SafeArea(
+            child: IndexedStack(index: _currentIndex, children: _screens),
+          ),
+
+          // Custom Menu Button
           Positioned(
-            top: 50,
-            left: 16,
+            top: 60,
+            left: 20,
             child: Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white70),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              builder: (context) => InkWell(
+                onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  ),
+                  child: const Icon(
+                    Icons.menu_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
               ),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+      bottomNavigationBar: SafeArea(child: _buildBottomNav()),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      backgroundColor: AppColors.background,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white10)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  "Boredom Breaker",
+                  style: GoogleFonts.outfit(
+                    color: AppColors.primary,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Elevate your mood.",
+                  style: GoogleFonts.inter(color: Colors.white54, fontSize: 13),
+                ),
+              ],
+            ),
           ),
-          color: const Color(0xFF09090B),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          backgroundColor: const Color(0xFF09090B),
-          selectedItemColor: Colors.blueAccent,
-          unselectedItemColor: Colors.white38,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+          _buildDrawerItem(
+            Icons.book_outlined,
+            "Journal",
+            () => _navigateTo(const JournalScreen()),
           ),
-          unselectedLabelStyle: GoogleFonts.inter(fontSize: 12),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard),
-              label: 'Home',
+          _buildDrawerItem(
+            Icons.mic_none_outlined,
+            "Voice Mode",
+            () => _navigateTo(const VoiceModeScreen()),
+          ),
+          _buildDrawerItem(
+            Icons.lock_outline,
+            "Lockbox",
+            () => _navigateTo(const LockboxScreen()),
+          ),
+          _buildDrawerItem(
+            Icons.history,
+            "History",
+            () => _navigateTo(const HistoryScreen()),
+          ),
+          const Divider(color: Colors.white10, height: 40),
+          _buildDrawerItem(Icons.logout_rounded, "Logout", () async {
+            await SessionManager.clearSession();
+            ApiClient.setToken(null);
+            if (!context.mounted) return;
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const LandingScreen()),
+              (route) => false,
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNav() {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: BackdropFilter(
+          filter: ColorFilter.mode(
+            Colors.black.withOpacity(0.2),
+            BlendMode.darken,
+          ),
+          child: Container(
+            height: 72,
+            decoration: BoxDecoration(
+              color: AppColors.surface.withOpacity(0.8),
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: Colors.white.withOpacity(0.05)),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.sports_esports_outlined),
-              activeIcon: Icon(Icons.sports_esports),
-              label: 'Games',
+            child: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) => setState(() => _currentIndex = index),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              selectedItemColor: AppColors.primary,
+              unselectedItemColor: Colors.white30,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              type: BottomNavigationBarType.fixed,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_filled),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.sports_esports_rounded),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.music_note_rounded),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.forum_rounded),
+                  label: '',
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.music_note_outlined),
-              activeIcon: Icon(Icons.music_note),
-              label: 'Music',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline),
-              activeIcon: Icon(Icons.chat_bubble),
-              label: 'AI Friend',
-            ),
-          ],
+          ),
         ),
       ),
     );

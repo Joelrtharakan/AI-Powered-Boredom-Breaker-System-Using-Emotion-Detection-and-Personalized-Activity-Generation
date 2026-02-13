@@ -2,40 +2,37 @@ import json
 import logging
 import random
 from app.services.llm_service import llm_service
-from app.services.rag_service import rag_service
 from app.services.spotify_service import spotify_service
 
 class PlannerAgent:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    async def generate_plan(self, mood: str, intensity: float, user_id: int = None):
+    async def generate_plan(self, mood: str, intensity: float, user_id: int = None, interests: list = None):
         """
-        Generates a 3-step improvement plan using RAG + LLM.
+        Generates a 3-step improvement plan personalized by user interests.
         """
-        # 1. Retrieve Context from ChromaDB
-        relevant_activities = rag_service.query_activities(mood, n_results=3)
-        relevant_micro_tasks = rag_service.query_micro_tasks(mood, n_results=3)
+        interests_str = ", ".join(interests) if interests else "General wellness"
         
-        context_str = f"Suggested Activities: {relevant_activities}\nSuggested Micro-tasks: {relevant_micro_tasks}"
+        # 1. Construct Prompt (Optimized for Speed and Personalization)
+        system_prompt = f"""You are a high-energy personalized activity planner. Create a 3-step mood improvement plan.
         
-        # 2. Construct Prompt (Optimized for Speed)
-        system_prompt = """You are a huge-energy activity planner. Create a 3-step mood plan.
-        
+The user's interests are: {interests_str}. 
+YOU MUST try to align at least the main activity and music/affirmation with these interests if possible.
+
 Rules:
 1. Return ONLY a JSON ARRAY.
-2. Objects: {"type": "...", "description": "...", "time_minutes": N}
+2. Objects: {{"type": "...", "description": "...", "time_minutes": N}}
 3. Types: "breathing", "micro_task", "activity", "music", "affirmation", "game".
 4. Structure:
    - 1: Micro-task/Breathing (1m)
-   - 2: Main Activity (5-10m)
-   - 3: Music/Affirmation (Music MANDATORY if sad/anxious)
+   - 2: Main Activity (5-10m) - PREFER user interests!
+   - 3: Music/Affirmation (Music MANDATORY if sad/anxious) - PREFER user interests!
 5. Keep descriptions SHORT and PUNCHY.
 """
 
         user_prompt = f"""
 Mood: {mood} (Intensity: {intensity})
-Context: {context_str}
 
 Generate JSON plan:
 """

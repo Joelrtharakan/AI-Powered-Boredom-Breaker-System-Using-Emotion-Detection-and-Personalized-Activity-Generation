@@ -44,4 +44,18 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
       state = AsyncValue.error(e, stack);
     }
   }
+
+  Future<void> getSurprisePlan() async {
+    state = const AsyncValue.loading();
+    try {
+      final res = await _api.get('/suggest/surprise');
+      // Wrap it in a plan-like structure our UI expects
+      state = AsyncValue.data({
+        'mood': {'mood': 'surprised', 'intensity': 1.0},
+        'plan': res.data is List ? res.data : [res.data],
+      });
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
 }

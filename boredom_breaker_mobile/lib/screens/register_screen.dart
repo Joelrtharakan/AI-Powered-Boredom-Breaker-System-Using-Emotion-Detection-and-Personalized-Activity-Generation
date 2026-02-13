@@ -5,23 +5,25 @@ import 'package:google_fonts/google_fonts.dart';
 import '../services/api_client.dart';
 import '../services/session_manager.dart';
 import '../theme/app_theme.dart';
-import 'main_layout.dart';
-import 'register_screen.dart';
+import 'interests_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  Future<void> _login() async {
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+  Future<void> _register() async {
+    if (_usernameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields")),
       );
@@ -33,16 +35,18 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final dio = ApiClient().client;
       final data = {
+        'username': _usernameController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
+        'interests': [],
       };
 
-      final response = await dio.post('/auth/login', data: data);
+      final response = await dio.post('/auth/register', data: data);
 
       if (response.statusCode == 200) {
         final accessToken = response.data['access_token'];
         final userData = response.data['user'];
-        final userName = userData?['username'] ?? 'User';
+        final userName = userData?['username'] ?? _usernameController.text;
         final userEmail = userData?['email'] ?? _emailController.text;
         final userId = userData?['id'] ?? 1;
 
@@ -59,14 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const MainLayout()),
+            MaterialPageRoute(builder: (_) => const InterestsScreen()),
           );
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login Failed: ${e.toString()}")),
+          SnackBar(content: Text("Registration Failed: ${e.toString()}")),
         );
       }
     } finally {
@@ -82,8 +86,8 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Ambient Glow
           Positioned(
-            top: -100,
-            right: -50,
+            top: -50,
+            left: -50,
             child: Container(
               width: 300,
               height: 300,
@@ -91,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.secondary.withOpacity(0.1),
                     blurRadius: 150,
                     spreadRadius: 50,
                   ),
@@ -109,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   IconButton(
                     icon: const Icon(
                       Icons.arrow_back_ios_new_rounded,
@@ -118,9 +122,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                   Text(
-                    "Welcome back to\nBoredom Breaker",
+                    "Create your\ncompanion account",
                     style: GoogleFonts.outfit(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -130,21 +134,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   ).animate().fadeIn().slideX(begin: -0.1),
                   const SizedBox(height: 12),
                   Text(
-                    "Let's get you back in flow.",
+                    "Join the community of joy-seekers.",
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       color: AppColors.textSecondary,
                     ),
                   ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.1),
 
-                  const SizedBox(height: 56),
+                  const SizedBox(height: 40),
 
+                  _buildPremiumField(
+                    "Display Name",
+                    Icons.person_rounded,
+                    _usernameController,
+                  ),
+                  const SizedBox(height: 20),
                   _buildPremiumField(
                     "Email Address",
                     Icons.email_rounded,
                     _emailController,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   _buildPremiumField(
                     "Password",
                     Icons.lock_rounded,
@@ -152,21 +162,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     isPassword: true,
                   ),
 
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 40),
 
-                  _buildLoginButton(),
+                  _buildRegisterButton(),
 
                   const SizedBox(height: 32),
                   Center(
                     child: TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
-                      ),
+                      onPressed: () => Navigator.pop(context),
                       child: Text(
-                        "No account? Create one",
+                        "Already have an account? Sign In",
                         style: GoogleFonts.inter(
                           color: AppColors.textMuted,
                           fontWeight: FontWeight.w500,
@@ -199,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
             fontWeight: FontWeight.w600,
             fontSize: 15,
           ),
-        ).animate().fadeIn(delay: 400.ms),
+        ).animate().fadeIn(delay: 300.ms),
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
@@ -212,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
             obscureText: isPassword,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              prefixIcon: Icon(icon, color: AppColors.primary, size: 22),
+              prefixIcon: Icon(icon, color: AppColors.secondary, size: 22),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 20,
@@ -220,28 +225,30 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-        ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
+        ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
       ],
     );
   }
 
-  Widget _buildLoginButton() {
+  Widget _buildRegisterButton() {
     return Container(
       width: double.infinity,
       height: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(colors: AppColors.primaryGradient),
+        gradient: const LinearGradient(
+          colors: [AppColors.secondary, Color(0xFF7C3AED)],
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.secondary.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
         ],
       ),
       child: ElevatedButton(
-        onPressed: _isLoading ? null : _login,
+        onPressed: _isLoading ? null : _register,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -256,13 +263,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               )
             : Text(
-                "Sign In",
+                "Create Account",
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
       ),
-    ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2);
+    ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2);
   }
 }

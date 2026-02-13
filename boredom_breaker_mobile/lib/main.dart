@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'screens/landing_screen.dart';
 import 'screens/main_layout.dart';
 import 'services/api_client.dart';
 import 'services/session_manager.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,18 +36,7 @@ class BoredomBreakerApp extends StatelessWidget {
     return MaterialApp(
       title: 'Boredom Breaker',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF09090B),
-        primarySwatch: Colors.blue,
-        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF09090B),
-          elevation: 0,
-          scrolledUnderElevation: 0,
-        ),
-      ),
+      theme: AppTheme.darkTheme,
       home: initialScreen,
     );
   }

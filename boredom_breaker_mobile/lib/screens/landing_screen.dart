@@ -1,175 +1,126 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../screens/login_screen.dart';
+import '../screens/register_screen.dart';
+import '../theme/app_theme.dart';
 
-class LandingScreen extends StatefulWidget {
+class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
-
-  @override
-  State<LandingScreen> createState() => _LandingScreenState();
-}
-
-class _LandingScreenState extends State<LandingScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeIn),
-      ),
-    );
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack),
-      ),
-    );
-
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Gradient (Animated or Static)
+          // Background Gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF18181B), Color(0xFF000000)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: AppColors.darkGradient,
               ),
             ),
           ),
 
-          // Ambient Glow
+          // High-end Ambient Glows
           Positioned(
-            top: -150,
-            right: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                color: Colors.blueAccent.withValues(alpha: 0.15),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blueAccent.withValues(alpha: 0.15),
-                    blurRadius: 150,
-                  ),
-                ],
-              ),
-            ),
+            top: -100,
+            left: -50,
+            child: _AmbientGlow(color: AppColors.primary.withOpacity(0.2)),
+          ),
+          Positioned(
+            bottom: -150,
+            right: -50,
+            child: _AmbientGlow(color: AppColors.secondary.withOpacity(0.2)),
           ),
 
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(),
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight:
+                      MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 40),
 
-                  // Animated Logo
-                  ScaleTransition(
-                    scale: _scaleAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Container(
-                        width: 160,
-                        height: 160,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(40),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.blueAccent.withValues(alpha: 0.2),
-                              blurRadius: 40,
-                              offset: const Offset(0, 10),
+                      // Glassmorphism Logo Container
+                      Container(
+                            width: 180,
+                            height: 180,
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(44),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.white.withOpacity(0.1),
+                                  Colors.white.withOpacity(0.02),
+                                ],
+                              ),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.1),
+                              ),
                             ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(40),
-                          child: Image.asset(
-                            'assets/logo.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(40),
+                              child: Image.asset(
+                                'assets/logo.png',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          )
+                          .animate()
+                          .scale(
+                            duration: 800.ms,
+                            curve: Curves.easeOutBack,
+                            begin: const Offset(0.5, 0.5),
+                          )
+                          .fadeIn(duration: 600.ms)
+                          .shimmer(delay: 2.seconds, duration: 2.seconds),
 
-                  const SizedBox(height: 50),
+                      const SizedBox(height: 48),
 
-                  // Title & Subtitle with Fade
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Column(
-                      children: [
-                        Text(
+                      // Title with Gradient Effect
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Colors.white, Color(0xFF94A3B8)],
+                        ).createShader(bounds),
+                        child: Text(
                           "Boredom Breaker",
                           style: GoogleFonts.outfit(
-                            fontSize: 36,
+                            fontSize: 42,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: -0.5,
+                            letterSpacing: -1.5,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "Rediscover joy. Break the loop.\nYour mood, reimagined.",
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            color: Colors.white60,
-                            height: 1.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
+                      ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
 
-                  const Spacer(),
+                      const SizedBox(height: 16),
 
-                  // Animated Buttons
-                  SlideTransition(
-                    position:
-                        Tween<Offset>(
-                          begin: const Offset(0, 0.5),
-                          end: Offset.zero,
-                        ).animate(
-                          CurvedAnimation(
-                            parent: _controller,
-                            curve: const Interval(
-                              0.6,
-                              1.0,
-                              curve: Curves.easeOutCubic,
-                            ),
-                          ),
+                      Text(
+                        "Your AI companion for breaking the loop and rediscovering joy.",
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          color: AppColors.textSecondary,
+                          height: 1.5,
                         ),
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Column(
+                        textAlign: TextAlign.center,
+                      ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
+
+                      const SizedBox(height: 60),
+
+                      // Action Buttons
+                      Column(
                         children: [
                           _buildPrimaryButton(context, "Get Started", () {
                             Navigator.push(
@@ -179,15 +130,22 @@ class _LandingScreenState extends State<LandingScreen>
                               ),
                             );
                           }),
-                          const SizedBox(height: 16),
-                          _buildSecondaryButton(context, "Create Account"),
+                          const SizedBox(height: 20),
+                          _buildSecondaryButton(context, "Create Account", () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
+                            );
+                          }),
                         ],
-                      ),
-                    ),
-                  ),
+                      ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.3),
 
-                  const SizedBox(height: 40),
-                ],
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -203,17 +161,15 @@ class _LandingScreenState extends State<LandingScreen>
   ) {
     return Container(
       width: double.infinity,
-      height: 58,
+      height: 64,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
-        ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(colors: AppColors.primaryGradient),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF3B82F6).withValues(alpha: 0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
@@ -221,36 +177,61 @@ class _LandingScreenState extends State<LandingScreen>
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
           ),
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
 
-  Widget _buildSecondaryButton(BuildContext context, String label) {
-    return SizedBox(
+  Widget _buildSecondaryButton(
+    BuildContext context,
+    String label,
+    VoidCallback onPressed,
+  ) {
+    return Container(
       width: double.infinity,
-      height: 58,
+      height: 64,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        color: Colors.white.withOpacity(0.05),
+      ),
       child: TextButton(
-        onPressed: () {},
+        onPressed: onPressed,
         style: TextButton.styleFrom(
-          foregroundColor: Colors.white70,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
           ),
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600),
+          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600),
         ),
+      ),
+    );
+  }
+}
+
+class _AmbientGlow extends StatelessWidget {
+  final Color color;
+  const _AmbientGlow({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 450,
+      height: 450,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [BoxShadow(color: color, blurRadius: 200, spreadRadius: 50)],
       ),
     );
   }

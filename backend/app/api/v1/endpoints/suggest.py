@@ -1,11 +1,35 @@
+import ast
 from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.db.session import SessionLocal
+from app.models.user import User
 from app.schemas.content import SuggestionRequest, SuggestionResponse, MicroTaskResponse
 from app.services.router_agent import router_agent
 
 router = APIRouter()
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @router.post("/", response_model=SuggestionResponse)
-async def suggest_plan(request: SuggestionRequest):
+async def suggest_plan(request: SuggestionRequest, db: Session = Depends(get_db)):
+    # Fetch interests from DB if user_id is provided
+    interests = []
+    if request.user_id:
+        user = db.query(User).filter(User.id == request.user_id).first()
+        if user and user.interests:
+            try:
+                # interests is stored as string representation of list in auth.py: str(user_in.interests)
+                interests = ast.literal_eval(user.interests)
+                if not isinstance(interests, list):
+                    interests = []
+            except:
+                interests = []
+
     # Route the request through the Agent Router logic
     plan_items = await router_agent.route(
         mood_data={
@@ -13,7 +37,8 @@ async def suggest_plan(request: SuggestionRequest):
             "emotion": request.emotion,
             "intensity": request.intensity
         },
-        user_id=request.user_id
+        user_id=request.user_id,
+        interests=interests
     )
     
     return {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_theme.dart';
 
 class JournalScreen extends StatelessWidget {
   const JournalScreen({super.key});
@@ -7,112 +9,139 @@ class JournalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF09090B),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(
           "Mindful Journal",
           style: GoogleFonts.outfit(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 26,
             fontWeight: FontWeight.bold,
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.blueAccent),
+            icon: const Icon(Icons.search_rounded, color: Colors.white70),
             onPressed: () {},
           ),
         ],
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 3, // Dummy Data
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        itemCount: 4, // Dummy Data
         itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.04),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Feb ${10 - index}, 2026",
-                      style: GoogleFonts.inter(
-                        color: Colors.white38,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Icon(Icons.lock_outline, color: Colors.white38, size: 16),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  index == 0
-                      ? "Today was a bit stressful but I managed to breathe through it."
-                      : index == 1
-                      ? "Played some games to relax."
-                      : "Felt very productive today!",
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 16,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _buildTag(
-                      index == 0
-                          ? "Anxious"
-                          : index == 1
-                          ? "Bored"
-                          : "Happy",
-                      index == 0
-                          ? Colors.orange
-                          : index == 1
-                          ? Colors.blueGrey
-                          : Colors.green,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
+          return _buildJournalEntry(
+            index,
+          ).animate().fadeIn(delay: (index * 100).ms).slideY(begin: 0.1);
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        backgroundColor: Colors.blueAccent,
-        icon: const Icon(Icons.edit),
-        label: const Text("New Entry"),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: const LinearGradient(colors: AppColors.primaryGradient),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          label: Text(
+            "Write Entry",
+            style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          ),
+          icon: const Icon(Icons.edit_note_rounded),
+        ),
       ),
     );
   }
 
-  Widget _buildTag(String label, Color color) {
+  Widget _buildJournalEntry(int index) {
+    final dates = ["Feb 12", "Feb 10", "Feb 08", "Feb 05"];
+    final moods = ["Relieved", "Anxious", "Inspired", "Bored"];
+    final colors = [
+      Colors.tealAccent,
+      Colors.orangeAccent,
+      AppColors.secondary,
+      Colors.blueGrey,
+    ];
+    final texts = [
+      "Finally finished the big project. The AI breathing exercises really helped maintain my focus during the final push.",
+      "A bit nervous about tomorrow's presentation. Trying to stay grounded and not overthink.",
+      "Had a sudden burst of creativity after using the Sonic Therapy mode. Wrote down two new app ideas.",
+      "The usual routine is getting a bit old. Need to find a new hobby or something to break the loop.",
+    ];
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.surface.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                dates[index],
+                style: GoogleFonts.inter(
+                  color: AppColors.textMuted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Icon(
+                Icons.verified_user_rounded,
+                color: Colors.tealAccent,
+                size: 18,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            texts[index],
+            style: GoogleFonts.inter(
+              color: Colors.white,
+              fontSize: 16,
+              height: 1.6,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: colors[index].withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colors[index].withOpacity(0.3)),
+            ),
+            child: Text(
+              moods[index],
+              style: TextStyle(
+                color: colors[index],
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

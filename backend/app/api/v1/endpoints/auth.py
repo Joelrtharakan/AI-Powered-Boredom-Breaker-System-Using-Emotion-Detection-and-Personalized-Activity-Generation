@@ -1,8 +1,10 @@
+import ast
 from fastapi import APIRouter, Depends, HTTPException, status
 # force reload
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from pydantic import BaseModel
+from typing import List, Optional
 
 from app.db.session import SessionLocal
 from app.core import security, config
@@ -99,7 +101,7 @@ def login(login_req: UserLogin, db: Session = Depends(get_db)):
             "username": user.username,
             "email": user.email,
             "is_active": True,
-            "interests": []
+            "interests": ast.literal_eval(user.interests) if user.interests else []
         }
     }
 
@@ -147,3 +149,17 @@ def reset_password(req: PasswordResetRequest, db: Session = Depends(get_db)):
     user.password_hash = security.get_password_hash(req.new_password)
     db.commit()
     return {"message": "Password updated successfully"}
+
+class InterestUpdateRequest(BaseModel):
+    user_id: int
+    interests: List[str]
+
+@router.post("/update-interests")
+def update_interests(req: InterestUpdateRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == req.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.interests = str(req.interests)
+    db.commit()
+    return {"message": "Interests updated successfully", "interests": req.interests}

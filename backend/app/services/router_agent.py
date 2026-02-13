@@ -8,18 +8,18 @@ class RouterAgent:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    async def route(self, mood_data: dict, user_id: int):
+    async def route(self, mood_data: dict, user_id: int, interests: list = None):
         try:
-            items = await self._route_logic(mood_data, user_id)
+            items = await self._route_logic(mood_data, user_id, interests)
             if not items:
                 # Fallback if agent returned empty
-                return await planner_agent.generate_plan(mood_data.get("mood"), 0.5, user_id)
+                return await planner_agent.generate_plan(mood_data.get("mood"), 0.5, user_id, interests)
             return items
         except Exception as e:
             self.logger.error(f"Router Error: {e}")
-            return await planner_agent.generate_plan("neutral", 0.5, user_id)
+            return await planner_agent.generate_plan("neutral", 0.5, user_id, interests)
 
-    async def _route_logic(self, mood_data: dict, user_id: int):
+    async def _route_logic(self, mood_data: dict, user_id: int, interests: list = None):
         """
         Internal routing logic
         """
@@ -32,12 +32,12 @@ class RouterAgent:
         # 1. Critical/Heavy Emotions -> Planner Agent (Needs structured help)
         if emotion in ["sadness", "anger", "fear", "exhaustion", "stressed", "anxious", "sad"]:
              self.logger.info("Selected Agent: PlannerAgent")
-             return await planner_agent.generate_plan(mood, intensity, user_id)
+             return await planner_agent.generate_plan(mood, intensity, user_id, interests)
 
         # 2. Boredom -> Planner Agent (Full Plan: Micro-task + Activity + Music)
         elif emotion == "boredom":
              self.logger.info("Selected Agent: PlannerAgent (Boredom)")
-             return await planner_agent.generate_plan(mood, intensity, user_id)
+             return await planner_agent.generate_plan(mood, intensity, user_id, interests)
 
         # 3. Neutral -> Surprise Agent (Spark joy)
         elif emotion == "neutral":
@@ -52,6 +52,6 @@ class RouterAgent:
         # 4. Happy/Optimism -> Planner Agent (Sustainability Plan)
         else:
              self.logger.info("Selected Agent: PlannerAgent (Default)")
-             return await planner_agent.generate_plan(mood, intensity, user_id)
+             return await planner_agent.generate_plan(mood, intensity, user_id, interests)
 
 router_agent = RouterAgent()
