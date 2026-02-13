@@ -9,6 +9,10 @@ class MoodResponse(BaseModel):
     emotion: str
     intensity: float
     energy_level: str
+    secondary_emotion: Optional[str] = None
+    confidence_level: Optional[float] = None
+    decision_source: Optional[str] = None
+    reason: Optional[str] = None
 
 class MoodLogRequest(BaseModel):
     mood: str

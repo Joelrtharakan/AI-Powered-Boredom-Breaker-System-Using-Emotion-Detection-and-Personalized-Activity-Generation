@@ -104,6 +104,7 @@ def interact_with_model():
     # --- Path Configuration ---
     # Try models in order: V9 -> V8 -> V7 -> V6 -> V5 -> V4 -> V1
     models = [
+        ("V10", os.path.abspath("models/fine_tuned_roberta_v10")),
         ("V9", os.path.abspath("models/fine_tuned_roberta_v9")),
         ("V8", os.path.abspath("models/fine_tuned_roberta_v8")),
         ("V7", os.path.abspath("models/fine_tuned_roberta_v7")),

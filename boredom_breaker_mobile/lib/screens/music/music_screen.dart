@@ -384,14 +384,17 @@ class _MusicScreenState extends State<MusicScreen> {
               letterSpacing: -2,
             ),
           ),
-          Text(
-            "SANCTUARY",
-            style: GoogleFonts.outfit(
-              fontSize: 56,
-              fontWeight: FontWeight.w200,
-              height: 0.9,
-              color: Colors.white.withValues(alpha: 0.2),
-              letterSpacing: 8,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              "SANCTUARY",
+              style: GoogleFonts.outfit(
+                fontSize: 56,
+                fontWeight: FontWeight.w200,
+                height: 0.9,
+                color: Colors.white.withValues(alpha: 0.2),
+                letterSpacing: 6,
+              ),
             ),
           ),
           const SizedBox(height: 32),

@@ -154,7 +154,11 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                                               letterSpacing: 12,
                                             ),
                                           )
-                                          .animate(key: ValueKey(_phase))
+                                          .animate(
+                                            key: ValueKey(
+                                              "phase_title_$_phase",
+                                            ),
+                                          )
                                           .fadeIn(duration: 800.ms)
                                           .blur(
                                             begin: const Offset(5, 5),
@@ -165,14 +169,20 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
 
                                       // Secondary Instruction
                                       Text(
-                                        _getPhaseInstruction(),
-                                        style: GoogleFonts.inter(
-                                          color: Colors.white38,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          letterSpacing: 1,
-                                        ),
-                                      ).animate(key: ValueKey(_phase)).fadeIn(),
+                                            _getPhaseInstruction(),
+                                            style: GoogleFonts.inter(
+                                              color: Colors.white38,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              letterSpacing: 1,
+                                            ),
+                                          )
+                                          .animate(
+                                            key: ValueKey(
+                                              "phase_subtitle_$_phase",
+                                            ),
+                                          )
+                                          .fadeIn(),
                                     ],
                                   ),
                                 ),

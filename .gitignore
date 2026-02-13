@@ -41,3 +41,7 @@ boredom_breaker.db
 # Expo
 .expo/
 web-build/
+
+# Training Checkpoints
+backend/results_v*/
+backend/results_*/

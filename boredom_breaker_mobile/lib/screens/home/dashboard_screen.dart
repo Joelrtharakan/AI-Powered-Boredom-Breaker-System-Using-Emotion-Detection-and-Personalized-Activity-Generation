@@ -325,7 +325,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _ReliefIcon(
-              icon: Icons.air,
+              imageUrl:
+                  "https://img.icons8.com/external-flat-vinzence-studio/64/external-breathe-world-pollution-flat-vinzence-studio.png",
               label: "Breathe",
               color: Colors.cyanAccent,
               onTap: () => Navigator.push(
@@ -334,7 +335,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             _ReliefIcon(
-              icon: Icons.gamepad_rounded,
+              imageUrl: "https://img.icons8.com/3d-fluency/94/controller.png",
               label: "Play",
               color: Colors.orangeAccent,
               onTap: () => Navigator.push(

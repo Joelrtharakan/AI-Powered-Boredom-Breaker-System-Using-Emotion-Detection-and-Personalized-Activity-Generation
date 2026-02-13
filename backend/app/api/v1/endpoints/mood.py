@@ -12,23 +12,17 @@ router = APIRouter()
 
 @router.post("/detect", response_model=MoodResponse)
 def detect_mood(request: MoodDetectRequest):
-    # This might take time on first run
     result = emotion_analyzer.analyze(request.text)
     
-    # Simple heuristic for energy level based on emotion
-    energy_map = {
-        "joy": "high",
-        "optimism": "high",
-        "anger": "high",
-        "sadness": "low"
-    }
-    energy = energy_map.get(result['mood'], "medium")
-
     return {
         "mood": result['mood'],
         "emotion": result['emotion'],
         "intensity": result['intensity'],
-        "energy_level": energy
+        "energy_level": result['energy_level'],
+        "secondary_emotion": result.get('secondary_emotion'),
+        "confidence_level": result.get('confidence_level'),
+        "decision_source": result.get('decision_source'),
+        "reason": result.get('reason')
     }
 
 @router.post("/log")
