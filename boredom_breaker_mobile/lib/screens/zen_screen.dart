@@ -23,16 +23,14 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    // Main expansion/contraction
     _expansionController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
     );
 
-    // Subtle pulse for the "Hold" phase
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
 
     _startBreathingCycle();
@@ -65,11 +63,11 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
 
   void _handleAnimationForPhase() {
     if (_phase == "Inhale") {
-      _expansionController.forward();
+      _expansionController.forward(from: 0);
     } else if (_phase == "Exhale") {
-      _expansionController.reverse();
+      _expansionController.reverse(from: 1);
     } else {
-      // Hold - keep expanded but could add a tiny pulse
+      // Hold - remains at 1 but pulse will affect it
     }
   }
 
@@ -104,89 +102,135 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.center,
-            radius: 1.5,
-            colors: [_getPhaseColor().withOpacity(0.15), AppColors.background],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Floating particles / stars
-            ...List.generate(15, (index) => _buildFloatingParticle(index)),
-
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 60),
-                  // Phase Text with unique animation
-                  Text(
-                        _phase,
-                        style: GoogleFonts.outfit(
-                          fontSize: 56,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: 8,
-                        ),
-                      )
-                      .animate(key: ValueKey(_phase))
-                      .fadeIn(duration: 600.ms)
-                      .slideY(begin: 0.2, end: 0)
-                      .blur(begin: const Offset(10, 10), end: Offset.zero),
-
-                  const SizedBox(height: 12),
-
-                  // Progress dots
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(4, (index) {
-                      bool active = (4 - _seconds) > index;
-                      return AnimatedContainer(
-                        duration: 300.ms,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: active ? 12 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: active ? _getPhaseColor() : Colors.white24,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      );
-                    }),
+      body: ExcludeSemantics(
+        child: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Stack(
+            children: [
+              // Dynamic Background Glow
+              AnimatedContainer(
+                duration: 2.seconds,
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 1.5,
+                    colors: [
+                      _getPhaseColor().withValues(alpha: 0.12),
+                      AppColors.background,
+                    ],
                   ),
-
-                  const SizedBox(height: 100),
-
-                  // The "Lungs" Visualizer
-                  _buildAnimatedLungs(),
-
-                  const SizedBox(height: 120),
-
-                  Text(
-                    _getPhaseInstruction(),
-                    style: GoogleFonts.inter(
-                      color: Colors.white70,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ).animate(key: ValueKey(_phase)).fadeIn().scale(),
-
-                  const SizedBox(height: 40),
-
-                  Text(
-                    "$_seconds",
-                    style: GoogleFonts.outfit(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white30,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              // Floating particles
+              ...List.generate(20, (index) => _buildFloatingParticle(index)),
+
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: IntrinsicHeight(
+                        child: SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: Column(
+                              children: [
+                                const Spacer(flex: 2),
+
+                                // Phase Text
+                                RepaintBoundary(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                            _phase.toUpperCase(),
+                                            style: GoogleFonts.outfit(
+                                              fontSize: 52,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.white,
+                                              letterSpacing: 12,
+                                            ),
+                                          )
+                                          .animate(key: ValueKey(_phase))
+                                          .fadeIn(duration: 800.ms)
+                                          .blur(
+                                            begin: const Offset(5, 5),
+                                            end: Offset.zero,
+                                          ),
+
+                                      const SizedBox(height: 8),
+
+                                      // Secondary Instruction
+                                      Text(
+                                        _getPhaseInstruction(),
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white38,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          letterSpacing: 1,
+                                        ),
+                                      ).animate(key: ValueKey(_phase)).fadeIn(),
+                                    ],
+                                  ),
+                                ),
+
+                                const Spacer(flex: 3),
+
+                                // The Main Visualizer
+                                RepaintBoundary(
+                                  child: Center(child: _buildAnimatedLungs()),
+                                ),
+
+                                const Spacer(flex: 3),
+
+                                // Seconds counter
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Container(
+                                      width: 80,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white10,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                          "$_seconds",
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.bold,
+                                            color: _getPhaseColor().withValues(
+                                              alpha: 0.8,
+                                            ),
+                                          ),
+                                        )
+                                        .animate(key: ValueKey(_seconds))
+                                        .scale(
+                                          begin: const Offset(0.8, 0.8),
+                                          end: const Offset(1, 1),
+                                        )
+                                        .fadeIn(duration: 200.ms),
+                                  ],
+                                ),
+
+                                const Spacer(flex: 2),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -204,7 +248,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
       child: Container()
           .animate(onPlay: (c) => c.repeat())
           .custom(
-            duration: (10 + random.nextInt(10)).seconds,
+            duration: (15 + random.nextInt(10)).seconds,
             builder: (context, value, child) {
               return Align(
                 alignment: Alignment(
@@ -216,12 +260,12 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                   height: size,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _getPhaseColor().withOpacity(0.3),
+                    color: _getPhaseColor().withValues(alpha: 0.2),
                     boxShadow: [
                       BoxShadow(
-                        color: _getPhaseColor().withOpacity(0.2),
+                        color: _getPhaseColor().withValues(alpha: 0.1),
                         blurRadius: 10,
-                        spreadRadius: 2,
+                        spreadRadius: 1,
                       ),
                     ],
                   ),
@@ -236,87 +280,85 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
     return AnimatedBuilder(
       animation: Listenable.merge([_expansionController, _pulseController]),
       builder: (context, child) {
-        final scale = 1.0 + (0.6 * _expansionController.value);
-        final pulse = _phase == "Hold"
-            ? (1.0 + 0.05 * _pulseController.value)
+        final baseScale = 1.0 + (0.6 * _expansionController.value);
+        final pulseEffect = _phase == "Hold"
+            ? (1.0 + 0.08 * _pulseController.value)
             : 1.0;
+
+        final finalScale = baseScale * pulseEffect;
 
         return Stack(
           alignment: Alignment.center,
           children: [
-            // Outer Aura 2
-            Container(
-              width: 260 * scale * pulse,
-              height: 260 * scale * pulse,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: _getPhaseColor().withOpacity(0.05),
-                  width: 1,
+            // Orbiting Ring
+            Transform.rotate(
+              angle: _pulseController.value * math.pi * 2,
+              child: Container(
+                width: 280,
+                height: 280,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: _getPhaseColor().withValues(alpha: 0.05),
+                    width: 1,
+                    strokeAlign: BorderSide.strokeAlignOutside,
+                  ),
                 ),
               ),
             ),
-            // Outer Aura 1
+
+            // Outer Aura
             Container(
-              width: 220 * scale * pulse,
-              height: 220 * scale * pulse,
+              width: 240 * finalScale,
+              height: 240 * finalScale,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: _getPhaseColor().withOpacity(0.1),
+                  color: _getPhaseColor().withValues(alpha: 0.1),
                   width: 2,
                 ),
               ),
             ),
-            // Main Gradient Glow
+
+            // Core Glow
             Container(
-              width: 180 * scale * pulse,
-              height: 180 * scale * pulse,
+              width: 160 * finalScale,
+              height: 160 * finalScale,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    _getPhaseColor().withOpacity(
-                      0.4 * _expansionController.value + 0.1,
-                    ),
+                    _getPhaseColor().withValues(alpha: 0.4),
                     Colors.transparent,
                   ],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: _getPhaseColor().withOpacity(
-                      0.2 * _expansionController.value,
-                    ),
-                    blurRadius: 50,
-                    spreadRadius: 20,
+                    color: _getPhaseColor().withValues(alpha: 0.2),
+                    blurRadius: 40 * finalScale,
+                    spreadRadius: 10 * finalScale,
                   ),
                 ],
               ),
             ),
-            // The Core
+
+            // The Inner Core
             Container(
-              width: 100 * scale * pulse,
-              height: 100 * scale * pulse,
+              width: 80 * finalScale,
+              height: 80 * finalScale,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppColors.background,
                 border: Border.all(
-                  color: _getPhaseColor().withOpacity(0.6),
+                  color: _getPhaseColor().withValues(alpha: 0.6),
                   width: 3,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: _getPhaseColor().withOpacity(0.4),
-                    blurRadius: 20,
-                    spreadRadius: -5,
-                  ),
-                ],
               ),
               child: Center(
                 child: Icon(
                   _getPhaseIcon(),
                   color: _getPhaseColor(),
-                  size: 40 * scale,
+                  size: 32 * finalScale,
                 ),
               ),
             ),
@@ -342,11 +384,11 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
   IconData _getPhaseIcon() {
     switch (_phase) {
       case "Inhale":
-        return Icons.arrow_upward_rounded;
+        return Icons.expand_rounded;
       case "Hold":
-        return Icons.pause_rounded;
+        return Icons.pause_circle_filled_rounded;
       case "Exhale":
-        return Icons.arrow_downward_rounded;
+        return Icons.compress_rounded;
       default:
         return Icons.air_rounded;
     }
@@ -355,13 +397,13 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
   String _getPhaseInstruction() {
     switch (_phase) {
       case "Inhale":
-        return "Take a deep breath in";
+        return "Fill your lungs slow";
       case "Hold":
-        return "Hold and feel the stillness";
+        return "Embrace the stillness";
       case "Exhale":
-        return "Slowly let it all out";
+        return "Release every tension";
       default:
-        return "Focus on the rhythm";
+        return "";
     }
   }
 }

@@ -29,12 +29,12 @@ class LandingScreen extends StatelessWidget {
           Positioned(
             top: -100,
             left: -50,
-            child: _AmbientGlow(color: AppColors.primary.withOpacity(0.2)),
+            child: _AmbientGlow(color: AppColors.primary.withValues(alpha: 0.2)),
           ),
           Positioned(
             bottom: -150,
             right: -50,
-            child: _AmbientGlow(color: AppColors.secondary.withOpacity(0.2)),
+            child: _AmbientGlow(color: AppColors.secondary.withValues(alpha: 0.2)),
           ),
 
           SafeArea(
@@ -62,12 +62,12 @@ class LandingScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(44),
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.white.withOpacity(0.1),
-                                  Colors.white.withOpacity(0.02),
+                                  Colors.white.withValues(alpha: 0.1),
+                                  Colors.white.withValues(alpha: 0.02),
                                 ],
                               ),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.withValues(alpha: 0.1),
                               ),
                             ),
                             child: ClipRRect(
@@ -167,7 +167,7 @@ class LandingScreen extends StatelessWidget {
         gradient: const LinearGradient(colors: AppColors.primaryGradient),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -200,8 +200,8 @@ class LandingScreen extends StatelessWidget {
       height: 64,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
-        color: Colors.white.withOpacity(0.05),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        color: Colors.white.withValues(alpha: 0.05),
       ),
       child: TextButton(
         onPressed: onPressed,

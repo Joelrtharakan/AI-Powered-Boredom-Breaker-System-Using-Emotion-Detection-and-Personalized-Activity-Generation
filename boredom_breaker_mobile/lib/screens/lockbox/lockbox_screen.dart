@@ -41,7 +41,7 @@ class LockboxScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.secondary.withOpacity(0.1),
+                    color: AppColors.secondary.withValues(alpha: 0.1),
                     blurRadius: 150,
                     spreadRadius: 50,
                   ),
@@ -56,10 +56,10 @@ class LockboxScreen extends StatelessWidget {
                 Container(
                       padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
-                        color: AppColors.surface.withOpacity(0.5),
+                        color: AppColors.surface.withValues(alpha: 0.5),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                         ),
                       ),
                       child: const Icon(
@@ -119,7 +119,7 @@ class LockboxScreen extends StatelessWidget {
         gradient: const LinearGradient(colors: AppColors.primaryGradient),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

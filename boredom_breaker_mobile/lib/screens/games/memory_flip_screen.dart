@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 
@@ -198,15 +197,15 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                         decoration: BoxDecoration(
                           color: isRevealed
                               ? Colors.white
-                              : AppColors.surface.withOpacity(0.5),
+                              : AppColors.surface.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
                           boxShadow: [
                             if (isRevealed)
                               BoxShadow(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.withValues(alpha: 0.1),
                                 blurRadius: 10,
                               ),
                           ],

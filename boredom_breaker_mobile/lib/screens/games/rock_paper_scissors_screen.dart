@@ -177,15 +177,15 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
       width: 120,
       height: 120,
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.5),
+        color: AppColors.surface.withValues(alpha: 0.5),
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         boxShadow: [
           if (choice != null)
             BoxShadow(
               color: isAI
-                  ? AppColors.secondary.withOpacity(0.2)
-                  : AppColors.primary.withOpacity(0.2),
+                  ? AppColors.secondary.withValues(alpha: 0.2)
+                  : AppColors.primary.withValues(alpha: 0.2),
               blurRadius: 30,
             ),
         ],
@@ -214,11 +214,11 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
             height: 80,
             decoration: BoxDecoration(
               color: isSelected
-                  ? color.withOpacity(0.2)
-                  : AppColors.surface.withOpacity(0.5),
+                  ? color.withValues(alpha: 0.2)
+                  : AppColors.surface.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected ? color : Colors.white.withOpacity(0.05),
+                color: isSelected ? color : Colors.white.withValues(alpha: 0.05),
               ),
             ),
             child: Icon(

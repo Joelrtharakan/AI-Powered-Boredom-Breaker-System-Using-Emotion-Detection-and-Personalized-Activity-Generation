@@ -103,7 +103,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.primary.withOpacity(0.3),
+                        color: AppColors.primary.withValues(alpha: 0.3),
                         width: 2,
                       ),
                     ),
@@ -216,12 +216,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.5),
+        color: AppColors.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 40,
             offset: const Offset(0, 20),
           ),
@@ -343,7 +343,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             _ReliefIcon(
-              icon: Icons.music_note_rounded,
+              imageUrl:
+                  "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
               label: "Listen",
               color: Colors.purpleAccent,
               onTap: () => Navigator.push(
@@ -416,9 +417,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.4),
+        color: AppColors.surface.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: InkWell(
         onTap: () =>
@@ -447,9 +448,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
         "${mood.toUpperCase()} • $intensity%",
@@ -491,9 +492,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.4),
+        color: AppColors.surface.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -501,10 +502,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(icon, color: color, size: 28),
+            child: item['type'] == 'music'
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Image.network(
+                        "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  )
+                : Icon(icon, color: color, size: 28),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -547,11 +558,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   Color _getMoodColor(String mood) {
     mood = mood.toLowerCase();
-    if (mood.contains('anger') || mood.contains('frust'))
+    if (mood.contains('anger') || mood.contains('frust')) {
       return Colors.redAccent;
-    if (mood.contains('happy') || mood.contains('joy'))
+    }
+    if (mood.contains('happy') || mood.contains('joy')) {
       return Colors.amberAccent;
-    if (mood.contains('sad')) return Colors.lightBlueAccent;
+    }
+    if (mood.contains('sad')) {
+      return Colors.lightBlueAccent;
+    }
     return AppColors.primary;
   }
 
@@ -559,7 +574,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.redAccent.withOpacity(0.1),
+        color: Colors.redAccent.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(error, style: const TextStyle(color: Colors.redAccent)),
@@ -568,12 +583,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 }
 
 class _ReliefIcon extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final String? imageUrl;
   final String label;
   final Color color;
   final VoidCallback onTap;
   const _ReliefIcon({
-    required this.icon,
+    this.icon,
+    this.imageUrl,
     required this.label,
     required this.color,
     required this.onTap,
@@ -588,16 +605,17 @@ class _ReliefIcon extends StatelessWidget {
         width: 100,
         padding: const EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
-          color: AppColors.surface.withOpacity(0.4),
+          color: AppColors.surface.withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: color,
-              size: 32,
+            SizedBox(
+              height: 32,
+              child: imageUrl != null
+                  ? Image.network(imageUrl!, fit: BoxFit.contain)
+                  : Icon(icon, color: color, size: 32),
             ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 2.seconds),
             const SizedBox(height: 12),
             Text(

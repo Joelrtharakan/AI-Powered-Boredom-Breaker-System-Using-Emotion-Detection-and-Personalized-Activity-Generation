@@ -96,9 +96,9 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.5),
+                color: AppColors.surface.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: SizedBox(
                 width: 300,
@@ -116,10 +116,10 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                       onTap: () => _handleTap(index),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.02),
+                          color: Colors.white.withValues(alpha: 0.02),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Colors.white.withValues(alpha: 0.05),
                           ),
                         ),
                         child: Center(
@@ -166,7 +166,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         boxShadow: [
           if (_winner != null || _isDraw)
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),

@@ -173,7 +173,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                   Icon(
                     Icons.gps_fixed_rounded,
                     size: 80,
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -209,9 +209,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.redAccent.withOpacity(
-                                          0.5,
-                                        ),
+                                        color: Colors.redAccent.withValues(alpha: 0.5,),
                                         blurRadius: 20,
                                       ),
                                     ],
@@ -246,7 +244,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -280,7 +278,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
         gradient: const LinearGradient(colors: AppColors.primaryGradient),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

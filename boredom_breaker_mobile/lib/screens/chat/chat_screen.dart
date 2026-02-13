@@ -158,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   gradient: isUser
                       ? const LinearGradient(colors: AppColors.primaryGradient)
                       : null,
-                  color: isUser ? null : AppColors.surface.withOpacity(0.4),
+                  color: isUser ? null : AppColors.surface.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(24),
                     topRight: const Radius.circular(24),
@@ -167,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   border: isUser
                       ? null
-                      : Border.all(color: Colors.white.withOpacity(0.05)),
+                      : Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Text(
                   text,
@@ -218,17 +218,17 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       padding: const EdgeInsets.only(bottom: 110, top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
-        color: AppColors.background.withOpacity(0.8),
-        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+        color: AppColors.background.withValues(alpha: 0.8),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
       ),
       child: Row(
         children: [
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.6),
+                color: AppColors.surface.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.white.withOpacity(0.08)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
               ),
               child: TextField(
                 controller: _controller,

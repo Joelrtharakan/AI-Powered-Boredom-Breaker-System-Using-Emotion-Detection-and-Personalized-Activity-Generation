@@ -53,10 +53,11 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
       _selectedTiles.add(index);
       if (!_targetTiles.contains(index)) {
         _lives--;
-        if (_lives <= 0)
+        if (_lives <= 0) {
           _gameOver();
-        else
+        } else {
           _tryAgain();
+        }
       } else {
         int correctCount = _selectedTiles
             .where((t) => _targetTiles.contains(t))
@@ -173,9 +174,9 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.symmetric(horizontal: 32),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.02),
+                color: Colors.white.withValues(alpha: 0.02),
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: AspectRatio(
                 aspectRatio: 1,
@@ -190,11 +191,12 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                   itemBuilder: (context, index) {
                     bool isTarget = _targetTiles.contains(index);
                     bool isSelected = _selectedTiles.contains(index);
-                    Color color = Colors.white.withOpacity(0.05);
-                    if (_showingPattern && isTarget)
+                    Color color = Colors.white.withValues(alpha: 0.05);
+                    if (_showingPattern && isTarget) {
                       color = Colors.white;
-                    else if (isSelected)
+                    } else if (isSelected) {
                       color = isTarget ? AppColors.primary : Colors.redAccent;
+                    }
 
                     return GestureDetector(
                       onTap: () => _handleTap(index),
@@ -204,9 +206,9 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                           color: color,
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
-                            if (color != Colors.white.withOpacity(0.05))
+                            if (color != Colors.white.withValues(alpha: 0.05))
                               BoxShadow(
-                                color: color.withOpacity(0.3),
+                                color: color.withValues(alpha: 0.3),
                                 blurRadius: 15,
                                 spreadRadius: 2,
                               ),
@@ -229,9 +231,9 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
       margin: const EdgeInsets.only(left: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [

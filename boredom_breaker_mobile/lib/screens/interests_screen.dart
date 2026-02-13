@@ -129,13 +129,13 @@ class _InterestsScreenState extends State<InterestsScreen> {
                             duration: const Duration(milliseconds: 200),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.primary.withOpacity(0.2)
-                                  : AppColors.surface.withOpacity(0.6),
+                                  ? AppColors.primary.withValues(alpha: 0.2)
+                                  : AppColors.surface.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isSelected
                                     ? AppColors.primary
-                                    : Colors.white.withOpacity(0.05),
+                                    : Colors.white.withValues(alpha: 0.05),
                               ),
                             ),
                             alignment: Alignment.center,
@@ -180,7 +180,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
         boxShadow: [
           if (_selectedInterests.isNotEmpty)
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),

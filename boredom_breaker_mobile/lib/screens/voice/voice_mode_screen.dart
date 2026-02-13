@@ -59,7 +59,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
           Positioned(
             top: 100,
             left: -100,
-            child: _GlowDisk(color: AppColors.primary.withOpacity(0.1)),
+            child: _GlowDisk(color: AppColors.primary.withValues(alpha: 0.1)),
           ),
 
           Center(
@@ -103,7 +103,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
                               boxShadow: [
                                 if (_isListening)
                                   BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.4),
+                                    color: AppColors.primary.withValues(alpha: 0.4),
                                     blurRadius: 40,
                                     spreadRadius: 10,
                                   ),
@@ -154,9 +154,9 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
                     margin: const EdgeInsets.symmetric(horizontal: 40),
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Text(
                       "\"I've been feeling a bit overwhelmed lately with work and was looking for something to relax...\"",
@@ -177,7 +177,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
       ),
       floatingActionButton: FloatingActionButton.large(
         onPressed: () => Navigator.pop(context),
-        backgroundColor: Colors.redAccent.withOpacity(0.9),
+        backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
         elevation: 0,
         child: const Icon(Icons.close_rounded, color: Colors.white, size: 36),
       ).animate().scale(delay: 1.seconds),
@@ -200,7 +200,7 @@ class _MicAura extends StatelessWidget {
         height: 140,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.primary.withOpacity(opacity),
+          color: AppColors.primary.withValues(alpha: opacity),
         ),
       ),
     );

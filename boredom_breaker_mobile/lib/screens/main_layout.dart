@@ -67,7 +67,7 @@ class _MainLayoutState extends State<MainLayout> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.05),
+                    color: AppColors.primary.withValues(alpha: 0.05),
                     blurRadius: 150,
                     spreadRadius: 50,
                   ),
@@ -90,9 +90,11 @@ class _MainLayoutState extends State<MainLayout> {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.surface.withOpacity(0.5),
+                    color: AppColors.surface.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.05),
+                    ),
                   ),
                   child: const Icon(
                     Icons.menu_rounded,
@@ -161,11 +163,10 @@ class _MainLayoutState extends State<MainLayout> {
           ),
           const Divider(color: Colors.white10, height: 40),
           _buildDrawerItem(Icons.logout_rounded, "Logout", () async {
+            final navigator = Navigator.of(context);
             await SessionManager.clearSession();
             ApiClient.setToken(null);
-            if (!context.mounted) return;
-            Navigator.pushAndRemoveUntil(
-              context,
+            navigator.pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => const LandingScreen()),
               (route) => false,
             );
@@ -182,15 +183,15 @@ class _MainLayoutState extends State<MainLayout> {
         borderRadius: BorderRadius.circular(32),
         child: BackdropFilter(
           filter: ColorFilter.mode(
-            Colors.black.withOpacity(0.2),
+            Colors.black.withValues(alpha: 0.2),
             BlendMode.darken,
           ),
           child: Container(
             height: 72,
             decoration: BoxDecoration(
-              color: AppColors.surface.withOpacity(0.8),
+              color: AppColors.surface.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
@@ -202,7 +203,7 @@ class _MainLayoutState extends State<MainLayout> {
               showSelectedLabels: false,
               showUnselectedLabels: false,
               type: BottomNavigationBarType.fixed,
-              items: const [
+              items: [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home_filled),
                   label: '',
@@ -212,7 +213,13 @@ class _MainLayoutState extends State<MainLayout> {
                   label: '',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Icons.music_note_rounded),
+                  icon: Image.network(
+                    "https://img.icons8.com/liquid-glass-color/32/musical-notes.png",
+                    height: 24,
+                    color: _currentIndex == 2
+                        ? null
+                        : Colors.white.withValues(alpha: 0.3),
+                  ),
                   label: '',
                 ),
                 BottomNavigationBarItem(

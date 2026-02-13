@@ -165,9 +165,9 @@ class GamesScreen extends StatelessWidget {
   ) {
     return Container(
           decoration: BoxDecoration(
-            color: AppColors.surface.withOpacity(0.4),
+            color: AppColors.surface.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Material(
             color: Colors.transparent,
@@ -186,7 +186,7 @@ class GamesScreen extends StatelessWidget {
                     Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.15),
+                            color: color.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Icon(icon, color: color, size: 28),
