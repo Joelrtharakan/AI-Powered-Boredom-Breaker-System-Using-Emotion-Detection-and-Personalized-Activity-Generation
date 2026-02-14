@@ -411,6 +411,21 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                             ),
                           ),
                         ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
+
+                        if (_isGameOver) ...[
+                          const SizedBox(height: 16),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              "EXIT GAME",
+                              style: GoogleFonts.outfit(
+                                color: Colors.white54,
+                                fontSize: 14,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ).animate().fadeIn(delay: 400.ms),
+                        ],
                       ],
                     ),
                   ),

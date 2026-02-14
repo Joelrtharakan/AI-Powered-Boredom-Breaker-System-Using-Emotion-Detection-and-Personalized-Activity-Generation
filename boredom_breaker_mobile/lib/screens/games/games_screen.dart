@@ -86,10 +86,10 @@ class GamesScreen extends StatelessWidget {
       GameData(
         "Tic Tac Toe",
         "Strategy",
-        Icons.close_rounded,
+        null,
         const Color(0xFF2979FF),
         const TicTacToeScreen(),
-        null,
+        "https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/64/external-Tic-Tac-Toe-table-games-icongeek26-linear-colour-icongeek26.png",
       ), // Blue
       GameData(
         "R-P-S",
@@ -530,11 +530,17 @@ class GamesScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(color: Colors.white12),
                               ),
-                              child: Icon(
-                                game.icon,
-                                color: game.color,
-                                size: 28,
-                              ),
+                              child: game.imageUrl != null
+                                  ? Image.network(
+                                      game.imageUrl!,
+                                      width: 28,
+                                      height: 28,
+                                    )
+                                  : Icon(
+                                      game.icon,
+                                      color: game.color,
+                                      size: 28,
+                                    ),
                             ),
                             const Spacer(),
                             Text(
@@ -610,7 +616,14 @@ class GamesScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(game.icon, color: game.color, size: 28),
+                child: game.imageUrl != null
+                    ? Image.network(
+                        game.imageUrl!,
+                        width: 28,
+                        height: 28,
+                        // Removed color property to show original image colors
+                      )
+                    : Icon(game.icon, color: game.color, size: 28),
               ),
               const SizedBox(width: 20),
               Expanded(
@@ -659,7 +672,7 @@ class GamesScreen extends StatelessWidget {
 class GameData {
   final String title;
   final String subtitle;
-  final IconData icon;
+  final IconData? icon;
   final Color color;
   final Widget screen;
   final String? imageUrl;
