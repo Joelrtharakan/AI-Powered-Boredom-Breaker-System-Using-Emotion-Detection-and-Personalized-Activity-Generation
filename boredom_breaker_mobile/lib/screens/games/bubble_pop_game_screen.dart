@@ -4,8 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'dart:math';
 import 'package:flutter/services.dart';
 
-import '../../theme/app_theme.dart';
-
 class BubblePopGameScreen extends StatefulWidget {
   const BubblePopGameScreen({super.key});
 
@@ -162,18 +160,18 @@ class _BubblePopGameScreenState extends State<BubblePopGameScreen>
                                 shape: BoxShape.circle,
                                 gradient: RadialGradient(
                                   colors: [
-                                    bubble.color.withOpacity(0.3),
-                                    bubble.color.withOpacity(0.1),
+                                    bubble.color.withValues(alpha: 0.3),
+                                    bubble.color.withValues(alpha: 0.1),
                                   ],
                                   stops: const [0.3, 1.0],
                                 ),
                                 border: Border.all(
-                                  color: bubble.color.withOpacity(0.5),
+                                  color: bubble.color.withValues(alpha: 0.5),
                                   width: 2,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: bubble.color.withOpacity(0.2),
+                                    color: bubble.color.withValues(alpha: 0.2),
                                     blurRadius: 10,
                                     spreadRadius: 2,
                                   ),
@@ -184,7 +182,7 @@ class _BubblePopGameScreenState extends State<BubblePopGameScreen>
                                   width: bubble.size * 0.3,
                                   height: bubble.size * 0.2,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.4),
+                                    color: Colors.white.withValues(alpha: 0.4),
                                     borderRadius: BorderRadius.all(
                                       Radius.elliptical(
                                         bubble.size,

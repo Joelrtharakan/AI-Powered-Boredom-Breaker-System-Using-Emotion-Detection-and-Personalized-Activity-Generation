@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -6,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../providers/mood_provider.dart';
 import '../../services/session_manager.dart';
-import '../../theme/app_theme.dart';
 import '../chat/chat_screen.dart';
 import '../zen_screen.dart';
 import '../music/music_screen.dart';
@@ -64,7 +62,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    Colors.purpleAccent.withOpacity(0.15),
+                    Colors.purpleAccent.withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -81,7 +79,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    Colors.blueAccent.withOpacity(0.15),
+                    Colors.blueAccent.withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                 ),
@@ -180,7 +178,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             border: Border.all(color: Colors.white24),
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 blurRadius: 10,
                 spreadRadius: 2,
               ),
@@ -349,10 +347,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1A1A1D),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
             boxShadow: [
               BoxShadow(
-                color: glowColor.withOpacity(0.05),
+                color: glowColor.withValues(alpha: 0.05),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),
@@ -427,7 +425,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white10),
             ),
@@ -436,7 +434,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -544,7 +542,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF151517),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

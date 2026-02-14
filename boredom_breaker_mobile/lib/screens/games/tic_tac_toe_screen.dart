@@ -197,9 +197,9 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFF131823),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: color.withOpacity(0.5), width: 2),
+              border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
               boxShadow: [
-                BoxShadow(color: color.withOpacity(0.2), blurRadius: 30),
+                BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 30),
               ],
             ),
             child: Column(
@@ -235,7 +235,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                         },
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
@@ -292,7 +292,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _primaryColor.withOpacity(0.05),
+                    color: _primaryColor.withValues(alpha: 0.05),
                     blurRadius: 100,
                     spreadRadius: 50,
                   ),
@@ -310,7 +310,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _secondaryColor.withOpacity(0.05),
+                    color: _secondaryColor.withValues(alpha: 0.05),
                     blurRadius: 100,
                     spreadRadius: 50,
                   ),
@@ -362,7 +362,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(color: Colors.white10),
           ),
@@ -394,7 +394,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   blurRadius: 30,
                   offset: const Offset(0, 10),
                 ),
@@ -422,8 +422,8 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                       decoration: BoxDecoration(
                         color: isWinningCell
                             ? (cellValue == "X"
-                                  ? _primaryColor.withOpacity(0.2)
-                                  : _secondaryColor.withOpacity(0.2))
+                                  ? _primaryColor.withValues(alpha: 0.2)
+                                  : _secondaryColor.withValues(alpha: 0.2))
                             : Colors.black26,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
@@ -431,7 +431,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                               ? (cellValue == "X"
                                     ? _primaryColor
                                     : _secondaryColor)
-                              : Colors.white.withOpacity(0.05),
+                              : Colors.white.withValues(alpha: 0.05),
                           width: isWinningCell ? 2 : 1,
                         ),
                       ),
@@ -479,7 +479,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                 border: Border.all(color: Colors.white10),
                 boxShadow: [
                   BoxShadow(
-                    color: _primaryColor.withOpacity(0.2),
+                    color: _primaryColor.withValues(alpha: 0.2),
                     blurRadius: 40,
                   ),
                 ],

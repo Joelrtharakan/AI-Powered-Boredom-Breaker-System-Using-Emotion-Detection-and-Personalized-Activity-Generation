@@ -16,7 +16,6 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
   bool _gameStarted = false; // Instructions overlay
 
   // Colors
-  final Color _rockColor = const Color(0xFFFF914D); // Orange
   final Color _paperColor = const Color(0xFF4D96FF); // Blue
   final Color _scissorsColor = const Color(0xFFFF4D4D); // Red
   final Color _bgColor = const Color(0xFF0F172A); // Slate 900
@@ -67,12 +66,13 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
 
     if (roll < 35) {
       // AI cheats to Win or Draw
-      if (user == "Rock")
+      if (user == "Rock") {
         ai = "Paper";
-      else if (user == "Paper")
+      } else if (user == "Paper") {
         ai = "Scissors";
-      else
+      } else {
         ai = "Rock";
+      }
     } else {
       // Random
       ai = _choices[Random().nextInt(3)];
@@ -122,7 +122,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
             boxShadow: [
               BoxShadow(
                 color: (playerWon ? Colors.blueAccent : Colors.redAccent)
-                    .withOpacity(0.3),
+                    .withValues(alpha: 0.3),
                 blurRadius: 40,
               ),
             ],
@@ -167,7 +167,9 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                         Navigator.pop(context); // Exit screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
@@ -240,7 +242,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                 color: _paperColor.withOpacity(0.05),
                 boxShadow: [
                   BoxShadow(
-                    color: _paperColor.withOpacity(0.1),
+                    color: _paperColor.withValues(alpha: 0.1),
                     blurRadius: 80,
                   ),
                 ],
@@ -258,7 +260,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                 color: _scissorsColor.withOpacity(0.05),
                 boxShadow: [
                   BoxShadow(
-                    color: _scissorsColor.withOpacity(0.1),
+                    color: _scissorsColor.withValues(alpha: 0.1),
                     blurRadius: 80,
                   ),
                 ],
@@ -472,8 +474,8 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isAi
-              ? Colors.redAccent.withOpacity(0.5)
-              : Colors.blueAccent.withOpacity(0.5),
+              ? Colors.redAccent.withValues(alpha: 0.5)
+              : Colors.blueAccent.withValues(alpha: 0.5),
           width: 2,
         ),
         boxShadow: [
