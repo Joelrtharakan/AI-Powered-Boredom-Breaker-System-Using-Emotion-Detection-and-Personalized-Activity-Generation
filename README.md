@@ -42,6 +42,8 @@ npm install
 npm run dev
 flutter emulators --launch apple_ios_simulator
 flutter run -d EA66F2A1-0EE7-4017-8319-A09259A3E6D3 --no-enable-impeller
+cd "/Users/joeltharakan/Documents/AI Boredom System/boredom_breaker_mobile" && flutter run -d EA66F2A1-0EE7-4017-8319-A09259A3E6D3
+open -a Simulator
 ```
 
 ## 🎮 Features
