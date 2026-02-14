@@ -176,42 +176,38 @@ class GamesScreen extends StatelessWidget {
             slivers: [
               // 2. Translucent App Bar
               SliverAppBar(
-                expandedHeight: 140.0,
+                expandedHeight: 100.0,
                 floating: false,
                 pinned: true,
                 backgroundColor: Colors.black.withOpacity(0.6),
                 surfaceTintColor: Colors.transparent,
+                title: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Image.network(
+                        "https://img.icons8.com/bubbles/100/apple-arcade.png",
+                        width: 28,
+                        height: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      "ARCADE",
+                      style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 3.0,
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
                 flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
-                  ),
-                  title: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.gamepad_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        "ARCADE",
-                        style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 3.0,
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
-                  ),
                   background: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                     child: Container(color: Colors.transparent),
