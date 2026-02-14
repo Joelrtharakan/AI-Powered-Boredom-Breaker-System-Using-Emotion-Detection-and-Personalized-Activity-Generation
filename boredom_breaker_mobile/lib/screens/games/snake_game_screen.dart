@@ -326,7 +326,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
           if (!_isPlaying)
             Positioned.fill(
               child: Container(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Center(
@@ -469,7 +469,7 @@ class SnakePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final Paint glowPaint = Paint()
-      ..color = Colors.greenAccent.withOpacity(0.4)
+      ..color = Colors.greenAccent.withValues(alpha: 0.4)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
 
     // Draw Snake
@@ -516,7 +516,9 @@ class SnakePainter extends CustomPainter {
           );
 
     Paint foodGlow = Paint()
-      ..color = const Color(0xFFFF4081).withOpacity(0.5 * (0.8 + (pulse * 0.2)))
+      ..color = const Color(
+        0xFFFF4081,
+      ).withValues(alpha: 0.5 * (0.8 + (pulse * 0.2)))
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
 
     canvas.drawCircle(foodCenter, (cellWidth / 2) - 2, foodGlow);

@@ -105,12 +105,12 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
             color: const Color(0xFF0A0F0D),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: _crosshairColor.withOpacity(0.5),
+              color: _crosshairColor.withValues(alpha: 0.5),
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: _crosshairColor.withOpacity(0.2),
+                color: _crosshairColor.withValues(alpha: 0.2),
                 blurRadius: 30,
                 spreadRadius: 2,
               ),
@@ -149,7 +149,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                         Navigator.pop(context); // Pop screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
@@ -290,13 +290,13 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                                                       shape: BoxShape.circle,
                                                       border: Border.all(
                                                         color: _targetColor
-                                                            .withOpacity(0.5),
+                                                            .withValues(alpha: 0.5),
                                                         width: 2,
                                                       ),
                                                       boxShadow: [
                                                         BoxShadow(
                                                           color: _targetColor
-                                                              .withOpacity(0.3),
+                                                              .withValues(alpha: 0.3),
                                                           blurRadius: 10,
                                                         ),
                                                       ],
@@ -353,7 +353,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           width: 1,
                         ),
                       ),
@@ -361,7 +361,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                         child: Container(
                           width: 2,
                           height: 2,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -429,7 +429,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
       decoration: BoxDecoration(
         color: Colors.black87,
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -463,7 +463,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                 border: Border.all(color: _crosshairColor, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: _crosshairColor.withOpacity(0.2),
+                    color: _crosshairColor.withValues(alpha: 0.2),
                     blurRadius: 50,
                   ),
                 ],
@@ -529,7 +529,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     elevation: 10,
-                    shadowColor: _crosshairColor.withOpacity(0.4),
+                    shadowColor: _crosshairColor.withValues(alpha: 0.4),
                   ),
                   child: Text(
                     "INITIATE SEQUENCE",

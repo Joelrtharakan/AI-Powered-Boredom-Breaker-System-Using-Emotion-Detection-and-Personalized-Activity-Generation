@@ -105,10 +105,12 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E1E1E),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
+            border: Border.all(
+              color: Colors.amberAccent.withValues(alpha: 0.3),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.amberAccent.withOpacity(0.2),
+                color: Colors.amberAccent.withValues(alpha: 0.2),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -148,7 +150,9 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                         Navigator.pop(context); // Exit screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -249,7 +253,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
@@ -296,10 +300,14 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.amberAccent.withOpacity(0.1),
+                                color: Colors.amberAccent.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.amberAccent.withOpacity(0.3),
+                                  color: Colors.amberAccent.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Row(
@@ -388,14 +396,16 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                       border: Border.all(
                                         color: (_showingPattern && isTarget)
                                             ? Colors.white
-                                            : Colors.white.withOpacity(0.05),
+                                            : Colors.white.withValues(
+                                                alpha: 0.05,
+                                              ),
                                         width: 1,
                                       ),
                                       boxShadow: [
                                         if (_showingPattern && isTarget)
                                           BoxShadow(
-                                            color: Colors.white.withOpacity(
-                                              0.4,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.4,
                                             ),
                                             blurRadius: 10,
                                             spreadRadius: 1,
@@ -403,7 +413,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                         if (isSelected && isTarget)
                                           BoxShadow(
                                             color: Colors.amberAccent
-                                                .withOpacity(0.4),
+                                                .withValues(alpha: 0.4),
                                             blurRadius: 10,
                                             spreadRadius: 1,
                                           ),
@@ -439,13 +449,13 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.amberAccent.withOpacity(0.05),
+                  color: Colors.amberAccent.withValues(alpha: 0.05),
                   border: Border.all(
-                    color: Colors.amberAccent.withOpacity(0.2),
+                    color: Colors.amberAccent.withValues(alpha: 0.2),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.amberAccent.withOpacity(0.1),
+                      color: Colors.amberAccent.withValues(alpha: 0.1),
                       blurRadius: 30,
                     ),
                   ],
@@ -518,7 +528,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 15,
-                      shadowColor: Colors.amberAccent.withOpacity(0.4),
+                      shadowColor: Colors.amberAccent.withValues(alpha: 0.4),
                     ),
                     child: Text(
                       "START TEST",
@@ -560,7 +570,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.amberAccent.withOpacity(0.1),
+              color: Colors.amberAccent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: Colors.amberAccent, size: 24),

@@ -239,7 +239,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _paperColor.withOpacity(0.05),
+                color: _paperColor.withValues(alpha: 0.05),
                 boxShadow: [
                   BoxShadow(
                     color: _paperColor.withValues(alpha: 0.1),
@@ -257,7 +257,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _scissorsColor.withOpacity(0.05),
+                color: _scissorsColor.withValues(alpha: 0.05),
                 boxShadow: [
                   BoxShadow(
                     color: _scissorsColor.withValues(alpha: 0.1),
@@ -458,7 +458,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         width: size * 0.7,
         height: size,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.02),
+          color: Colors.white.withValues(alpha: 0.02),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white10),
         ),
@@ -480,8 +480,8 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: (isAi ? Colors.redAccent : Colors.blueAccent).withOpacity(
-              0.2,
+            color: (isAi ? Colors.redAccent : Colors.blueAccent).withValues(
+              alpha: 0.2,
             ),
             blurRadius: 40,
           ),
@@ -548,7 +548,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                 border: Border.all(color: Colors.white10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.purpleAccent.withOpacity(0.2),
+                    color: Colors.purpleAccent.withValues(alpha: 0.2),
                     blurRadius: 40,
                   ),
                 ],

@@ -166,10 +166,10 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E1E1E),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: glowColor.withOpacity(0.3)),
+            border: Border.all(color: glowColor.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: glowColor.withOpacity(0.2),
+                color: glowColor.withValues(alpha: 0.2),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -220,7 +220,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                         Navigator.pop(context); // Exit screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -306,7 +306,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            Colors.pinkAccent.withOpacity(0.15),
+                            Colors.pinkAccent.withValues(alpha: 0.15),
                             Colors.transparent,
                           ],
                         ),
@@ -336,7 +336,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
+                                color: Colors.white.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
@@ -383,10 +383,10 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: Colors.white.withValues(alpha: 0.1),
                                 ),
                               ),
                               child: Text(
@@ -508,7 +508,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 10,
-                  shadowColor: Colors.pinkAccent.withOpacity(0.4),
+                  shadowColor: Colors.pinkAccent.withValues(alpha: 0.4),
                 ),
                 child: Text(
                   "START GAME",
@@ -545,7 +545,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: Colors.pinkAccent, size: 24),
@@ -600,10 +600,10 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A20),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -612,7 +612,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
       child: Center(
         child: Icon(
           Icons.question_mark_rounded,
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
           size: 24,
         ),
       ),
@@ -627,14 +627,14 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
         border: Border.all(
           color: isSolved
               ? Colors.greenAccent
-              : Colors.pinkAccent.withOpacity(0.6),
+              : Colors.pinkAccent.withValues(alpha: 0.6),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
             color: isSolved
-                ? Colors.greenAccent.withOpacity(0.3)
-                : Colors.pinkAccent.withOpacity(0.2),
+                ? Colors.greenAccent.withValues(alpha: 0.3)
+                : Colors.pinkAccent.withValues(alpha: 0.2),
             blurRadius: 10,
           ),
         ],

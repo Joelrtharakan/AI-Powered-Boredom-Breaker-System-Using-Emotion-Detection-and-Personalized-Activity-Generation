@@ -83,10 +83,10 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E1E1E),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.cyanAccent.withOpacity(0.3)),
+            border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: Colors.cyanAccent.withOpacity(0.2),
+                color: Colors.cyanAccent.withValues(alpha: 0.2),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -126,7 +126,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                         Navigator.pop(context); // Exit screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -228,7 +228,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                             // Back Button
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
@@ -274,10 +274,10 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.cyanAccent.withOpacity(0.1),
+                                color: Colors.cyanAccent.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.cyanAccent.withOpacity(0.3),
+                                  color: Colors.cyanAccent.withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Text(
@@ -336,13 +336,13 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                           },
                           icon: Icon(
                             Icons.refresh_rounded,
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                             size: 18,
                           ),
                           label: Text(
                             "RESET",
                             style: GoogleFonts.outfit(
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                               letterSpacing: 1.5,
                               fontSize: 12,
                             ),
@@ -371,14 +371,14 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
           border: Border.all(
             color: _hideNumbers
                 ? Colors.white
-                : Colors.cyanAccent.withOpacity(0.3),
+                : Colors.cyanAccent.withValues(alpha: 0.3),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
               color: _hideNumbers
-                  ? Colors.white.withOpacity(0.3)
-                  : Colors.cyanAccent.withOpacity(0.15),
+                  ? Colors.white.withValues(alpha: 0.3)
+                  : Colors.cyanAccent.withValues(alpha: 0.15),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -393,8 +393,8 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.cyanAccent.withOpacity(0.1),
-                    Colors.blue.withOpacity(0.05),
+                    Colors.cyanAccent.withValues(alpha: 0.1),
+                    Colors.blue.withValues(alpha: 0.05),
                   ],
                 ),
         ),
@@ -417,7 +417,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                     color: Colors.cyanAccent,
                     shadows: [
                       Shadow(
-                        color: Colors.blue.withOpacity(0.5),
+                        color: Colors.blue.withValues(alpha: 0.5),
                         blurRadius: 10,
                       ),
                     ],
@@ -436,7 +436,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.cyanAccent.withOpacity(0.1),
+              color: Colors.cyanAccent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: Colors.cyanAccent, size: 24),
@@ -470,11 +470,11 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.cyanAccent.withOpacity(0.05),
-                  border: Border.all(color: Colors.cyanAccent.withOpacity(0.2)),
+                  color: Colors.cyanAccent.withValues(alpha: 0.05),
+                  border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.2)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyanAccent.withOpacity(0.1),
+                      color: Colors.cyanAccent.withValues(alpha: 0.1),
                       blurRadius: 30,
                     ),
                   ],
@@ -542,7 +542,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 15,
-                      shadowColor: Colors.cyanAccent.withOpacity(0.4),
+                      shadowColor: Colors.cyanAccent.withValues(alpha: 0.4),
                     ),
                     child: Text(
                       "START EXPERIMENT",

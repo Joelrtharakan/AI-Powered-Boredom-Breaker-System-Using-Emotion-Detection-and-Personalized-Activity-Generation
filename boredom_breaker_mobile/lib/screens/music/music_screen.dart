@@ -747,7 +747,7 @@ class _MusicScreenState extends State<MusicScreen> {
             decoration: cardDecoration,
             child: Stack(
               children: [
-                if (backgroundEffect != null) backgroundEffect,
+                backgroundEffect ?? const SizedBox(),
 
                 // Shared Ambient Glow (Top Right)
                 Positioned(

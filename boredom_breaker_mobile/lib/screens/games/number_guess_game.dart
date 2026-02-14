@@ -119,7 +119,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _primaryColor.withOpacity(0.3),
+                    color: _primaryColor.withValues(alpha: 0.3),
                     blurRadius: 100,
                     spreadRadius: 20,
                   ),
@@ -137,7 +137,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _secondaryColor.withOpacity(0.3),
+                    color: _secondaryColor.withValues(alpha: 0.3),
                     blurRadius: 100,
                     spreadRadius: 20,
                   ),
@@ -165,7 +165,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -192,7 +192,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -221,18 +221,18 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                   padding: const EdgeInsets.all(32),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: _getStatusColor().withOpacity(0.1),
+                    color: _getStatusColor().withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(32),
                     border: Border.all(
                       color: _status == 'neutral'
                           ? Colors.white10
-                          : _getStatusColor().withOpacity(0.5),
+                          : _getStatusColor().withValues(alpha: 0.5),
                       width: 2,
                     ),
                     boxShadow: [
                       if (_status != 'neutral')
                         BoxShadow(
-                          color: _getStatusColor().withOpacity(0.2),
+                          color: _getStatusColor().withValues(alpha: 0.2),
                           blurRadius: 20,
                           offset: const Offset(0, 4),
                         ),
@@ -266,9 +266,9 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                   // Nice modern input
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                     ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -287,7 +287,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                         border: InputBorder.none,
                         hintText: "?",
                         hintStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                         ),
                         counterText: "",
                       ),
@@ -309,7 +309,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        shadowColor: _primaryColor.withOpacity(0.5),
+                        shadowColor: _primaryColor.withValues(alpha: 0.5),
                         elevation: 8,
                       ),
                       child: Text(
@@ -418,9 +418,9 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
+                          color: color.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: color.withOpacity(0.3)),
+                          border: Border.all(color: color.withValues(alpha: 0.3)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -464,11 +464,11 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: _primaryColor.withOpacity(0.1),
-                border: Border.all(color: _primaryColor.withOpacity(0.3)),
+                color: _primaryColor.withValues(alpha: 0.1),
+                border: Border.all(color: _primaryColor.withValues(alpha: 0.3)),
                 boxShadow: [
                   BoxShadow(
-                    color: _primaryColor.withOpacity(0.2),
+                    color: _primaryColor.withValues(alpha: 0.2),
                     blurRadius: 40,
                   ),
                 ],
@@ -531,7 +531,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 15,
-                    shadowColor: _primaryColor.withOpacity(0.4),
+                    shadowColor: _primaryColor.withValues(alpha: 0.4),
                   ),
                   child: Text(
                     "START GUESSING",
@@ -572,7 +572,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: Colors.white, size: 24),
