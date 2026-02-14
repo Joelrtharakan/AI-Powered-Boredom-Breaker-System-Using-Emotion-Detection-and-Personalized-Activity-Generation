@@ -94,10 +94,10 @@ class GamesScreen extends StatelessWidget {
       GameData(
         "Rock Paper Scissors",
         "Logic & Luck",
-        null,
+        Icons.sports_mma_rounded,
         const Color(0xFF651FFF),
         const RockPaperScissorsScreen(),
-        "https://img.icons8.com/color/96/rock-paper-scissors.png",
+        "assets/rock_paper.png",
       ), // Indigo
     ];
 
@@ -527,11 +527,17 @@ class GamesScreen extends StatelessWidget {
                                 border: Border.all(color: Colors.white12),
                               ),
                               child: game.imageUrl != null
-                                  ? Image.network(
-                                      game.imageUrl!,
-                                      width: 28,
-                                      height: 28,
-                                    )
+                                  ? (game.imageUrl!.startsWith("http")
+                                        ? Image.network(
+                                            game.imageUrl!,
+                                            width: 28,
+                                            height: 28,
+                                          )
+                                        : Image.asset(
+                                            game.imageUrl!,
+                                            width: 28,
+                                            height: 28,
+                                          ))
                                   : Icon(
                                       game.icon,
                                       color: game.color,
