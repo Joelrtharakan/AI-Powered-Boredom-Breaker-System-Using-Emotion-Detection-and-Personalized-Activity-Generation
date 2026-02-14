@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
-import 'game_2048_screen.dart';
+import 'bubble_pop_game_screen.dart';
 import 'snake_game_screen.dart';
 import 'visual_memory_game.dart';
 import 'reaction_time_game.dart';
@@ -57,11 +57,11 @@ class GamesScreen extends StatelessWidget {
               children: [
                 _buildModernGameCard(
                   context,
-                  "2048",
-                  Icons.grid_4x4_rounded,
-                  Colors.orangeAccent,
-                  "Strategic puzzle",
-                  const Game2048Screen(),
+                  "Bubble Pop",
+                  Icons.bubble_chart_rounded,
+                  Colors.pinkAccent,
+                  "Pop stress away",
+                  const BubblePopGameScreen(),
                   0,
                 ),
                 _buildModernGameCard(
