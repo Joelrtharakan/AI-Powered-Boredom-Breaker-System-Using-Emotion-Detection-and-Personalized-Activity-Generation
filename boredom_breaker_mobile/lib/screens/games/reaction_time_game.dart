@@ -16,7 +16,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
   String _state = 'idle'; // idle = waiting to start
   DateTime? _startTime;
   int _lastTime = 0;
-  List<int> _history = [];
+  final List<int> _history = [];
   bool _gameStarted = false; // Instructions overlay
   Timer? _waitTimer;
 
@@ -172,7 +172,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                         Icon(
                               _getIcon(),
                               size: 100,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                             )
                             .animate(target: _state == 'active' ? 1 : 0)
                             .scale(duration: 100.ms, curve: Curves.easeOutBack),
@@ -268,7 +268,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
@@ -296,11 +296,13 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.blueAccent.withOpacity(0.1),
-                  border: Border.all(color: Colors.blueAccent.withOpacity(0.5)),
+                  color: Colors.blueAccent.withValues(alpha: 0.1),
+                  border: Border.all(
+                    color: Colors.blueAccent.withValues(alpha: 0.5),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueAccent.withOpacity(0.2),
+                      color: Colors.blueAccent.withValues(alpha: 0.2),
                       blurRadius: 40,
                     ),
                   ],
@@ -354,7 +356,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 8,
-                      shadowColor: Colors.blueAccent.withOpacity(0.4),
+                      shadowColor: Colors.blueAccent.withValues(alpha: 0.4),
                     ),
                     child: Text(
                       "START TEST",

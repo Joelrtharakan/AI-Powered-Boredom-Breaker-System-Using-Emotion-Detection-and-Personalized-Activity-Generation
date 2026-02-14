@@ -368,7 +368,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           ),
           child: Text(
             _winner != null
-                ? "${_winner == 'X' ? 'YOU WIN!' : 'AI WINS!'}"
+                ? (_winner == 'X' ? 'YOU WIN!' : 'AI WINS!')
                 : _isDraw
                 ? "DRAW"
                 : (_isPlayerTurn ? "YOUR TURN" : "AI THINKING..."),

@@ -133,7 +133,7 @@ class GamesScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            const Color(0xFF7B1FA2).withOpacity(0.15),
+                            const Color(0xFF7B1FA2).withValues(alpha: 0.15),
                             Colors.transparent,
                           ],
                         ),
@@ -157,7 +157,7 @@ class GamesScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            const Color(0xFF0091EA).withOpacity(0.15),
+                            const Color(0xFF0091EA).withValues(alpha: 0.15),
                             Colors.transparent,
                           ],
                         ),
@@ -179,14 +179,14 @@ class GamesScreen extends StatelessWidget {
                 expandedHeight: 100.0,
                 floating: false,
                 pinned: true,
-                backgroundColor: Colors.black.withOpacity(0.6),
+                backgroundColor: Colors.black.withValues(alpha: 0.6),
                 surfaceTintColor: Colors.transparent,
                 title: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Image.network(
@@ -283,7 +283,7 @@ class GamesScreen extends StatelessWidget {
         Text(
           title,
           style: GoogleFonts.outfit(
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 2,
@@ -295,7 +295,7 @@ class GamesScreen extends StatelessWidget {
             height: 1,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [color.withOpacity(0.5), Colors.transparent],
+                colors: [color.withValues(alpha: 0.5), Colors.transparent],
               ),
             ),
           ),
@@ -315,10 +315,13 @@ class GamesScreen extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: game.color.withOpacity(0.3), width: 1.5),
+          border: Border.all(
+            color: game.color.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
-              color: game.color.withOpacity(0.15),
+              color: game.color.withValues(alpha: 0.15),
               blurRadius: 40,
               offset: const Offset(0, 10),
             ),
@@ -336,7 +339,7 @@ class GamesScreen extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        game.color.withOpacity(0.15),
+                        game.color.withValues(alpha: 0.15),
                         const Color(0xFF121212),
                       ],
                       stops: const [0.0, 0.6],
@@ -354,7 +357,7 @@ class GamesScreen extends StatelessWidget {
                   child: Icon(
                     game.icon,
                     size: 200,
-                    color: game.color.withOpacity(0.08),
+                    color: game.color.withValues(alpha: 0.08),
                   ),
                 ),
               ),
@@ -370,9 +373,11 @@ class GamesScreen extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: game.color.withOpacity(0.2),
+                        color: game.color.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: game.color.withOpacity(0.3)),
+                        border: Border.all(
+                          color: game.color.withValues(alpha: 0.3),
+                        ),
                       ),
                       child: Text(
                         "MOST POPULAR",
@@ -411,7 +416,7 @@ class GamesScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: game.color.withOpacity(0.4),
+                            color: game.color.withValues(alpha: 0.4),
                             blurRadius: 15,
                             offset: const Offset(0, 4),
                           ),
@@ -488,7 +493,9 @@ class GamesScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF121212),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                  ),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
@@ -503,10 +510,10 @@ class GamesScreen extends StatelessWidget {
                           height: 100,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: game.color.withOpacity(0.15),
+                            color: game.color.withValues(alpha: 0.15),
                             boxShadow: [
                               BoxShadow(
-                                color: game.color.withOpacity(0.2),
+                                color: game.color.withValues(alpha: 0.2),
                                 blurRadius: 40,
                               ),
                             ],
@@ -574,7 +581,7 @@ class GamesScreen extends StatelessWidget {
                         right: 20,
                         child: Icon(
                           Icons.arrow_forward_rounded,
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           size: 20,
                         ),
                       ),
@@ -599,7 +606,7 @@ class GamesScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF121212),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -613,18 +620,15 @@ class GamesScreen extends StatelessWidget {
                   border: Border.all(color: Colors.white12),
                   boxShadow: [
                     BoxShadow(
-                      color: game.color.withOpacity(0.1),
+                      color: game.color.withValues(alpha: 0.1),
                       blurRadius: 15,
                     ),
                   ],
                 ),
                 child: game.imageUrl != null
-                    ? Image.network(
-                        game.imageUrl!,
-                        width: 28,
-                        height: 28,
-                        // Removed color property to show original image colors
-                      )
+                    ? (game.imageUrl!.startsWith("http")
+                          ? Image.network(game.imageUrl!, width: 28, height: 28)
+                          : Image.asset(game.imageUrl!, width: 28, height: 28))
                     : Icon(game.icon, color: game.color, size: 28),
               ),
               const SizedBox(width: 20),
@@ -654,7 +658,7 @@ class GamesScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

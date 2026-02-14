@@ -170,7 +170,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
               painter: GridPainter(
                 rows: rows,
                 columns: columns,
-                color: Colors.greenAccent.withOpacity(0.05),
+                color: Colors.greenAccent.withValues(alpha: 0.05),
               ),
             ),
           ),
@@ -189,7 +189,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
@@ -209,11 +209,11 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                           color: Colors.black54,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Colors.greenAccent.withOpacity(0.3),
+                            color: Colors.greenAccent.withValues(alpha: 0.3),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.greenAccent.withOpacity(0.1),
+                              color: Colors.greenAccent.withValues(alpha: 0.1),
                               blurRadius: 10,
                             ),
                           ],
@@ -251,13 +251,15 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: Colors.greenAccent.withOpacity(0.2),
+                              color: Colors.greenAccent.withValues(alpha: 0.2),
                               width: 2,
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.greenAccent.withOpacity(0.1),
+                                color: Colors.greenAccent.withValues(
+                                  alpha: 0.1,
+                                ),
                                 blurRadius: 20,
                               ),
                             ],
@@ -340,7 +342,9 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                               color: Colors.redAccent,
                               shadows: [
                                 BoxShadow(
-                                  color: Colors.redAccent.withOpacity(0.5),
+                                  color: Colors.redAccent.withValues(
+                                    alpha: 0.5,
+                                  ),
                                   blurRadius: 20,
                                 ),
                               ],
@@ -400,7 +404,9 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                               borderRadius: BorderRadius.circular(24),
                             ),
                             elevation: 10,
-                            shadowColor: Colors.greenAccent.withOpacity(0.5),
+                            shadowColor: Colors.greenAccent.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
                           child: Text(
                             _isGameOver ? "TRY AGAIN" : "START GAME",

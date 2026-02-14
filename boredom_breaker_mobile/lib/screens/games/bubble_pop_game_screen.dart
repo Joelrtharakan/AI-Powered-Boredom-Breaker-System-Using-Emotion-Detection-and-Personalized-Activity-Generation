@@ -205,7 +205,7 @@ class _BubblePopGameScreenState extends State<BubblePopGameScreen>
                             ),
                   ),
                 );
-              }).toList(),
+              }),
 
               // Bottom Hint
               Positioned(
