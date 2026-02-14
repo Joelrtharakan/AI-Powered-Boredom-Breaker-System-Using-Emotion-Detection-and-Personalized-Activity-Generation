@@ -92,12 +92,12 @@ class GamesScreen extends StatelessWidget {
         "https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/64/external-Tic-Tac-Toe-table-games-icongeek26-linear-colour-icongeek26.png",
       ), // Blue
       GameData(
-        "R-P-S",
+        "Rock Paper Scissors",
         "Logic & Luck",
-        Icons.front_hand_rounded,
+        null,
         const Color(0xFF651FFF),
         const RockPaperScissorsScreen(),
-        null,
+        "https://img.icons8.com/color/96/rock-paper-scissors.png",
       ), // Indigo
     ];
 

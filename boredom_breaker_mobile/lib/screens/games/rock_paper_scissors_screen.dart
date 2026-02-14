@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../theme/app_theme.dart';
 
 class RockPaperScissorsScreen extends StatefulWidget {
   const RockPaperScissorsScreen({super.key});
@@ -14,151 +13,611 @@ class RockPaperScissorsScreen extends StatefulWidget {
 
 class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
   final List<String> _choices = ["Rock", "Paper", "Scissors"];
-  final List<IconData> _icons = [
-    Icons.back_hand_rounded,
-    Icons.front_hand_rounded,
-    Icons.content_cut_rounded,
-  ];
+  bool _gameStarted = false; // Instructions overlay
+
+  // Colors
+  final Color _rockColor = const Color(0xFFFF914D); // Orange
+  final Color _paperColor = const Color(0xFF4D96FF); // Blue
+  final Color _scissorsColor = const Color(0xFFFF4D4D); // Red
+  final Color _bgColor = const Color(0xFF0F172A); // Slate 900
 
   String? _userChoice;
   String? _aiChoice;
-  String? _result;
-  bool _isAnimating = false;
+  String? _result; // "WIN", "LOSE", "DRAW"
+  bool _isProcessing = false;
 
-  void _play(String choice) {
-    if (_isAnimating) return;
+  // Stats
+  int _playerScore = 0;
+  int _aiScore = 0;
 
+  void _startGame() {
     setState(() {
-      _userChoice = choice;
-      _isAnimating = true;
-      _result = null;
-      _aiChoice = null;
-    });
-
-    // Simulate "Rock, Paper, Scissors..." animation
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      final aiIndex = Random().nextInt(3);
-      final aiChoice = _choices[aiIndex];
-
-      setState(() {
-        _aiChoice = aiChoice;
-        _isAnimating = false;
-        _result = _getResult(choice, aiChoice);
-      });
+      _gameStarted = true;
+      _resetRound();
     });
   }
 
-  String _getResult(String user, String ai) {
-    if (user == ai) return "It's a Tie!";
-    if ((user == "Rock" && ai == "Scissors") ||
+  void _resetRound() {
+    setState(() {
+      _userChoice = null;
+      _aiChoice = null;
+      _result = null;
+      _isProcessing = false;
+    });
+  }
+
+  void _play(String choice) {
+    if (_isProcessing) return;
+
+    setState(() {
+      _userChoice = choice;
+      _isProcessing = true;
+    });
+
+    // Animate randomness
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (!mounted) return;
+      _determineWinner(choice);
+    });
+  }
+
+  void _determineWinner(String user) {
+    String ai;
+    int roll = Random().nextInt(100);
+
+    if (roll < 35) {
+      // AI cheats to Win or Draw
+      if (user == "Rock")
+        ai = "Paper";
+      else if (user == "Paper")
+        ai = "Scissors";
+      else
+        ai = "Rock";
+    } else {
+      // Random
+      ai = _choices[Random().nextInt(3)];
+    }
+
+    String res;
+    if (user == ai) {
+      res = "DRAW";
+    } else if ((user == "Rock" && ai == "Scissors") ||
         (user == "Paper" && ai == "Rock") ||
         (user == "Scissors" && ai == "Paper")) {
-      return "You Win! 🎉";
+      res = "WIN";
+      _playerScore++;
+    } else {
+      res = "LOSE";
+      _aiScore++;
     }
-    return "AI Wins! 🤖";
+
+    setState(() {
+      _aiChoice = ai;
+      _result = res;
+      _isProcessing = false;
+    });
+
+    if (_playerScore >= 5 || _aiScore >= 5) {
+      Future.delayed(const Duration(milliseconds: 1000), _showGameOverDialog);
+    }
+  }
+
+  void _showGameOverDialog() {
+    bool playerWon = _playerScore > _aiScore;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: playerWon ? Colors.blueAccent : Colors.redAccent,
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: (playerWon ? Colors.blueAccent : Colors.redAccent)
+                    .withOpacity(0.3),
+                blurRadius: 40,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                playerWon ? Icons.emoji_events_rounded : Icons.cancel_rounded,
+                size: 60,
+                color: playerWon ? Colors.amberAccent : Colors.redAccent,
+              ).animate().scale(curve: Curves.elasticOut),
+
+              const SizedBox(height: 24),
+
+              Text(
+                playerWon ? "MATCH WON!" : "MATCH LOST",
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                ),
+              ),
+              Text(
+                "$_playerScore - $_aiScore",
+                style: GoogleFonts.spaceMono(
+                  color: Colors.white70,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close dialog
+                        Navigator.pop(context); // Exit screen
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(
+                        "EXIT",
+                        style: GoogleFonts.outfit(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close dialog
+                        _restartMatch();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: playerWon
+                            ? Colors.blueAccent
+                            : Colors.redAccent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: Text(
+                        "REMATCH",
+                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _restartMatch() {
+    setState(() {
+      _playerScore = 0;
+      _aiScore = 0;
+      _resetRound();
+    });
+  }
+
+  IconData _getIcon(String? choice) {
+    if (choice == "Rock") return Icons.landscape_rounded;
+    if (choice == "Paper") return Icons.feed_rounded;
+    if (choice == "Scissors") return Icons.content_cut_rounded;
+    return Icons.question_mark_rounded;
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          "Rock Paper Scissors",
-          style: GoogleFonts.outfit(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+      backgroundColor: _bgColor,
+      body: Stack(
+        children: [
+          // Ambient Background
+          Positioned(
+            top: -100,
+            left: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _paperColor.withOpacity(0.05),
+                boxShadow: [
+                  BoxShadow(
+                    color: _paperColor.withOpacity(0.1),
+                    blurRadius: 80,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+          Positioned(
+            bottom: -50,
+            right: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _scissorsColor.withOpacity(0.05),
+                boxShadow: [
+                  BoxShadow(
+                    color: _scissorsColor.withOpacity(0.1),
+                    blurRadius: 80,
+                  ),
+                ],
+              ),
+            ),
           ),
-          onPressed: () => Navigator.pop(context),
-        ),
+
+          SafeArea(
+            child: !_gameStarted ? _buildInstructions() : _buildGameUI(size),
+          ),
+        ],
       ),
-      body: Center(
+    );
+  }
+
+  Widget _buildGameUI(Size size) {
+    // Determine card size based on height to prevent overflow
+    double cardSize = size.height * 0.15;
+    if (cardSize > 140) cardSize = 140; // Max size
+    if (cardSize < 100) cardSize = 100; // Min size
+
+    return Column(
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 8,
+          ), // Reduced vertical padding
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildScoreBadge(
+                "YOU",
+                _playerScore,
+                Colors.blueAccent,
+                Icons.person,
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, color: Colors.white54),
+              ),
+              _buildScoreBadge(
+                "AI",
+                _aiScore,
+                Colors.redAccent,
+                Icons.smart_toy_rounded,
+              ),
+            ],
+          ),
+        ),
+
+        // BATTLE ARENA (Flexible Column)
+        Expanded(
+          flex: 6, // Give more space to arena
+          child: Column(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceEvenly, // Distribute evenly
+            children: [
+              // AI Choice
+              _buildPlayCard(_aiChoice, isAi: true, size: cardSize),
+
+              // Result / VS Text
+              Flexible(
+                child: Center(
+                  child: _result != null
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              _result == "WIN"
+                                  ? "VICTORY"
+                                  : (_result == "LOSE" ? "DEFEATED" : "DRAW"),
+                              style: GoogleFonts.outfit(
+                                fontSize: 32, // Slightly smaller font
+                                fontWeight: FontWeight.w900,
+                                color: _result == "WIN"
+                                    ? Colors.greenAccent
+                                    : (_result == "LOSE"
+                                          ? Colors.redAccent
+                                          : Colors.amberAccent),
+                                letterSpacing: 2,
+                                shadows: [
+                                  BoxShadow(
+                                    color: Colors.black54,
+                                    blurRadius: 20,
+                                  ),
+                                ],
+                              ),
+                            ).animate().scale(curve: Curves.elasticOut),
+
+                            const SizedBox(height: 8),
+
+                            // Play Again Button
+                            ElevatedButton(
+                              onPressed: _resetRound,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white24,
+                                shape: const StadiumBorder(),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
+                              ),
+                              child: Text(
+                                "PLAY AGAIN",
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : (!_isProcessing
+                            ? Text(
+                                "VS",
+                                style: GoogleFonts.outfit(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white10,
+                                ),
+                              )
+                            : SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white24,
+                                  strokeWidth: 2,
+                                ),
+                              )),
+                ),
+              ),
+
+              // User Choice
+              _buildPlayCard(_userChoice, isAi: false, size: cardSize),
+            ],
+          ),
+        ),
+
+        // CONTROLS (Only visible if not processing result)
+        // Wrapped in Container with fixed height to prevent layout jumps
+        SizedBox(
+          height: 120,
+          child: (_result == null && !_isProcessing)
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 20, top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildChoiceBtn("Rock"),
+                      _buildChoiceBtn("Paper"),
+                      _buildChoiceBtn("Scissors"),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(), // Render empty box when hidden to keep layout stable-ish? No, shrink is fine.
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScoreBadge(String label, int score, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            "$label: $score",
+            style: GoogleFonts.spaceMono(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlayCard(
+    String? choice, {
+    required bool isAi,
+    required double size,
+  }) {
+    if (choice == null) {
+      return Container(
+        width: size * 0.7,
+        height: size,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.02),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Icon(Icons.help_outline, color: Colors.white10, size: 30),
+      );
+    }
+
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isAi
+              ? Colors.redAccent.withOpacity(0.5)
+              : Colors.blueAccent.withOpacity(0.5),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: (isAi ? Colors.redAccent : Colors.blueAccent).withOpacity(
+              0.2,
+            ),
+            blurRadius: 40,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(_getIcon(choice), size: size * 0.4, color: Colors.white),
+          SizedBox(height: size * 0.1),
+          Text(
+            choice,
+            style: GoogleFonts.outfit(
+              color: Colors.white70,
+              fontSize: size * 0.15,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn().scale();
+  }
+
+  Widget _buildChoiceBtn(String choice) {
+    return GestureDetector(
+      onTap: () => _play(choice),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // prevent expansion
+        children: [
+          Container(
+            width: 64, // Slightly smaller buttons
+            height: 64,
+            decoration: BoxDecoration(
+              color: Colors.white10,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white24),
+            ),
+            child: Icon(_getIcon(choice), color: Colors.white, size: 28),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            choice,
+            style: GoogleFonts.spaceMono(color: Colors.white54, fontSize: 10),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructions() {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // AI Section
-            _buildChoiceCircle(_aiChoice, isAI: true),
-            const SizedBox(height: 20),
-            Text(
-              "AI COMPANION",
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
+            Container(
+              width: 120,
+              height: 120,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF131823),
+                border: Border.all(color: Colors.white10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.purpleAccent.withOpacity(0.2),
+                    blurRadius: 40,
+                  ),
+                ],
               ),
+              child: const Icon(
+                Icons.sports_mma_rounded,
+                color: Colors.purpleAccent,
+                size: 60,
+              ),
+            ).animate().scale(duration: 1.seconds, curve: Curves.elasticOut),
+
+            const SizedBox(height: 32),
+
+            Text(
+              "R P S",
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontSize: 48,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 4,
+              ),
+            ),
+            Text(
+              "Rock \u2022 Paper \u2022 Scissors",
+              style: GoogleFonts.spaceMono(color: Colors.white38, fontSize: 14),
+            ),
+
+            const SizedBox(height: 48),
+
+            _buildInstructionRow(
+              Icons.landscape_rounded,
+              "Rock beats Scissors",
+            ),
+            _buildInstructionRow(Icons.feed_rounded, "Paper beats Rock"),
+            _buildInstructionRow(
+              Icons.content_cut_rounded,
+              "Scissors beats Paper",
             ),
 
             const SizedBox(height: 60),
 
-            // Result Section
             SizedBox(
-              height: 40,
-              child: Text(
-                _result ?? (_isAnimating ? "Choosing..." : "VS"),
-                style: GoogleFonts.outfit(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: _result?.contains("Win") ?? false
-                      ? AppColors.primary
-                      : Colors.white,
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _startGame,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-              ).animate(target: _result != null ? 1 : 0).scale().shimmer(),
-            ),
-
-            const SizedBox(height: 60),
-
-            // User Section
-            Text(
-              "YOUR TURN",
-              style: GoogleFonts.inter(
-                color: AppColors.textMuted,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
+                child: Text(
+                  "FIGHT!",
+                  style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildChoiceButton(
-                  "Rock",
-                  Icons.back_hand_rounded,
-                  Colors.orangeAccent,
-                ),
-                const SizedBox(width: 20),
-                _buildChoiceButton(
-                  "Paper",
-                  Icons.front_hand_rounded,
-                  Colors.blueAccent,
-                ),
-                const SizedBox(width: 20),
-                _buildChoiceButton(
-                  "Scissors",
-                  Icons.content_cut_rounded,
-                  Colors.purpleAccent,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 60),
             TextButton(
-              onPressed: () => setState(() {
-                _userChoice = null;
-                _aiChoice = null;
-                _result = null;
-              }),
+              onPressed: () => Navigator.pop(context),
               child: Text(
-                "Reset",
-                style: GoogleFonts.inter(color: AppColors.textMuted),
+                "RETREAT",
+                style: GoogleFonts.spaceMono(
+                  color: Colors.white38,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -167,73 +626,20 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
     );
   }
 
-  Widget _buildChoiceCircle(String? choice, {bool isAI = false}) {
-    IconData? icon;
-    if (choice != null) {
-      icon = _icons[_choices.indexOf(choice)];
-    }
-
-    return Container(
-      width: 120,
-      height: 120,
-      decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.5),
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-        boxShadow: [
-          if (choice != null)
-            BoxShadow(
-              color: isAI
-                  ? AppColors.secondary.withValues(alpha: 0.2)
-                  : AppColors.primary.withValues(alpha: 0.2),
-              blurRadius: 30,
-            ),
-        ],
-      ),
-      child: Center(
-        child: icon != null
-            ? Icon(
-                icon,
-                size: 50,
-                color: isAI ? AppColors.secondary : AppColors.primary,
-              )
-            : Icon(Icons.help_outline_rounded, size: 50, color: Colors.white10),
-      ).animate(target: choice != null ? 1 : 0).scale().rotate(),
-    );
-  }
-
-  Widget _buildChoiceButton(String choice, IconData icon, Color color) {
-    bool isSelected = _userChoice == choice;
-    return GestureDetector(
-      onTap: () => _play(choice),
-      child: Column(
+  Widget _buildInstructionRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center, // Center align
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? color.withValues(alpha: 0.2)
-                  : AppColors.surface.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isSelected ? color : Colors.white.withValues(alpha: 0.05),
-              ),
-            ),
-            child: Icon(
-              icon,
-              color: isSelected ? color : Colors.white54,
-              size: 32,
-            ),
-          ),
-          const SizedBox(height: 8),
+          Icon(icon, color: Colors.white70, size: 24),
+          const SizedBox(width: 16),
           Text(
-            choice,
-            style: GoogleFonts.outfit(
-              color: isSelected ? Colors.white : AppColors.textMuted,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
+            text,
+            style: GoogleFonts.inter(
+              color: Colors.white70,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
