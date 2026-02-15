@@ -22,7 +22,28 @@ class SpotifyPlayerScreen extends StatefulWidget {
 class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
+  bool _isClosing = false;
   String _error = "";
+
+  Future<void> _handlePop([dynamic result]) async {
+    if (!mounted || _isClosing) return;
+    setState(() => _isClosing = true);
+
+    // Stop playback immediately
+    try {
+      await _controller.loadRequest(Uri.parse('about:blank'));
+    } catch (e) {
+      debugPrint("Error stopping playback: $e");
+    }
+
+    // Determine wait time based on whether we are already in a frame or not,
+    // but a small fixed delay ensures the UI has updated to hide the WebView.
+    // Also gives time for the 'about:blank' request to process.
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (mounted) {
+      Navigator.of(context).pop(result);
+    }
+  }
 
   @override
   void initState() {
@@ -73,7 +94,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
             if (widget.isLoginOnly &&
                 !url.contains("accounts.spotify.com") &&
                 url.contains("spotify.com")) {
-              Navigator.pop(context, true);
+              _handlePop(true);
             }
           },
           onWebResourceError: (WebResourceError error) {
@@ -90,70 +111,77 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
 
   @override
   void dispose() {
-    // Stop playback by loading a blank page to kill audio process
-    _controller.loadRequest(Uri.parse('about:blank'));
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xFF0F0F12),
-      body: Stack(
-        children: [
-          // Background Glow for immersive feel
-          Positioned(
-            top: -50,
-            left: -50,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF6D4EFF).withValues(alpha: 0.12),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        _handlePop();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: const Color(0xFF0F0F12),
+        body: Stack(
+          children: [
+            // Background Glow for immersive feel
+            Positioned(
+              top: -50,
+              left: -50,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF6D4EFF).withValues(alpha: 0.12),
+                ),
               ),
             ),
-          ),
 
-          SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(context),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(widget.isLoginOnly ? 0 : 20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        widget.isLoginOnly ? 0 : 32,
+            SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(context),
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.all(widget.isLoginOnly ? 0 : 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          widget.isLoginOnly ? 0 : 32,
+                        ),
+                        boxShadow: [
+                          if (!widget.isLoginOnly)
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              blurRadius: 40,
+                              spreadRadius: -10,
+                            ),
+                        ],
                       ),
-                      boxShadow: [
-                        if (!widget.isLoginOnly)
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            blurRadius: 40,
-                            spreadRadius: -10,
-                          ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        widget.isLoginOnly ? 0 : 32,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          widget.isLoginOnly ? 0 : 32,
+                        ),
+                        child: _isClosing
+                            ? Container(color: const Color(0xFF0F0F12))
+                            : WebViewWidget(controller: _controller),
                       ),
-                      child: WebViewWidget(controller: _controller),
                     ),
                   ),
-                ),
-                if (!widget.isLoginOnly) const SizedBox(height: 20),
-              ],
+                  if (!widget.isLoginOnly) const SizedBox(height: 20),
+                ],
+              ),
             ),
-          ),
 
-          if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(color: Color(0xFF4EEBFF)),
-            ),
-        ],
+            if (_isLoading)
+              const Center(
+                child: CircularProgressIndicator(color: Color(0xFF4EEBFF)),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -171,7 +199,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
               color: Colors.white70,
               size: 22,
             ),
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => _handlePop(false),
           ),
           const SizedBox(width: 8),
           Expanded(

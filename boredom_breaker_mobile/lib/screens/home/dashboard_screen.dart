@@ -106,6 +106,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
                   const SizedBox(height: 32),
 
+                  // Dynamic Content (Plan)
+                  moodState.when(
+                    data: (data) {
+                      if (data.isEmpty) return const SizedBox.shrink();
+                      return _buildGeneratedPlan(
+                        data,
+                      ).animate().fadeIn(duration: 500.ms);
+                    },
+                    loading: () => _buildLoadingIndicator(),
+                    error: (e, _) => Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Text(
+                        "Error: $e",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+
                   // 3. Quick Relief (Featured Icons)
                   Text(
                     "Instant Dopamine",
@@ -122,21 +140,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       .slideX(),
 
                   const SizedBox(height: 32),
-
-                  // 4. Dynamic Content (Plan or Explore)
-                  moodState.when(
-                    data: (data) {
-                      if (data.isEmpty) return const SizedBox.shrink();
-                      return _buildGeneratedPlan(
-                        data,
-                      ).animate().fadeIn(duration: 500.ms);
-                    },
-                    loading: () => _buildLoadingIndicator(),
-                    error: (e, _) => Text(
-                      "Error: $e",
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ),
 
                   _buildExploreGrid().animate().fadeIn(delay: 600.ms),
 
