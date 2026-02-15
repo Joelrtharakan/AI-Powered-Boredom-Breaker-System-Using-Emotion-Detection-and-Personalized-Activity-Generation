@@ -7,7 +7,16 @@ import '../../theme/app_theme.dart';
 import 'spotify_player_screen.dart';
 
 class MusicScreen extends StatefulWidget {
-  const MusicScreen({super.key});
+  final String? initialPlaylistName;
+  final String? initialSpotifyUrl;
+  final String? initialTitle;
+
+  const MusicScreen({
+    super.key,
+    this.initialPlaylistName,
+    this.initialSpotifyUrl,
+    this.initialTitle,
+  });
 
   @override
   State<MusicScreen> createState() => _MusicScreenState();
@@ -74,6 +83,35 @@ class _MusicScreenState extends State<MusicScreen> {
   void initState() {
     super.initState();
     _checkSpotifyConnection();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.initialSpotifyUrl != null) {
+        _openInAppPlayer(
+          widget.initialTitle ?? "AI Pick",
+          widget.initialSpotifyUrl!,
+        );
+      } else if (widget.initialPlaylistName != null) {
+        // Find matching playlist
+        final playlist = _moods.firstWhere(
+          (m) =>
+              m["title"].toString().toLowerCase().contains(
+                widget.initialPlaylistName!.toLowerCase(),
+              ) ||
+              widget.initialPlaylistName!.toLowerCase().contains(
+                m['title'].toString().toLowerCase(),
+              ),
+          orElse: () => _moods[0], // fallback
+        );
+        if (playlist["title"].toString().toLowerCase().contains(
+              widget.initialPlaylistName!.toLowerCase(),
+            ) ||
+            widget.initialPlaylistName!.toLowerCase().contains(
+              playlist['title'].toString().toLowerCase(),
+            )) {
+          _openInAppPlayer(playlist["title"], playlist["url"]);
+        }
+      }
+    });
   }
 
   Future<void> _checkSpotifyConnection() async {

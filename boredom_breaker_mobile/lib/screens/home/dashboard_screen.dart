@@ -100,6 +100,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         if (data.isEmpty) return const SizedBox.shrink();
                         return _GeneratedPlanCard(
                           data: data,
+                          onReset: () {
+                            ref.read(moodProvider.notifier).reset();
+                            _controller.clear();
+                          },
                         ).animate().fadeIn().slideY(begin: 0.1);
                       },
                       loading: () => _buildLoadingIndicator(),
@@ -559,8 +563,9 @@ class _MoodInputSection extends StatelessWidget {
 
 class _GeneratedPlanCard extends StatelessWidget {
   final Map<String, dynamic> data;
+  final VoidCallback onReset;
 
-  const _GeneratedPlanCard({required this.data});
+  const _GeneratedPlanCard({required this.data, required this.onReset});
 
   @override
   Widget build(BuildContext context) {
@@ -599,25 +604,39 @@ class _GeneratedPlanCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2A2A2E), // Subtle badge bg
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: Colors.white10),
-                ),
-                child: Text(
-                  mood.toString().toUpperCase(),
-                  style: GoogleFonts.outfit(
-                    color: const Color(0xFFB0B0B0),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: onReset,
+                    icon: const Icon(
+                      Icons.refresh_rounded,
+                      color: Colors.white54,
+                      size: 20,
+                    ),
+                    tooltip: "New Plan",
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2A2A2E), // Subtle badge bg
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Text(
+                      mood.toString().toUpperCase(),
+                      style: GoogleFonts.outfit(
+                        color: const Color(0xFFB0B0B0),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -673,7 +692,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                        _buildActionLink(context, item['description']),
+                        _buildActionLink(context, item),
                       ],
                     ),
                   ),
@@ -686,31 +705,94 @@ class _GeneratedPlanCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionLink(BuildContext context, String description) {
+  Widget _buildActionLink(BuildContext context, Map<String, dynamic> item) {
+    final String description = item['description'];
+    final Map<String, dynamic>? metadata = item['metadata'];
     final lowerDesc = description.toLowerCase();
+
     String? label;
     Widget? screen;
     IconData? icon;
     Color? color;
 
-    if (lowerDesc.contains('breath') || lowerDesc.contains('meditat')) {
+    final String type = item['type'] ?? '';
+
+    if (type == 'breathing' ||
+        lowerDesc.contains('breath') ||
+        lowerDesc.contains('meditat')) {
       label = "Start Breathing";
       screen = const ZenScreen();
       icon = Icons.air_rounded;
       color = const Color(0xFF00C6FF);
-    } else if (lowerDesc.contains('game') || lowerDesc.contains('play')) {
-      label = "Play Games";
-      screen = const GamesScreen();
-      icon = Icons.gamepad_rounded;
-      color = const Color(0xFFF2994A);
-    } else if (lowerDesc.contains('music') ||
+    } else if (type == 'music' ||
+        lowerDesc.contains('music') ||
         lowerDesc.contains('song') ||
-        lowerDesc.contains('listen')) {
+        lowerDesc.contains('listen') ||
+        lowerDesc.contains('playlist') ||
+        (metadata != null &&
+            (metadata.containsKey('spotify_uri') ||
+                metadata.containsKey('playlist_name')))) {
       label = "Open Music";
-      screen = const MusicScreen();
+
+      String? playlistName;
+      String? spotifyUrl;
+      String? trackName;
+
+      if (metadata != null) {
+        if (metadata.containsKey('spotify_uri'))
+          spotifyUrl = metadata['spotify_uri'];
+        if (metadata.containsKey('playlist_name')) {
+          playlistName = metadata['playlist_name'];
+          trackName = playlistName;
+        }
+      }
+
+      screen = MusicScreen(
+        initialPlaylistName: playlistName,
+        initialSpotifyUrl: spotifyUrl,
+        initialTitle: trackName,
+      );
       icon = Icons.music_note_rounded;
       color = const Color(0xFF833AB4);
-    } else if (lowerDesc.contains('journal') || lowerDesc.contains('write')) {
+      if (playlistName != null) label = "Play $playlistName";
+    } else if (type == 'game' ||
+        lowerDesc.contains('game') ||
+        lowerDesc.contains('play')) {
+      label = "Play Games";
+      String? gameTitle;
+
+      // Try to find known game titles in description if minimal metadata isnt there
+      if (metadata != null && metadata.containsKey('game_name')) {
+        gameTitle = metadata['game_name'];
+      } else {
+        // Fuzzy find common games
+        final knownGames = [
+          "Snake Evolution",
+          "Memory Flip",
+          "Chimp Test",
+          "Visual Memory",
+          "Guess Number",
+          "Aim Trainer",
+          "Reaction Time",
+          "Tic Tac Toe",
+          "Rock Paper Scissors",
+        ];
+        for (final g in knownGames) {
+          if (lowerDesc.contains(g.toLowerCase())) {
+            gameTitle = g;
+            break;
+          }
+        }
+      }
+
+      screen = GamesScreen(initialGameTitle: gameTitle);
+      icon = Icons.gamepad_rounded;
+      color = const Color(0xFFF2994A);
+      if (gameTitle != null) label = "Play $gameTitle";
+    } else if (type == 'journal' ||
+        lowerDesc.contains('journal') ||
+        lowerDesc.contains('write') ||
+        lowerDesc.contains('note')) {
       label = "Open Journal";
       screen = const JournalScreen();
       icon = Icons.book_rounded;

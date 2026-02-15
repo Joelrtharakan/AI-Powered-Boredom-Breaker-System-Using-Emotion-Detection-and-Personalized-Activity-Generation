@@ -13,22 +13,50 @@ import 'chimp_test_screen.dart';
 import 'aim_trainer_screen.dart';
 import 'memory_flip_screen.dart';
 
-class GamesScreen extends StatelessWidget {
-  const GamesScreen({super.key});
+class GamesScreen extends StatefulWidget {
+  final String? initialGameTitle;
+  const GamesScreen({super.key, this.initialGameTitle});
 
   @override
-  Widget build(BuildContext context) {
-    // Game Data Organization
-    final featuredGame = GameData(
-      "Snake Evolution",
-      "Retro Reimagined",
-      Icons.gesture_rounded,
-      const Color(0xFF00FF94), // Neon Green
-      const SnakeGameScreen(),
-      "https://img.icons8.com/3d-fluency/94/snake.png",
+  State<GamesScreen> createState() => _GamesScreenState();
+}
+
+class _GamesScreenState extends State<GamesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialGameTitle != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigateToGame(widget.initialGameTitle!);
+      });
+    }
+  }
+
+  void _navigateToGame(String title) {
+    // Re-create the list to find the game
+    // This is a bit inefficient but safe since we don't want to move all data classes out right now
+    final allGames = _getAllGames();
+    final game = allGames.firstWhere(
+      (g) => g.title.toLowerCase() == title.toLowerCase(),
+      orElse: () => allGames[0], // Fallback
     );
 
-    final brainGames = [
+    // Only navigate if we found a match (or fallback if desired, but better to check)
+    if (game.title.toLowerCase() == title.toLowerCase()) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => game.screen));
+    }
+  }
+
+  List<GameData> _getAllGames() {
+    return [
+      GameData(
+        "Snake Evolution",
+        "Retro Reimagined",
+        Icons.gesture_rounded,
+        const Color(0xFF00FF94),
+        const SnakeGameScreen(),
+        "https://img.icons8.com/3d-fluency/94/snake.png",
+      ),
       GameData(
         "Memory Flip",
         "Pattern Match",
@@ -36,7 +64,7 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFFFF0055),
         const MemoryFlipScreen(),
         null,
-      ), // Neon Pink
+      ),
       GameData(
         "Chimp Test",
         "Sequence Recall",
@@ -44,7 +72,7 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFFFFD600),
         const ChimpTestScreen(),
         null,
-      ), // Neon Yellow
+      ),
       GameData(
         "Visual Memory",
         "Spatial Grid",
@@ -52,7 +80,7 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFF00E5FF),
         const VisualMemoryGame(),
         null,
-      ), // Neon Cyan
+      ),
       GameData(
         "Guess Number",
         "Intuition",
@@ -60,10 +88,7 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFFD500F9),
         const NumberGuessGame(),
         null,
-      ), // Neon Purple
-    ];
-
-    final actionGames = [
+      ),
       GameData(
         "Aim Trainer",
         "Precision",
@@ -71,7 +96,7 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFFFF3D00),
         const AimTrainerScreen(),
         null,
-      ), // Neon Red
+      ),
       GameData(
         "Reaction Time",
         "Reflexes",
@@ -79,10 +104,7 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFF76FF03),
         const ReactionTimeGame(),
         null,
-      ), // Lime Green
-    ];
-
-    final classicGames = [
+      ),
       GameData(
         "Tic Tac Toe",
         "Strategy",
@@ -90,7 +112,7 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFF2979FF),
         const TicTacToeScreen(),
         "https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/64/external-Tic-Tac-Toe-table-games-icongeek26-linear-colour-icongeek26.png",
-      ), // Blue
+      ),
       GameData(
         "Rock Paper Scissors",
         "Logic & Luck",
@@ -98,8 +120,35 @@ class GamesScreen extends StatelessWidget {
         const Color(0xFF651FFF),
         const RockPaperScissorsScreen(),
         "assets/rock_paper.png",
-      ), // Indigo
+      ),
     ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Game Data Organization
+    // We'll filter from the master list now
+    final allGames = _getAllGames();
+
+    final featuredGame = allGames.firstWhere(
+      (g) => g.title == "Snake Evolution",
+    );
+    final brainGames = allGames
+        .where(
+          (g) => [
+            "Memory Flip",
+            "Chimp Test",
+            "Visual Memory",
+            "Guess Number",
+          ].contains(g.title),
+        )
+        .toList();
+    final actionGames = allGames
+        .where((g) => ["Aim Trainer", "Reaction Time"].contains(g.title))
+        .toList();
+    final classicGames = allGames
+        .where((g) => ["Tic Tac Toe", "Rock Paper Scissors"].contains(g.title))
+        .toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFF050505),

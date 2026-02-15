@@ -58,4 +58,8 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
       state = AsyncValue.error(e, stack);
     }
   }
+
+  void reset() {
+    state = const AsyncValue.data({});
+  }
 }

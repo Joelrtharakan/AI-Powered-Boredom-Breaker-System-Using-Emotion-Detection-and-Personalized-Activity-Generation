@@ -32,25 +32,53 @@ class PlannerAgent:
         }
 
         # 1. Construct Prompt (Optimized for Speed and Personalization)
-        system_prompt = f"""You are a high-energy personalized activity planner. Create a 3-step mood improvement plan.
+        
+        distress_keywords = ["sad", "sadness", "stressed", "stress", "anxious", "anxiety", "overwhelmed", "depressed", "fear", "anger"]
+        is_distressed = any(k in mood.lower() for k in distress_keywords)
+
+        guidelines = ""
+        structure_instruction = """
+4. Structure (3 Steps):
+   - 1: Micro-task/Breathing (Focus: Biology/Body)
+   - 2: Main Activity (Focus: Engagement/Dopamine) - PREFER user interests!
+   - 3: Music/Affirmation/Game (Focus: Mood Lift) - PREFER user interests!
+"""
+
+        if is_distressed:
+            guidelines = """
+*** CRITICAL EMOTIONAL REGULATION PROTOCOL (ACTIVE) ***
+For this user, you MUST prioritizing REGULATION over distraction.
+1. REQUIRED: Include one JOURNALING step: "Write a short message expressing how you feel right now."
+2. REQUIRED: Include gentle physical movement (e.g., "Slow stretch", "Walk for 2 mins", "Posture reset").
+3. MUSIC: Use CALM/SLOW music (Chill/Worship). Do not force happiness.
+4. GAME: Only suggest calming games like "Visual Memory" or "Tic Tac Toe". Avoid high-stress games.
+"""
+            structure_instruction = """
+4. Structure (3-4 Steps for Regulation):
+   - 1: Body Regulation (Breathing/Grounding)
+   - 2: Gentle Movement (Stretching/Walking)
+   - 3: Emotional Processing (Journaling: "Express how you feel")
+   - 4: Calm Music/Soothing Game (Optional)
+"""
+
+        system_prompt = f"""You are an empathetic, intelligent personalized activity planner. Create a mood improvement plan.
         
 The user's interests are: {interests_str}. 
-YOU MUST try to align at least the main activity and music/affirmation with these interests if possible.
+YOU MUST try to align activities with these interests if possible.
 
 AVAILABLE GAMES (Suggest ONLY these): {", ".join(AVAILABLE_GAMES)}
 AVAILABLE PLAYLISTS (Suggest ONLY from these for music): {", ".join([f"{k}: {v}" for k, v in AVAILABLE_PLAYLISTS.items()])}
 
+{guidelines}
+
 Rules:
 1. Return ONLY a JSON ARRAY.
 2. Objects: {{"type": "...", "description": "...", "time_minutes": N}}
-3. Types: "breathing", "micro_task", "activity", "music", "affirmation", "game".
-4. Structure:
-   - 1: Micro-task/Breathing (1m)
-   - 2: Main Activity (5-10m) - PREFER user interests!
-   - 3: Music/Affirmation/Game (Music MANDATORY if sad/anxious) - PREFER user interests!
+3. Types: "breathing", "micro_task", "activity", "music", "affirmation", "game", "journal", "social".
+{structure_instruction}
 5. If suggesting a GAME, use the exact name from the available list.
 6. If suggesting MUSIC, mention the playlist name from the available list.
-7. Keep descriptions SHORT and PUNCHY.
+7. Keep descriptions SHORT, WARM, and ACTIONABLE.
 """
 
         user_prompt = f"""
