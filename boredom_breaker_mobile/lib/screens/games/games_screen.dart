@@ -181,6 +181,31 @@ class GamesScreen extends StatelessWidget {
                 pinned: true,
                 backgroundColor: Colors.black.withValues(alpha: 0.6),
                 surfaceTintColor: Colors.transparent,
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Center(
+                    child: InkWell(
+                      onTap: () => Scaffold.of(context).openDrawer(),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        height: 48,
+                        width: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.1),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.menu_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 title: Row(
                   children: [
                     Container(

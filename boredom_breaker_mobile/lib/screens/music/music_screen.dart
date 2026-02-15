@@ -282,7 +282,13 @@ class _MusicScreenState extends State<MusicScreen> {
         padding: const EdgeInsets.only(left: 20),
         child: Center(
           child: InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                Scaffold.of(context).openDrawer();
+              }
+            },
             borderRadius: BorderRadius.circular(16),
             child: Container(
               height: 48,
@@ -292,10 +298,12 @@ class _MusicScreenState extends State<MusicScreen> {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
+              child: Icon(
+                Navigator.canPop(context)
+                    ? Icons.arrow_back_ios_new_rounded
+                    : Icons.menu_rounded,
                 color: Colors.white,
-                size: 16,
+                size: 20,
               ),
             ),
           ),

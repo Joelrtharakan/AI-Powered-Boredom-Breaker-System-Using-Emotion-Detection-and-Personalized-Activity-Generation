@@ -118,6 +118,26 @@ class _ChatScreenState extends State<ChatScreen> {
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
+        leading: Center(
+          child: InkWell(
+            onTap: () => Scaffold.of(context).openDrawer(),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              height: 48,
+              width: 48,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              child: const Icon(
+                Icons.menu_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -158,7 +178,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   gradient: isUser
                       ? const LinearGradient(colors: AppColors.primaryGradient)
                       : null,
-                  color: isUser ? null : AppColors.surface.withValues(alpha: 0.4),
+                  color: isUser
+                      ? null
+                      : AppColors.surface.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(24),
                     topRight: const Radius.circular(24),
@@ -219,7 +241,9 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: const EdgeInsets.only(bottom: 110, top: 20, left: 20, right: 20),
       decoration: BoxDecoration(
         color: AppColors.background.withValues(alpha: 0.8),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
+        border: Border(
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
+        ),
       ),
       child: Row(
         children: [

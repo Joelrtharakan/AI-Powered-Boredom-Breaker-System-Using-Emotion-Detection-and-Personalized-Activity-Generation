@@ -79,32 +79,6 @@ class _MainLayoutState extends State<MainLayout> {
           SafeArea(
             child: IndexedStack(index: _currentIndex, children: _screens),
           ),
-
-          // Custom Menu Button
-          Positioned(
-            top: 60,
-            left: 20,
-            child: Builder(
-              builder: (context) => InkWell(
-                onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.menu_rounded,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
       bottomNavigationBar: SafeArea(child: _buildBottomNav()),
