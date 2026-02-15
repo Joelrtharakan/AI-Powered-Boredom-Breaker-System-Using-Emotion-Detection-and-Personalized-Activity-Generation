@@ -89,8 +89,16 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
   }
 
   @override
+  void dispose() {
+    // Stop playback by loading a blank page to kill audio process
+    _controller.loadRequest(Uri.parse('about:blank'));
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xFF0F0F12),
       body: Stack(
         children: [
