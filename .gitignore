@@ -37,6 +37,7 @@ android/captures/
 backend/models/
 chroma_db/
 boredom_breaker.db
+backend/.cache
 
 # Expo
 .expo/
