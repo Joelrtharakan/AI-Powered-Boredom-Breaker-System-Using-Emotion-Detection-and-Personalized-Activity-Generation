@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List, Any
+from datetime import datetime
 
 class MoodDetectRequest(BaseModel):
     text: str
@@ -16,15 +17,20 @@ class MoodResponse(BaseModel):
 
 class MoodLogRequest(BaseModel):
     mood: str
+    emotion: str
     intensity: float
+    energy_level: str
     activities_used: Optional[List[str]] = []
+    source: Optional[str] = "text"
 
 class MoodHistoryItem(BaseModel):
     id: int
     mood: str
-    emotion: Optional[str]
-    intensity: Optional[float]
-    created_at: Any 
+    emotion: Optional[str] = None
+    intensity: Optional[float] = None
+    energy_level: Optional[str] = None
+    source: Optional[str] = None
+    created_at: datetime 
     
     class Config:
         from_attributes = True

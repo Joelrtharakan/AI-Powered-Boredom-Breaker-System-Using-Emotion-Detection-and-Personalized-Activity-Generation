@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
 
 import '../../providers/mood_provider.dart';
+import '../../providers/history_provider.dart';
 import '../../services/session_manager.dart';
 import '../chat/chat_screen.dart';
 import '../zen_screen.dart';
@@ -81,6 +82,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ref
                                 .read(moodProvider.notifier)
                                 .analyzeMood(_controller.text, _userId);
+                            ref.read(historyProvider.notifier).fetchHistory();
                             FocusScope.of(context).unfocus();
                           }
                         },

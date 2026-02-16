@@ -17,18 +17,32 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
   Future<void> analyzeMood(String text, int userId) async {
     state = const AsyncValue.loading();
     try {
-      // 1. Detect Mood (Calls run_emotion_ai)
-      final moodRes = await _api.post('/mood/detect', data: {'text': text});
-      final moodData = moodRes.data;
+      final moodData = await _api.post('/mood/detect', data: {'text': text});
+
+      // 1.5 Log Mood for History
+      await _api.post(
+        '/mood/log',
+        data: {
+          'mood': moodData.data['mood'],
+          'emotion': moodData.data['emotion'],
+          'intensity': moodData.data['intensity'],
+          'energy_level': moodData.data['energy_level'],
+          'source': 'text',
+          'activities_used': [],
+        },
+        queryParameters: {'user_id': userId},
+      );
+
+      final moodRes = moodData.data;
 
       // 2. Get Suggestion Plan (Calls Planner Agent)
       final planRes = await _api.post(
         '/suggest/',
         data: {
           'user_id': userId,
-          'mood': moodData['mood'],
-          'emotion': moodData['emotion'],
-          'intensity': moodData['intensity'],
+          'mood': moodRes['mood'],
+          'emotion': moodRes['emotion'],
+          'intensity': moodRes['intensity'],
           'time_available_minutes': 30,
         },
       );
@@ -39,7 +53,7 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
         plan = planRes.data['plan'];
       }
 
-      state = AsyncValue.data({'mood': moodData, 'plan': plan});
+      state = AsyncValue.data({'mood': moodRes, 'plan': plan});
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

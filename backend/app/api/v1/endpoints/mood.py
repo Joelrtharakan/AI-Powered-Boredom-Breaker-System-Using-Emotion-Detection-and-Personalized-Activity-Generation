@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from datetime import timezone
 
 from app.db.session import SessionLocal
 from app.models.mood import MoodHistory
@@ -31,8 +32,11 @@ def log_mood(request: MoodLogRequest, user_id: int, db: Session = Depends(get_db
     log = MoodHistory(
         user_id=user_id,
         mood=request.mood,
+        emotion=request.emotion,
         intensity=request.intensity,
-        activities_used=str(request.activities_used)
+        energy_level=request.energy_level,
+        activities_used=str(request.activities_used),
+        source=request.source
     )
     db.add(log)
     db.commit()
@@ -41,4 +45,10 @@ def log_mood(request: MoodLogRequest, user_id: int, db: Session = Depends(get_db
 @router.get("/history", response_model=List[MoodHistoryItem])
 def get_history(user_id: int, db: Session = Depends(get_db)):
     logs = db.query(MoodHistory).filter(MoodHistory.user_id == user_id).order_by(MoodHistory.created_at.desc()).limit(20).all()
+    
+    # Ensure timezone is UTC for correct frontend parsing
+    for log in logs:
+        if log.created_at and log.created_at.tzinfo is None:
+            log.created_at = log.created_at.replace(tzinfo=timezone.utc)
+            
     return logs

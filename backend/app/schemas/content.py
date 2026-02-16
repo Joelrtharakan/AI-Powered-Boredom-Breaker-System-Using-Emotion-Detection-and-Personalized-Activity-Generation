@@ -8,6 +8,7 @@ class SuggestionRequest(BaseModel):
     intensity: Optional[float] = 0.5
     time_available_minutes: Optional[int] = 30
     preferences: Optional[dict] = {}
+    text: Optional[str] = None
 
 class PlanItem(BaseModel):
     type: str # 'breathing', 'micro_task', 'activity', 'music'

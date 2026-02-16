@@ -32,7 +32,14 @@ class SurpriseAgent:
         elif type_ == "micro_task":
              content = microtask_agent.generate()['micro_task']
         else: # challenge
-             content = "Do 10 pushups right now!"
+             challenges = [
+                 "Drink a glass of water right now.",
+                 "Text a friend that you appreciate them.",
+                 "Do a slow, deep stretch for 30 seconds.",
+                 "Close your eyes and take 5 deep breaths.",
+                 "Name 3 things you are grateful for."
+             ]
+             content = random.choice(challenges)
              
         return {
             "surprise": content,

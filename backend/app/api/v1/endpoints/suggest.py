@@ -38,7 +38,8 @@ async def suggest_plan(request: SuggestionRequest, db: Session = Depends(get_db)
             "intensity": request.intensity
         },
         user_id=request.user_id,
-        interests=interests
+        interests=interests,
+        text=request.text
     )
     
     return {

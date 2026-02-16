@@ -8,7 +8,7 @@ class PlannerAgent:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    async def generate_plan(self, mood: str, intensity: float, user_id: int = None, interests: list = None):
+    async def generate_plan(self, mood: str, intensity: float, user_id: int = None, interests: list = None, text: str = ""):
         """
         Generates a 3-step improvement plan personalized by user interests.
         """
@@ -61,6 +61,31 @@ For this user, you MUST prioritizing REGULATION over distraction.
    - 4: Calm Music/Soothing Game (Optional)
 """
 
+        # Check for Fatigue/Low Energy (Overrides Distress if present)
+        fatigue_keywords = [
+            "sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", 
+            "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep",
+            "too tired", "brain shutting down"
+        ]
+        # Check both mood string and raw text if available
+        is_fatigued = any(k in mood.lower() for k in fatigue_keywords) or (text and any(k in text.lower() for k in fatigue_keywords))
+
+        if is_fatigued:
+            guidelines = """
+*** CRITICAL PHYSIOLOGICAL NEED: SLEEP PROTOCOL ACTIVE ***
+User is PHYSICALLY EXHAUSTED. Prioritize REST over all else.
+1. GOAL: Restore capacity. Do NOT activate or stimulate.
+2. FORBIDDEN: movement, games, cognitive tasks, journaling, productivity.
+3. ALLOWED: rest, environment_adjustment, calming_audio.
+4. TONE: Gentle, permission-giving, soft.
+"""
+            structure_instruction = """
+4. Structure (Strictly 2-3 Steps):
+   - 1: Permission to Rest (Type: "rest") -> e.g., "Lie down and close your eyes."
+   - 2: Environment Setup (Type: "environment_adjustment") -> e.g., "Dim the lights."
+   - 3: Sensory Support (Type: "calming_audio") -> e.g., "Play soft rain sounds."
+"""
+
         system_prompt = f"""You are an empathetic, intelligent personalized activity planner. Create a mood improvement plan.
         
 The user's interests are: {interests_str}. 
@@ -74,7 +99,7 @@ AVAILABLE PLAYLISTS (Suggest ONLY from these for music): {", ".join([f"{k}: {v}"
 Rules:
 1. Return ONLY a JSON ARRAY.
 2. Objects: {{"type": "...", "description": "...", "time_minutes": N}}
-3. Types: "breathing", "micro_task", "activity", "music", "affirmation", "game", "journal", "social".
+3. Types: "breathing", "micro_task", "activity", "music", "affirmation", "game", "journal", "social", "rest", "environment_adjustment", "calming_audio".
 {structure_instruction}
 5. If suggesting a GAME, use the exact name from the available list.
 6. If suggesting MUSIC, mention the playlist name from the available list.
@@ -124,8 +149,12 @@ Generate JSON plan:
                 {"type": step3_type, "description": desc, "time_minutes": 5 if step3_type == "music" else 0}
             ]
 
-        # 4. Inject Game Recommendation (Bonus for Boredom/Stress)
-        if mood in ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral", "sad", "sadness"]:
+
+        # 4. Inject Game Recommendation (Bonus for Boredom/Stress, but NOT Fatigue)
+        game_triggers = ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral", "sad", "sadness"]
+        should_suggest_game = any(t in mood.lower() for t in game_triggers)
+        
+        if should_suggest_game and not is_fatigued:
                 games = ["Snake Evolution", "Memory Flip", "Chimp Test", "Visual Memory", "Number Guess", "Aim Trainer", "Reaction Time", "Tic Tac Toe", "Rock Paper Scissors"]
                 plan.append({
                     "type": "game",
