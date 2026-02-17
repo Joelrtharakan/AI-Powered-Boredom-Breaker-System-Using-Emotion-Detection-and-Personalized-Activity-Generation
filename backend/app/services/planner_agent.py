@@ -63,12 +63,18 @@ For this user, you MUST prioritizing REGULATION over distraction.
 
         # Check for Fatigue/Low Energy (Overrides Distress if present)
         fatigue_keywords = [
-            "sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", 
+            "sleepy", "tired", "exhausted", "fatigue", "fatigued", "drained", "burnout", "no energy", 
             "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep",
             "too tired", "brain shutting down"
         ]
         # Check both mood string and raw text if available
         is_fatigued = any(k in mood.lower() for k in fatigue_keywords) or (text and any(k in text.lower() for k in fatigue_keywords))
+        
+        # Explicit check for "fatigued" mood from emotion_ai
+        if mood.lower() == "fatigued":
+            is_fatigued = True
+            
+        print(f"DEBUG: Mood='{mood}', Text='{text}', IsFatigued={is_fatigued}")
 
         if is_fatigued:
             guidelines = """

@@ -9,7 +9,8 @@ class SemanticEngine:
         self.clusters = {
             "sadness": ["pain", "devastated", "broken", "pointless", "heartbroken", "crushed", "empty", "shattered", "unbearable", "grief", "heart hurts", "so heavy", "worthless", "misery", "bleak", "invisible", "hopeless", "drowning", "tear", "tears", "crying", "lonely", "disappointed", "rejection", "touch breaks", "dead inside", "bittersweet", "depths of despair", "hope tomorrow is better", "wish he would call", "silence is loud"],
             "fear": ["shaken", "rattled", "terrified", "panicking", "panic attack", "anxious", "nervous", "dread", "afraid", "scared", "worried", "troubled", "alarmed", "trembling", "shaking", "bad feeling", "suspense", "sweating", "unsafe", "paralyzed", "jitters", "on edge", "uncertainty", "what if", "heard a noise", "spiraling", "yikes", "pounding", "refreshing the page", "haven't replied", "vibes"],
-            "bored": ["lethargic", "sluggish", "lazy", "no energy", "drained", "exhausted", "unmotivated", "listless", "apathetic", "sleepy", "tired", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "so bored", "brain is fried", "doomscrolling", "dragging", "don't want to get out of bed"],
+            "bored": ["lethargic", "sluggish", "lazy", "unmotivated", "listless", "apathetic", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "so bored", "doomscrolling", "dragging", "don't want to get out of bed"],
+            "fatigue": ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep", "too tired", "brain is fried", "brain shutting down", "wiped out"],
             "neutral": ["okay", "all good", "fine", "alright", "normal", "existing", "average", "standard", "nothing much", "chilling", "reading", "eating", "drinking", "sitting", "standing", "waiting", "lukewarm", "quiet", "simple", "neither happy nor sad", "shoes", "cloudy", "apples", "wifi", "laptop", "meeting", "wsg", "gang", "what's good", "sup"],
             "anger": ["sick of fake people", "fake people", "blood boil", "pissed", "furious", "enraged", "mad", "annoyed", "frustrated", "fed up", "ridiculous", "audacity", "interrupting", "nightmare", "snap", "patience", "frustrating", "drama", "rent free", "forgot to eat", "what a mess", "can we just stop"],
             "joy": ["happy", "promotion", "breathtaking", "smiling", "blessed", "plan", "laughed", "top of the world", "yes!", "perfect", "alive", "beaming", "best day", "appreciate", "beautiful", "excited", "full heart", "aced", "winning", "fantastic", "dream come true", "flowers", "she said yes", "cloud nine", "finally finished", "good way", "good day", "great day", "amazing day"]
@@ -149,6 +150,7 @@ class EmotionAnalyzer:
             "sadness": "sad",
             "fear": "anxious", "anxious": "anxious",
             "bored": "low_energy", "low_energy_bored": "low_energy",
+            "fatigue": "fatigued",
             "neutral": "neutral", "surprise": "neutral"
         }
 
@@ -156,7 +158,7 @@ class EmotionAnalyzer:
             "mood": mood_map.get(final_emotion, "neutral"),
             "emotion": final_emotion,
             "intensity": final_score,
-            "energy_level": "low" if final_emotion in ["sadness", "bored"] else ("high" if final_emotion in ["anger", "joy"] else "medium"),
+            "energy_level": "low" if final_emotion in ["sadness", "bored", "fatigue", "fatigued"] else ("high" if final_emotion in ["anger", "joy"] else "medium"),
             "secondary_emotion": secondary['label'] if secondary else None,
             "confidence_level": model_score,
             "decision_source": decision_source,
