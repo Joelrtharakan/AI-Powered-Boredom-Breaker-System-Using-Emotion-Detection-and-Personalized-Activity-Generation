@@ -5,6 +5,7 @@ class UserBase(BaseModel):
     email: EmailStr
     username: Optional[str] = None
     interests: Optional[List[str]] = []
+    profile_picture: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str

@@ -12,3 +12,4 @@ class User(Base):
     is_active = Column(Integer, default=1)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    profile_picture = Column(Text, nullable=True) # Base64 string or URL

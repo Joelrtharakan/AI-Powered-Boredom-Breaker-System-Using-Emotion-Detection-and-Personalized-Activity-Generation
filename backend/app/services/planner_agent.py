@@ -31,36 +31,6 @@ class PlannerAgent:
             "top_hits": "Top Hits (https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M)"
         }
 
-        # 1. Construct Prompt (Optimized for Speed and Personalization)
-        
-        distress_keywords = ["sad", "sadness", "stressed", "stress", "anxious", "anxiety", "overwhelmed", "depressed", "fear", "anger"]
-        is_distressed = any(k in mood.lower() for k in distress_keywords)
-
-        guidelines = ""
-        structure_instruction = """
-4. Structure (3 Steps):
-   - 1: Micro-task/Breathing (Focus: Biology/Body)
-   - 2: Main Activity (Focus: Engagement/Dopamine) - PREFER user interests!
-   - 3: Music/Affirmation/Game (Focus: Mood Lift) - PREFER user interests!
-"""
-
-        if is_distressed:
-            guidelines = """
-*** CRITICAL EMOTIONAL REGULATION PROTOCOL (ACTIVE) ***
-For this user, you MUST prioritizing REGULATION over distraction.
-1. REQUIRED: Include one JOURNALING step: "Write a short message expressing how you feel right now."
-2. REQUIRED: Include gentle physical movement (e.g., "Slow stretch", "Walk for 2 mins", "Posture reset").
-3. MUSIC: Use CALM/SLOW music (Chill/Worship). Do not force happiness.
-4. GAME: Only suggest calming games like "Visual Memory" or "Tic Tac Toe". Avoid high-stress games.
-"""
-            structure_instruction = """
-4. Structure (3-4 Steps for Regulation):
-   - 1: Body Regulation (Breathing/Grounding)
-   - 2: Gentle Movement (Stretching/Walking)
-   - 3: Emotional Processing (Journaling: "Express how you feel")
-   - 4: Calm Music/Soothing Game (Optional)
-"""
-
         # Check for Fatigue/Low Energy (Overrides Distress if present)
         fatigue_keywords = [
             "sleepy", "tired", "exhausted", "fatigue", "fatigued", "drained", "burnout", "no energy", 
@@ -76,44 +46,90 @@ For this user, you MUST prioritizing REGULATION over distraction.
             
         print(f"DEBUG: Mood='{mood}', Text='{text}', IsFatigued={is_fatigued}")
 
-        if is_fatigued:
-            guidelines = """
-*** CRITICAL PHYSIOLOGICAL NEED: SLEEP PROTOCOL ACTIVE ***
-User is PHYSICALLY EXHAUSTED. Prioritize REST over all else.
-1. GOAL: Restore capacity. Do NOT activate or stimulate.
-2. FORBIDDEN: movement, games, cognitive tasks, journaling, productivity.
-3. ALLOWED: rest, environment_adjustment, calming_audio.
-4. TONE: Gentle, permission-giving, soft.
-"""
-            structure_instruction = """
-4. Structure (Strictly 2-3 Steps):
-   - 1: Permission to Rest (Type: "rest") -> e.g., "Lie down and close your eyes."
-   - 2: Environment Setup (Type: "environment_adjustment") -> e.g., "Dim the lights."
-   - 3: Sensory Support (Type: "calming_audio") -> e.g., "Play soft rain sounds."
-"""
-
-        system_prompt = f"""You are an empathetic, intelligent personalized activity planner. Create a mood improvement plan.
+        # Check for Positive Expression (Minimal Intervention)
+        positive_keywords = ["love", "grateful", "blessed", "god is good", "amazing day", "good day", "excited", "happy"]
+        is_positive = any(k in mood.lower() for k in positive_keywords) or (text and any(k in text.lower() for k in positive_keywords))
         
-The user's interests are: {interests_str}. 
-YOU MUST try to align activities with these interests if possible.
+        system_prompt = f"""
+🧠 FINAL PRODUCTION PROMPT — Emotion-Aware Regulation Planner
 
-AVAILABLE GAMES (Suggest ONLY these): {", ".join(AVAILABLE_GAMES)}
-AVAILABLE PLAYLISTS (Suggest ONLY from these for music): {", ".join([f"{k}: {v}" for k, v in AVAILABLE_PLAYLISTS.items()])}
+You are a behavioral regulation planner inside an AI emotional support system.
 
-{guidelines}
+Your job is to generate a small, realistic, human-aligned action plan based on:
+• user_text: "{text}"
+• detected emotion: "{mood}"
+• detected energy level: "auto-detect"
+• classifier confidence: "trust input"
 
-Rules:
-1. Return ONLY a JSON ARRAY.
-2. Objects: {{"type": "...", "description": "...", "time_minutes": N}}
-3. Types: "breathing", "micro_task", "activity", "music", "affirmation", "game", "journal", "social", "rest", "environment_adjustment", "calming_audio".
-{structure_instruction}
-5. If suggesting a GAME, use the exact name from the available list.
-6. If suggesting MUSIC, mention the playlist name from the available list.
-7. Keep descriptions SHORT, WARM, and ACTIONABLE.
+Your purpose is: regulate → stabilize → gently support ONLY when support is needed.
+You must respect user capacity and context. You are not a coach, therapist, or productivity system.
+
+Compassionate Context: The user's interests are: {interests_str}. Align activities with these if appropriate.
+
+Available Resources:
+AVAILABLE GAMES: {", ".join(AVAILABLE_GAMES)}
+AVAILABLE PLAYLISTS: {", ".join([f"{k}: {v}" for k, v in AVAILABLE_PLAYLISTS.items()])}
+
+compassionate_rules:
+    - If user is "fatigued" or "exhausted", you MUST trigger SLEEP MODE (Rest only).
+    - If user is "happy", "grateful", or expressing faith ("I love Jesus"), you MUST trigger POSITIVE MODE (Savoring only).
+    - If user is "bored", provide stimulation.
+    - If user is "anxious", provide grounding.
+
+⸻
+
+🧭 MASTER DECISION RULE
+
+IF the user does NOT show distress or impairment → minimize intervention.
+IF the body needs rest → support rest, not regulation.
+IF confidence is low → provide light, optional support only.
+
+⸻
+
+✨ POSITIVE EXPRESSION MINIMAL INTERVENTION MODE (MANDATORY)
+Trigger: {is_positive} (User expresses love, gratitude, faith, joy without distress).
+Behavior:
+• Do NOT generate coping or regulation plan
+• Provide 0–2 tiny savoring steps maximum
+• Goal: sustain positive emotion
+Allowed: gratitude noticing, brief reflection, gentle appreciation.
+Forbidden: breathing for regulation, activation tasks, productivity suggestions, mood fixing.
+
+⸻
+
+💤 FATIGUE / SLEEPINESS OVERRIDE MODE (MANDATORY)
+Trigger: {is_fatigued} (User expresses physical tiredness/sleepiness).
+Behavior:
+• Treat as physical recovery need, not emotional distress.
+• Generate a minimal rest-support plan (1–3 steps).
+Allowed: lie down / rest, reduce stimulation, sleep-support environment, calm ambient audio.
+Forbidden: games, cognitive tasks, emotional processing, productivity activities, engagement steps.
+
+⸻
+
+🧩 EMOTION-SPECIFIC STRATEGIES
+
+SADNESS: Goal → validation + soothing. (1. acknowledge, 2. grounding, 3. comfort).
+FEAR/ANXIETY: Goal → calm nervous system. (1. breathing, 2. grounding, 3. safety).
+BOREDOM: Goal → stimulation. (1. activation, 2. novelty, 3. playful).
+ANGER: Goal → safe tension release. (1. release, 2. breathing, 3. redirection).
+
+⸻
+
+✅ OUTPUT FORMAT (MANDATORY)
+Return JSON array only.
+Example: [{{"type": "rest", "description": "Lie down...", "time_minutes": 20, "purpose": "recovery"}}]
+Valid Types: "breathing", "micro_task", "activity", "music", "affirmation", "game", "journal", "social", "rest", "environment_adjustment", "calming_audio".
+Keep descriptions SHORT, WARM, and ACTIONABLE.
 """
 
         user_prompt = f"""
-Mood: {mood} (Intensity: {intensity})
+Input Context:
+User Text: "{text}"
+Mood: {mood}
+Intensity: {intensity}
+Is Fatigued: {is_fatigued}
+Is Positive Context: {is_positive}
 
 Generate JSON plan:
 """

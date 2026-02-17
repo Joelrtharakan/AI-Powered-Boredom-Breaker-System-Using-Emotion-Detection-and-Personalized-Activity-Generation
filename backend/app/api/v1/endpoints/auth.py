@@ -74,6 +74,10 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 @router.post("/login", response_model=Token)
 def login(login_req: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == login_req.email).first()
+    print(f"DEBUG: Login attempt for {login_req.email}. User found: {user is not None}")
+    if user:
+         print(f"DEBUG: Password verification: {security.verify_password(login_req.password, user.password_hash)}")
+
     if not user or not security.verify_password(login_req.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -163,3 +167,59 @@ def update_interests(req: InterestUpdateRequest, db: Session = Depends(get_db)):
     user.interests = str(req.interests)
     db.commit()
     return {"message": "Interests updated successfully", "interests": req.interests}
+
+# --- Profile Feature ---
+
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+@router.get("/me")
+def read_users_me(current_user: User = Depends(get_current_user)):
+    """Get current user details including profile picture"""
+    interests_list = []
+    if current_user.interests:
+        try:
+            interests_list = ast.literal_eval(current_user.interests)
+        except:
+            interests_list = []
+            
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "username": current_user.username,
+        "is_active": current_user.is_active == 1,
+        "interests": interests_list,
+        "profile_picture": current_user.profile_picture
+    }
+
+class ProfilePicUpdate(BaseModel):
+    image_base64: str
+
+@router.post("/update-profile-picture")
+def update_profile_picture(req: ProfilePicUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Update profile picture (stores base64 string in DB)"""
+    # Simply update the text column
+    current_user.profile_picture = req.image_base64
+    db.commit()
+    return {"message": "Profile picture updated successfully"}

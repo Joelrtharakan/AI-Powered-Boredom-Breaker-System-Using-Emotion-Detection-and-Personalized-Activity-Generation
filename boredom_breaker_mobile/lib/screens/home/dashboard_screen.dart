@@ -1,3 +1,4 @@
+import 'dart:convert'; // Added for base64Decode
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -7,6 +8,7 @@ import 'dart:ui';
 import '../../providers/mood_provider.dart';
 import '../../providers/history_provider.dart';
 import '../../services/session_manager.dart';
+import '../../services/api_client.dart'; // Added ApiClient
 import '../chat/chat_screen.dart';
 import '../zen_screen.dart';
 import '../music/music_screen.dart';
@@ -15,6 +17,7 @@ import '../journal/journal_screen.dart';
 import '../history/history_screen.dart';
 import '../lockbox/lockbox_screen.dart';
 import '../voice/voice_mode_screen.dart';
+import '../profile/profile_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -25,8 +28,10 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   final TextEditingController _controller = TextEditingController();
+  final ApiClient _apiClient = ApiClient(); // Instance of ApiClient
   int _userId = 1;
   String _userName = "Friend";
+  String? _profilePicture; // State variable for profile picture
 
   @override
   void initState() {
@@ -37,6 +42,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Future<void> _loadUserData() async {
     final id = await SessionManager.getUserId();
     final name = await SessionManager.getUserName();
+
+    // Fetch profile picture from backend
+    try {
+      final response = await _apiClient.client.get('/auth/me');
+      if (response.statusCode == 200 && response.data != null) {
+        if (mounted) {
+          setState(() {
+            _profilePicture = response.data['profile_picture'];
+          });
+        }
+      }
+    } catch (e) {
+      // Silent error for profile pic to not disrupt UX
+      debugPrint("Failed to load profile picture: $e");
+    }
+
     if (mounted) {
       setState(() {
         if (id != null) _userId = id;
@@ -196,39 +217,55 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ],
           ),
         ),
-        Container(
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFF8E2DE2),
-                Color(0xFF4A00E0),
-              ], // Deep Purple gradient
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF8E2DE2).withValues(alpha: 0.4),
-                blurRadius: 20,
-                spreadRadius: 0,
-              ),
-            ],
-          ),
+        GestureDetector(
+          onTap: () async {
+            // Navigate to profile and refresh when back
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            );
+            // Refresh user data (especially profile pic) when returning
+            _loadUserData();
+          },
           child: Container(
             padding: const EdgeInsets.all(2),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.black,
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFF8E2DE2),
+                  Color(0xFF4A00E0),
+                ], // Deep Purple gradient
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF8E2DE2).withValues(alpha: 0.4),
+                  blurRadius: 20,
+                  spreadRadius: 0,
+                ),
+              ],
             ),
-            child: const CircleAvatar(
-              radius: 20,
-              backgroundColor: Color(0xFF1A1A1D),
-              child: Icon(
-                Icons.person_outline_rounded,
-                color: Colors.white,
-                size: 20,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black,
+              ),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: const Color(0xFF1A1A1D),
+                backgroundImage: _profilePicture != null
+                    ? MemoryImage(base64Decode(_profilePicture!))
+                    : null,
+                child: _profilePicture == null
+                    ? const Icon(
+                        Icons.person_outline_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      )
+                    : null,
               ),
             ),
           ),

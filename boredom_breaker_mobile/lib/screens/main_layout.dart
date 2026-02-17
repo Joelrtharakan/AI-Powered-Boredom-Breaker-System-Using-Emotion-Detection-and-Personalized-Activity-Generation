@@ -33,7 +33,12 @@ class _MainLayoutState extends State<MainLayout> {
   ];
 
   void _navigateTo(Widget screen) {
-    Navigator.pop(context);
+    // Close the drawer safely using the scaffold key, ONLY if it's open
+    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+      _scaffoldKey.currentState?.closeDrawer();
+    }
+
+    // Navigate to the new screen
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
@@ -137,6 +142,11 @@ class _MainLayoutState extends State<MainLayout> {
           ),
           const Divider(color: Colors.white10, height: 40),
           _buildDrawerItem(Icons.logout_rounded, "Logout", () async {
+            // Close drawer first
+            if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+              _scaffoldKey.currentState?.closeDrawer();
+            }
+
             final navigator = Navigator.of(context);
             await SessionManager.clearSession();
             ApiClient.setToken(null);
