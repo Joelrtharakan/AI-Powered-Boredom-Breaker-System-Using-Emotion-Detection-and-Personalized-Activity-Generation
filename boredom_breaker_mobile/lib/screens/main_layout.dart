@@ -33,10 +33,8 @@ class _MainLayoutState extends State<MainLayout> {
   ];
 
   void _navigateTo(Widget screen) {
-    // Close the drawer safely using the scaffold key, ONLY if it's open
-    if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
-      _scaffoldKey.currentState?.closeDrawer();
-    }
+    // Close the drawer first
+    Navigator.pop(context);
 
     // Navigate to the new screen
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
@@ -81,12 +79,35 @@ class _MainLayoutState extends State<MainLayout> {
             ),
           ),
 
+          // Main Content
           SafeArea(
-            child: IndexedStack(index: _currentIndex, children: _screens),
+            bottom:
+                false, // Allow content to flow behind nav bar area if needed, but we pad it
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _screens.map((screen) {
+                // Wrap each screen in a container with bottom padding to clear the floating nav bar
+                // Nav bar height (72) + bottom padding (24) + extra buffer (24) = ~120
+                return Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 0,
+                  ), // Screens handle their own padding now (like ChatScreen)
+                  child: screen,
+                );
+              }).toList(),
+            ),
+          ),
+
+          // Floating Bottom Navigation Bar
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(top: false, child: _buildBottomNav()),
           ),
         ],
       ),
-      bottomNavigationBar: SafeArea(child: _buildBottomNav()),
+      // Removed standard bottomNavigationBar to avoid the "black block" slot
     );
   }
 
@@ -142,18 +163,19 @@ class _MainLayoutState extends State<MainLayout> {
           ),
           const Divider(color: Colors.white10, height: 40),
           _buildDrawerItem(Icons.logout_rounded, "Logout", () async {
-            // Close drawer first
-            if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
-              _scaffoldKey.currentState?.closeDrawer();
-            }
+            // Close drawer
+            Navigator.pop(context);
 
-            final navigator = Navigator.of(context);
             await SessionManager.clearSession();
             ApiClient.setToken(null);
-            navigator.pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LandingScreen()),
-              (route) => false,
-            );
+
+            if (mounted) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LandingScreen()),
+                (route) => false,
+              );
+            }
           }),
         ],
       ),
@@ -167,15 +189,23 @@ class _MainLayoutState extends State<MainLayout> {
         borderRadius: BorderRadius.circular(32),
         child: BackdropFilter(
           filter: ColorFilter.mode(
-            Colors.black.withValues(alpha: 0.2),
+            Colors.black.withValues(alpha: 0.5), // Darker filter
             BlendMode.darken,
           ),
           child: Container(
             height: 72,
             decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.8),
+              // Higher opacity for darker look
+              color: AppColors.surface.withValues(alpha: 0.85),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,

@@ -10,7 +10,8 @@ class OpenRouterService:
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.logger = logging.getLogger(__name__)
         # Default model: Mistral 7B (Free, Fast, Good Instruction Following)
-        self.model = "nvidia/nemotron-3-nano-30b-a3b:free" 
+        # Default model: Mistral 7B (Free, Fast, Good Instruction Following)
+        self.model = "mistralai/mistral-7b-instruct-v0.1" 
         
     async def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
         if not self.api_key:
@@ -41,18 +42,22 @@ class OpenRouterService:
                     result = response.json()
                     return result['choices'][0]['message']['content'].strip()
                 except httpx.HTTPStatusError as e:
+                    print(f"❌ OpenRouter HTTP Error: {e.response.status_code} - {e.response.text}")
                     self.logger.error(f"OpenRouter HTTP Error: {e.response.status_code} - {e.response.text}")
                     return self._get_fallback_response(system_prompt)
                 except httpx.RequestError as e:
+                    print(f"❌ OpenRouter Network Error: {e}")
                     self.logger.error(f"OpenRouter Network Error: {e}")
                     if attempt < max_retries - 1:
                         await asyncio.sleep(2)
                     else:
+                        print("❌ Max retries reached. Falling back.")
                         return self._get_fallback_response(system_prompt)
                 except Exception as e:
+                    print(f"❌ Unexpected LLM error: {e}")
                     self.logger.error(f"Unexpected LLM error: {e}")
                     import traceback
-                    self.logger.error(traceback.format_exc())
+                    traceback.print_exc()
                     return self._get_fallback_response(system_prompt)
     
     def _get_fallback_response(self, system_prompt):
@@ -62,6 +67,7 @@ class OpenRouterService:
              return '{"plan": []}' 
         if "affirmation" in s_lower:
             return "You are stronger than you think."
-        return "I am currently offline, but I hear you. Take a deep breath."
+        print("⚠️ DEBUG: Using Fallback Response")
+        return "I am currently having trouble connecting to my brain (API Error). Please try again or check the server logs."
 
 llm_service = OpenRouterService()
