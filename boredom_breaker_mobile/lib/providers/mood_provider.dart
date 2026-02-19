@@ -36,6 +36,7 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
       final moodRes = moodData.data;
 
       // 2. Get Suggestion Plan (Calls Planner Agent)
+      // Send FULL text for risk assessment
       final planRes = await _api.post(
         '/suggest/',
         data: {
@@ -44,6 +45,7 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
           'emotion': moodRes['emotion'],
           'intensity': moodRes['intensity'],
           'time_available_minutes': 30,
+          'text': text, // CRITICAL: Send raw text for risk analysis
         },
       );
 

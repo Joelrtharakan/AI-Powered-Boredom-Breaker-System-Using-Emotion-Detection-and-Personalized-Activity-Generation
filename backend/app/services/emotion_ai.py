@@ -33,10 +33,58 @@ class SemanticEngine:
         
         return best_emotion, best_score
 
+class RiskAssessment:
+    """Classifies user input into risk levels based on keywords and intensity."""
+    def __init__(self):
+        self.patterns = {
+            "CRISIS": [
+                "kill myself", "suicide", "want to die", "end it all", "better off dead", 
+                "no reason to live", "cutting myself", "overdose", "hanging myself", 
+                "wish i was dead", "hurt myself", "pain ends", "goodbye forever"
+            ],
+            "HIGH_DISTRESS": [
+                "panic attack", "can't breathe", "falling apart", "shaking", "terrified",
+                "hopeless", "drowning in sorrow", "unbearable", "heart is ripping", 
+                "screaming", "can't take this", "breaking point", "mudiyala", "avalotha"
+            ],
+            "MODERATE_DISTRESS": [
+                "stressed", "anxious", "worried", "tired", "sad", "lonely", "frustrated", 
+                "annoyed", "exhausted", "fed up", "crying"
+            ]
+        }
+    
+    def assess(self, text: str, emotion: str, intensity: float) -> str:
+        text_lower = text.lower()
+        
+        # 1. CRISIS Check (Highest Priority)
+        for pattern in self.patterns["CRISIS"]:
+            if pattern in text_lower:
+                return "CRISIS"
+        
+        # 2. HIGH DISTRESS Check
+        for pattern in self.patterns["HIGH_DISTRESS"]:
+            if pattern in text_lower:
+                return "HIGH_DISTRESS"
+        
+        # 3. Contextual High Distress (High Intensity Negative Emotions)
+        if emotion in ["fear", "sadness", "anger"] and intensity > 0.8:
+            return "HIGH_DISTRESS"
+
+        # 4. MODERATE DISTRESS Check
+        for pattern in self.patterns["MODERATE_DISTRESS"]:
+            if pattern in text_lower:
+                return "MODERATE_DISTRESS"
+        
+        if emotion in ["sadness", "fear", "anger", "fatigue"] and intensity > 0.5:
+             return "MODERATE_DISTRESS"
+
+        return "LOW_NORMAL"
+
 class EmotionAnalyzer:
     def __init__(self):
         self.classifier = None
         self.semantic = SemanticEngine()
+        self.risk_assessor = RiskAssessment()
         self.logger = logging.getLogger(__name__)
 
     def load_model(self):
@@ -73,34 +121,36 @@ class EmotionAnalyzer:
         semantic_emotion, semantic_score = self.semantic.find_best_match(text_clean)
 
         # 2. Model Signal (Transformer)
-        model_results = self.classifier(text)[0]
-        model_results.sort(key=lambda x: x['score'], reverse=True)
-        
-        primary = model_results[0]
-        secondary = model_results[1] if len(model_results) > 1 else None
-        
-        model_emotion = primary['label']
-        model_score = primary['score']
+        try:
+            model_results = self.classifier(text)[0]
+            model_results.sort(key=lambda x: x['score'], reverse=True)
+            
+            primary = model_results[0]
+            secondary = model_results[1] if len(model_results) > 1 else None
+            
+            model_emotion = primary['label']
+            model_score = primary['score']
+        except Exception as e:
+            self.logger.error(f"Model prediction failed: {e}")
+            model_emotion = "neutral"
+            model_score = 0.5
+            secondary = None
+            model_results = []
 
         # 3. Ensemble Fusion Logic
-        # Formula: 0.6 * model + 0.3 * semantic + 0.1 * uncertainty_score
         final_emotion = model_emotion
         final_score = model_score
         decision_source = "model_primary"
         reason = "Detected via RoBERTa Transformer logic."
 
-        # Case A: Semantic Prime (Override weak or ambiguous model predictions)
+        # Case A: Semantic Prime
         if semantic_emotion:
-            # If semantic matches model, boost confidence
             if semantic_emotion == model_emotion:
                 final_score = min(0.99, model_score + 0.2)
                 decision_source = "ensemble_fused"
                 reason = f"Consensus between Transformer and Semantic Engine on '{semantic_emotion}'."
-            # If semantic is strong and model is weak/wrong (Edge Case Specialist)
             elif semantic_score > 0.6 or model_score < 0.5:
-                # 🛑 CONTRASTIVE LOGIC CHECK (New V12.5 Feature)
-                # If sentence has "but", "although", "however" -> DO NOT BLINDLY TRUST SEMANTICS
-                # Example: "I'm smiling but I want to cry" -> Semantic sees "smiling" (Joy), but Context is Sad.
+                # Contrastive Logic Check
                 contrastive_markers = [" but ", "however", "although", " yet ", "spite of"]
                 has_contrast = any(c in text_clean for c in contrastive_markers)
                 
@@ -110,39 +160,34 @@ class EmotionAnalyzer:
                     decision_source = "semantic_override"
                     reason = f"Semantic Engine identified clear indicators for '{semantic_emotion}'."
                 else:
-                    # Trust the Transformer model for complex/mixed sentences
                     reason = "Contrastive logic detected ('but/however'), trusting Transformer context over Keywords."
 
-        # Case B: Mundane/Neutral Handling (Explicit)
-        # If text is short and contains neutral markers, force neutral unless strong emotion detected
+        # Case B: Mundane/Neutral Handling
         mundane_markers = ["toast", "breakfast", "lunch", "dinner", "walk the", "dog", "cat", "wall", "car", "parked", "reading", "book", "email", "chilling", "progress", "steady", "shopping"]
         is_mundane = any(m in text_clean for m in mundane_markers)
-        
-        # Only override if:
-        # 1. Model is NOT super confident (< 0.9)
-        # 2. Detected emotion is NOT joy/happy (avoid killing "walking in park makes me happy")
-        # 3. No strong semantic signal was found (if we found "alive", don't neutralize)
         if is_mundane and model_score < 0.95 and final_emotion != "joy" and not semantic_emotion:
              final_emotion = "neutral"
              final_score = 0.85
              decision_source = "mundane_override"
              reason = "Identified mundane activity pattern, overriding weak emotional signal."
 
-        # Case C: Handle Uncertainty (Neutralize if everything is low)
+        # Case C: Handle Uncertainty
         if final_score < 0.4 and not semantic_emotion:
             final_emotion = "neutral"
             final_score = 0.6
             decision_source = "uncertainty_handled"
             reason = "Weak emotional signals detected, defaulting to neutral."
 
-        # 4. Ambivalent Anticipation Rule (Specific Fix for "Nervous but Excited")
-        # High arousal mixed states often default to Happy in models, but users often mean Anxious.
+        # 4. Ambivalent Anticipation Rule
         if "nervous" in text_clean and "excited" in text_clean:
             final_emotion = "fear"
             final_score = 0.85
             decision_source = "heuristic_override"
             reason = "Detected 'Nervous Anticipation' pattern, prioritizing Anxiety over Excitement."
             
+        # 5. RISK ASSESSMENT (New V14 Feature)
+        risk_level = self.risk_assessor.assess(text_clean, final_emotion, final_score)
+        
         # Mapping to internal app moods
         mood_map = {
             "joy": "happy", "love": "happy", "optimism": "happy",
@@ -154,21 +199,32 @@ class EmotionAnalyzer:
             "neutral": "neutral", "surprise": "neutral"
         }
 
+        # Strategy Guidance for Agent
+        strategy = "Provide clear, accurate, efficient help."
+        if risk_level == "CRISIS":
+            strategy = "CRISIS PROTOCOL: Respond with empathy, validate feelings, slow the moment (grounding), encourage reaching trusted person. DO NOT give productivity tips."
+        elif risk_level == "HIGH_DISTRESS":
+            strategy = "HIGH DISTRESS: Validate emotion strongly. Provide grounding + one simple coping step."
+        elif risk_level == "MODERATE_DISTRESS":
+            strategy = "MODERATE DISTRESS: Provide supportive guidance with emotional awareness."
+
         return {
             "mood": mood_map.get(final_emotion, "neutral"),
             "emotion": final_emotion,
             "intensity": final_score,
-            "energy_level": "low" if final_emotion in ["sadness", "bored", "fatigue", "fatigued"] else ("high" if final_emotion in ["anger", "joy"] else "medium"),
+            "energy_level": "low" if final_emotion in ["sadness", "bored", "fatigue"] else ("high" if final_emotion in ["anger", "joy"] else "medium"),
             "secondary_emotion": secondary['label'] if secondary else None,
-            "confidence_level": model_score,
+            "risk_level": risk_level,
+            "strategy": strategy,
+            "confidence_level": model_score if 'model_score' in locals() else final_score,
             "decision_source": decision_source,
-            "reason": reason,
-            "raw_scores": {r['label']: r['score'] for r in model_results}
+            "reason": reason
         }
 
     def _neutral_response(self, reason):
         return {
             "mood": "neutral", "emotion": "neutral", "intensity": 0.5, "energy_level": "medium",
+            "risk_level": "LOW_NORMAL", "strategy": "Provide clear, accurate, efficient help.",
             "decision_source": "system_fallback", "reason": reason
         }
 

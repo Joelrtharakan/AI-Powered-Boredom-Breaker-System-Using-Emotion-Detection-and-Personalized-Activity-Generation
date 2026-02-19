@@ -3,6 +3,7 @@ import logging
 import random
 from app.services.llm_service import llm_service
 from app.services.spotify_service import spotify_service
+from app.services.emotion_ai import emotion_analyzer
 
 class PlannerAgent:
     def __init__(self):
@@ -10,8 +11,55 @@ class PlannerAgent:
 
     async def generate_plan(self, mood: str, intensity: float, user_id: int = None, interests: list = None, text: str = ""):
         """
-        Generates a 3-step improvement plan personalized by user interests.
+        Generates a 3-step improvement plan personalized by user interests and SAFETY RISK.
         """
+        # 1. RISK ASSESSMENT (Critical Step)
+        # We re-analyze or use the provided text to check for crisis
+        analysis = emotion_analyzer.analyze(text) if text else {"risk_level": "LOW_NORMAL"}
+        risk_level = analysis.get("risk_level", "LOW_NORMAL")
+        
+        self.logger.info(f"Planner Risk Assessment: {risk_level} for text='{text}'")
+
+        # 🚨 CRISIS PROTOCOL: Force Safety Plan
+        if risk_level == "CRISIS":
+            return [
+                {
+                    "type": "breathing",
+                    "description": "Box Breathing: Inhale 4s, Hold 4s, Exhale 4s, Hold 4s.",
+                    "time_minutes": 2,
+                    "purpose": "immediate_grounding"
+                },
+                {
+                    "type": "social",
+                    "description": "Reach out to a trusted friend, family member, or helpline.",
+                    "time_minutes": 5,
+                    "purpose": "safety_connection"
+                },
+                {
+                    "type": "environment_adjustment",
+                    "description": "Go to a safe, comfortable space. Wrap yourself in a blanket.",
+                    "time_minutes": 0,
+                    "purpose": "safety_environment"
+                }
+            ]
+
+        # 🚨 HIGH DISTRESS PROTOCOL: Force Calming Plan (No Games)
+        if risk_level == "HIGH_DISTRESS":
+            return [
+                {
+                    "type": "breathing",
+                    "description": "focus on your breath. Long exhale.",
+                    "time_minutes": 3,
+                    "purpose": "calming"
+                },
+                 {
+                    "type": "micro_task",
+                    "description": "5-4-3-2-1 Grounding: Name 5 things you see, 4 you feel.",
+                    "time_minutes": 2,
+                    "purpose": "grounding"
+                }
+            ]
+
         interests_str = ", ".join(interests) if interests else "General wellness"
         
         # Available Resources
@@ -44,8 +92,6 @@ class PlannerAgent:
         if mood.lower() == "fatigued":
             is_fatigued = True
             
-        print(f"DEBUG: Mood='{mood}', Text='{text}', IsFatigued={is_fatigued}")
-
         # Check for Positive Expression (Minimal Intervention)
         positive_keywords = ["love", "grateful", "blessed", "god is good", "amazing day", "good day", "excited", "happy"]
         is_positive = any(k in mood.lower() for k in positive_keywords) or (text and any(k in text.lower() for k in positive_keywords))
@@ -75,6 +121,16 @@ compassionate_rules:
     - If user is "happy", "grateful", or expressing faith ("I love Jesus"), you MUST trigger POSITIVE MODE (Savoring only).
     - If user is "bored", provide stimulation.
     - If user is "anxious", provide grounding.
+
+⸻
+
+🚨 CRITICAL SAFETY RULES (OVERRIDE EVERYTHING):
+1. If Risk Level is CRISIS or HIGH_DISTRESS:
+   - DO NOT suggest games.
+   - DO NOT suggest "sad music".
+   - DO NOT suggest productivity tasks.
+   - ONLY suggest: Breathing, Grounding (5-4-3-2-1), Safe Space, Calling Helpline/Friend.
+   - Tone must be extremely gentle, slow, and validating.
 
 ⸻
 
@@ -128,6 +184,7 @@ Input Context:
 User Text: "{text}"
 Mood: {mood}
 Intensity: {intensity}
+Risk Level: {risk_level}
 Is Fatigued: {is_fatigued}
 Is Positive Context: {is_positive}
 
@@ -138,7 +195,6 @@ Generate JSON plan:
         # 3. Call LLM
         try:
             response_text = await llm_service.generate(system_prompt, user_prompt)
-            print(f"DEBUG LLM RAW: {response_text}")
             # Clean response to ensure valid JSON
             cleaned_text = response_text
             if "```json" in response_text:
@@ -172,11 +228,15 @@ Generate JSON plan:
             ]
 
 
-        # 4. Inject Game Recommendation (Bonus for Boredom/Stress, but NOT Fatigue)
+        # 4. Inject Game Recommendation
+        # POLICY: Only suggest games for Boredom/Stress/Sadness if RISK IS LOW.
+        # NEVER suggest games for Crisis or High Distress or Fatigue.
         game_triggers = ["bored", "boredom", "stressed", "anxious", "low_energy", "neutral", "sad", "sadness"]
         should_suggest_game = any(t in mood.lower() for t in game_triggers)
         
-        if should_suggest_game and not is_fatigued:
+        is_high_risk = risk_level in ["CRISIS", "HIGH_DISTRESS"]
+        
+        if should_suggest_game and not is_fatigued and not is_high_risk:
                 games = ["Snake Evolution", "Memory Flip", "Chimp Test", "Visual Memory", "Number Guess", "Aim Trainer", "Reaction Time", "Tic Tac Toe", "Rock Paper Scissors"]
                 plan.append({
                     "type": "game",
@@ -187,7 +247,10 @@ Generate JSON plan:
         # 5. Inject Music Recommendation (Universal)
         for step in plan:
             if step.get("type") == "music":
-                playlists = spotify_service.get_mood_playlists(mood, limit=1)
+                # For high risk, force chill/calm music, never sad
+                target_mood = "chill" if is_high_risk else mood
+                
+                playlists = spotify_service.get_mood_playlists(target_mood, limit=1)
                 if playlists:
                     if "metadata" not in step:
                         step["metadata"] = {}

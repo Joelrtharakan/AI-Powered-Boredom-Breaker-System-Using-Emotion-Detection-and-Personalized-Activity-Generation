@@ -2,12 +2,25 @@ import httpx
 import asyncio
 import os
 
-API_KEY = "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"
+# Load key from environment or .env file if available
+from app.core.config import settings
+
+# Do not hardcode API keys here!
+API_KEY = settings.OPENROUTER_API_KEY
+if not API_KEY:
+    # Fallback for manual testing if .env not loaded by app config
+    API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+
 URL = "https://openrouter.ai/api/v1/chat/completions"
 # Using a model that should work on free tier
 MODEL = "mistralai/mistral-7b-instruct-v0.1"
 
 async def test_key():
+    if not API_KEY or "sk-or-" not in API_KEY:
+        print("❌ ERROR: OPENROUTER_API_KEY not found in environment variables.")
+        print("Please set it: export OPENROUTER_API_KEY='your_key_here'")
+        return
+
     print(f"Testing API Key: {API_KEY[:10]}...")
     
     headers = {
