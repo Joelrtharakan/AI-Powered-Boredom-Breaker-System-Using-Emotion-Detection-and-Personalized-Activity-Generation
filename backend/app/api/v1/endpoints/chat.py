@@ -27,6 +27,7 @@ class MessageOut(BaseModel):
     id: int
     role: str
     message: str
+    session_id: str
     created_at: datetime
     class Config:
         from_attributes = True
@@ -51,7 +52,11 @@ async def send_message(msg: MessageIn, db: Session = Depends(get_db)):
     db.commit()
     
     # 2. Agent Logic
-    response_text = await chat_agent.generate_response(msg.message)
+    # Pull current session context
+    session_msgs = db.query(ChatHistory).filter(ChatHistory.session_id == sid).order_by(ChatHistory.created_at.asc()).all()
+    history = [{"role": m.role, "content": m.message} for m in session_msgs]
+    
+    response_text = await chat_agent.generate_response(msg.message, history=history)
     
     # 3. Save AI message
     ai_entry = ChatHistory(
@@ -68,11 +73,17 @@ async def send_message(msg: MessageIn, db: Session = Depends(get_db)):
 
 @router.get("/history", response_model=List[MessageOut])
 def get_history(user_id: int, session_id: Optional[str] = None, limit: int = 50, db: Session = Depends(get_db)):
+    if not session_id:
+        # Find the most recent session_id for this user
+        latest_msg = db.query(ChatHistory).filter(ChatHistory.user_id == user_id).order_by(ChatHistory.created_at.desc()).first()
+        if latest_msg:
+            session_id = latest_msg.session_id
+
     query = db.query(ChatHistory).filter(ChatHistory.user_id == user_id)
     if session_id:
         query = query.filter(ChatHistory.session_id == session_id)
     
-    return query.order_by(ChatHistory.created_at.asc()).limit(limit).all()
+    return query.order_by(ChatHistory.created_at.desc()).limit(limit).all()
 
 class SessionRef(BaseModel):
     session_id: str

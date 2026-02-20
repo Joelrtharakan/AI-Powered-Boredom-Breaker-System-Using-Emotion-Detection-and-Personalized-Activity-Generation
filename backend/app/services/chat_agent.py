@@ -15,7 +15,7 @@ CORE RULES:
 3. **Safety First:** If risk is detected, prioritize safety over all else.
 """
 
-    async def generate_response(self, user_message: str) -> str:
+    async def generate_response(self, user_message: str, history: list = None) -> str:
         # 1. Analyze Emotion & Risk (V14 Model)
         try:
             analysis = emotion_analyzer.analyze(user_message)
@@ -57,16 +57,31 @@ If it's a casual chat, just hang out.
 """
 
         full_system_prompt = self.base_system_prompt + dynamic_instruction
+        
+        # 3. Memory Pipeline
+        full_transcript = ""
+        if history:
+            # We already have the previous messages. Let's pick the last 6 for context depth.
+            context_msgs = history[-6:]
+            for msg in context_msgs:
+                role_label = "User" if msg.get("role") == "user" else "Assistant"
+                full_transcript += f"{role_label}: {msg.get('content')}\n"
+        
+        full_transcript += f"User: {user_message}\nAssistant:"
 
-        # 3. Call LLM
+        # 4. Call LLM
         response = await llm_service.generate(
             system_prompt=full_system_prompt,
-            user_prompt=user_message
+            user_prompt=full_transcript
         )
         
         # Clean artifacts
         cleaned = re.sub(r'\[.*?\]', '', response) 
         cleaned = cleaned.replace("<s>", "").replace("</s>", "").strip()
+        # Edge case artifacting on generic LLM
+        if cleaned.startswith("Assistant:"):
+            cleaned = cleaned[10:].strip()
+            
         return cleaned
 
 chat_agent = ChatAgent()

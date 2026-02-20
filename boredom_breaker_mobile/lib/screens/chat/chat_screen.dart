@@ -18,6 +18,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _api = ApiClient().client;
   final ScrollController _scrollController = ScrollController();
   int _userId = 1;
+  String? _currentSessionId;
 
   @override
   void initState() {
@@ -39,6 +40,11 @@ class _ChatScreenState extends State<ChatScreen> {
         if (mounted) {
           setState(() {
             _messages.clear();
+            if (history.isNotEmpty) {
+              // The API now returns the latest session id inside the history!
+              _currentSessionId = history.first['session_id'];
+            }
+            // API returns DESC, we reverse to display ASC in chat
             for (var msg in history.reversed) {
               _messages.add({
                 'role': msg['role'] == 'assistant' ? 'ai' : 'user',
@@ -78,13 +84,17 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      final res = await _api.post(
-        '/chat/send',
-        data: {'user_id': _userId, 'message': text},
-      );
+      final requestData = {'user_id': _userId, 'message': text};
+      if (_currentSessionId != null) {
+        requestData['session_id'] = _currentSessionId!;
+      }
+
+      final res = await _api.post('/chat/send', data: requestData);
 
       if (mounted) {
         setState(() {
+          _currentSessionId =
+              res.data['session_id']; // Save new session ID if it was created
           _messages.add({'role': 'ai', 'text': res.data['reply']});
         });
         _scrollToBottom();
