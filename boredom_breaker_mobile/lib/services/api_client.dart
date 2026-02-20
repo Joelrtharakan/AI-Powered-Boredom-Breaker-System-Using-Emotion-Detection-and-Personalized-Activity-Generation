@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../config/api_config.dart';
+import '../services/session_manager.dart';
 
 class ApiClient {
   final Dio _dio = Dio();
@@ -36,6 +37,14 @@ class ApiClient {
                 'Bearer $token'; // Adjust 'Bearer' as needed
           }
           return handler.next(options);
+        },
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            // Token expired or invalid
+            await SessionManager.clearSession();
+            setToken(null);
+          }
+          return handler.next(e);
         },
       ),
     );

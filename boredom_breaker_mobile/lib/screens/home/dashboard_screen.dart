@@ -43,19 +43,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final id = await SessionManager.getUserId();
     final name = await SessionManager.getUserName();
 
-    // Fetch profile picture from backend
-    try {
-      final response = await _apiClient.client.get('/auth/me');
-      if (response.statusCode == 200 && response.data != null) {
-        if (mounted) {
-          setState(() {
-            _profilePicture = response.data['profile_picture'];
-          });
+    // Fetch profile picture from backend (only if authenticated)
+    if (ApiClient.token != null) {
+      try {
+        final response = await _apiClient.client.get('/auth/me');
+        if (response.statusCode == 200 && response.data != null) {
+          if (mounted) {
+            setState(() {
+              _profilePicture = response.data['profile_picture'];
+            });
+          }
         }
+      } catch (e) {
+        // Silent error for profile pic to not disrupt UX
+        debugPrint("Failed to load profile picture: $e");
       }
-    } catch (e) {
-      // Silent error for profile pic to not disrupt UX
-      debugPrint("Failed to load profile picture: $e");
     }
 
     if (mounted) {
@@ -686,59 +688,95 @@ class _GeneratedPlanCard extends StatelessWidget {
               height: 1,
             ),
           ),
-          ...plan.asMap().entries.map((entry) {
-            final item = entry.value;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          // Check for NO_EMOTION response
+          if (plan.isNotEmpty && plan[0]['no_plan'] == true)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Column(
                 children: [
-                  _StepNumber(number: entry.key + 1),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item['description'],
-                          style: GoogleFonts.inter(
-                            color: const Color(0xFFE0E0E0),
-                            fontSize: 15,
-                            height: 1.5,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        if (item['time_minutes'] != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.timer_outlined,
-                                  size: 14,
-                                  color: Colors.white38,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  "${item['time_minutes']} MIN",
-                                  style: GoogleFonts.outfit(
-                                    color: Colors.white38,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        _buildActionLink(context, item),
-                      ],
+                  Icon(
+                    Icons.sentiment_neutral_rounded,
+                    color: Colors.white38,
+                    size: 48,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    plan[0]['description'] ?? "No emotion detected",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      color: const Color(0xFFB0B0B0),
+                      fontSize: 15,
+                      height: 1.6,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    "Try telling me how you feel 💬",
+                    style: GoogleFonts.outfit(
+                      color: const Color(0xFF6D4EFF),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ],
               ),
-            );
-          }),
+            )
+          else
+            ...plan.asMap().entries.map((entry) {
+              final item = entry.value;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _StepNumber(number: entry.key + 1),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item['description'],
+                            style: GoogleFonts.inter(
+                              color: const Color(0xFFE0E0E0),
+                              fontSize: 15,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          if (item['time_minutes'] != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.timer_outlined,
+                                    size: 14,
+                                    color: Colors.white38,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    "${item['time_minutes']} MIN",
+                                    style: GoogleFonts.outfit(
+                                      color: Colors.white38,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          _buildActionLink(context, item),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
         ],
       ),
     );

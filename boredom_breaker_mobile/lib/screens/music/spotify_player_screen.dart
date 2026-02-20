@@ -171,7 +171,69 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                       ),
                     ),
                   ),
-                  if (!widget.isLoginOnly) const SizedBox(height: 20),
+                  if (!widget.isLoginOnly) ...[
+                    const SizedBox(height: 12),
+                    // Preview limitation banner
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1DB954).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(
+                            0xFF1DB954,
+                          ).withValues(alpha: 0.25),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.info_outline_rounded,
+                            color: Color(0xFF1DB954),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "Preview only · Open in Spotify for full playback",
+                              style: GoogleFonts.inter(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: _launchInFullApp,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1DB954),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                "Open",
+                                style: GoogleFonts.outfit(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ],
               ),
             ),
@@ -251,9 +313,23 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
   }
 
   Future<void> _launchInFullApp() async {
-    final uri = Uri.parse(widget.spotifyUrl);
-    if (await canLaunchUrl(uri)) {
+    String url = widget.spotifyUrl;
+
+    // Convert spotify:playlist:ID or spotify:track:ID to a proper URL
+    if (url.startsWith('spotify:')) {
+      final parts = url.split(':'); // ["spotify", "playlist", "ID"]
+      if (parts.length >= 3) {
+        final type = parts[1]; // "playlist" or "track"
+        final id = parts[2];
+        url = 'https://open.spotify.com/$type/$id';
+      }
+    }
+
+    final uri = Uri.parse(url);
+    try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint("Failed to launch Spotify: $e");
     }
   }
 }

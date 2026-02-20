@@ -35,7 +35,8 @@ async def suggest_plan(request: SuggestionRequest, db: Session = Depends(get_db)
         mood_data={
             "mood": request.mood,
             "emotion": request.emotion,
-            "intensity": request.intensity
+            "intensity": request.intensity,
+            "decision_source": request.decision_source or ""
         },
         user_id=request.user_id,
         interests=interests,

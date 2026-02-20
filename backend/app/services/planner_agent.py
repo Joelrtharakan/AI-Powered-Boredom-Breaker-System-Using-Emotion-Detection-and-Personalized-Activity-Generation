@@ -12,8 +12,8 @@ class PlannerAgent:
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # SECTION 4: Music Intelligence
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    def _get_emotion_music(self, emotion: str, risk_level: str) -> dict:
-        """Select music based on emotion. Enforces safety rules."""
+    def _get_emotion_music(self, emotion: str, risk_level: str, subtype: str = None) -> dict:
+        """Select music based on emotion/subtype. Enforces safety rules."""
 
         # ABSOLUTE RULES:
         # - No lyrical music in CRISIS or HIGH_DISTRESS
@@ -24,8 +24,8 @@ class PlannerAgent:
         music_map = {
             "sadness": {"description": "Soft piano, slow instrumental", "purpose": "emotional_comfort", "mood_key": "chill"},
             "fear": {"description": "Low tempo ambient, deep breathing tones", "purpose": "nervous_system_regulation", "mood_key": "chill"},
-            "anger": {"description": "Slow instrumental, calming", "purpose": "de_escalation", "mood_key": "chill"},
-            "fatigue": {"description": "White noise, rain, nature sounds", "purpose": "restoration", "mood_key": "chill"},
+            "anger": {"description": "Rhythmic instrumental, controlled tempo", "purpose": "de_escalation", "mood_key": "chill"},
+            "fatigue": {"description": "Ambient, white noise, rainfall", "purpose": "restoration", "mood_key": "chill"},
             "bored": {"description": "Upbeat, energetic music", "purpose": "stimulation", "mood_key": "energize"},
             "joy": {"description": "Celebratory, feel-good music", "purpose": "amplification", "mood_key": "happy"},
             "neutral": {"description": "Light background music", "purpose": "ambient", "mood_key": "chill"},
@@ -33,9 +33,17 @@ class PlannerAgent:
 
         base = music_map.get(emotion, music_map["neutral"])
 
+        # Subtype overrides
+        if subtype == "ATTACHMENT":
+            base["description"] = "Warm piano, acoustic, nostalgic tones"
+            base["mood_key"] = "sad"
+
         # Safety overrides
-        if risk_level in ["CRISIS", "HIGH_DISTRESS"]:
+        if risk_level == "CRISIS":
             base["description"] = "Soft instrumental (no lyrics)"
+            base["mood_key"] = "chill"
+        elif risk_level == "HIGH_DISTRESS":
+            base["description"] = "60-70 BPM instrumental (no lyrics)"
             base["mood_key"] = "chill"
         elif risk_level == "FATIGUE":
             base["description"] = "Ambient rainfall or white noise"
@@ -63,38 +71,72 @@ class PlannerAgent:
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # SECTION 5: Adaptive Plan Modifier
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    def _apply_adaptive_modifiers(self, plan: list, emotion: str, intensity: float, text: str, risk_level: str) -> list:
+    def _apply_adaptive_modifiers(self, plan: list, emotion: str, intensity: float, text: str, risk_level: str, subtype: str = None) -> list:
         """Dynamically adapt plan steps based on emotion + intensity."""
 
         plan_types = [s.get("type", "") for s in plan]
         text_lower = text.lower() if text else ""
 
-        # Rule 1: intensity > 0.9 → Add grounding step if not already present
-        if intensity > 0.9 and "micro_task" not in plan_types and risk_level not in ["BOREDOM", "LOW_NORMAL"]:
+        # Section 6: Social Intelligence
+        # If sadness subtype = ATTACHMENT: Social step must be first or second.
+        # If loneliness detected: Add “Send a short message” suggestion.
+        loneliness_markers = ["lonely", "alone", "no one", "nobody", "isolated", "by myself"]
+        is_lonely = any(m in text_lower for m in loneliness_markers) or subtype == "ATTACHMENT"
+        
+        if is_lonely and "social" not in plan_types and risk_level not in ["CRISIS", "BOREDOM", "LOW_NORMAL"]:
+            social_step = {
+                "type": "social",
+                "description": "Send a short message to someone you trust — even a quick text helps.",
+                "time_minutes": 5,
+                "purpose": "connection"
+            }
+            if subtype == "ATTACHMENT":
+                plan.insert(min(1, len(plan)), social_step) # First or second
+                plan_types.insert(min(1, len(plan_types)), "social")
+            else:
+                plan.append(social_step)
+                plan_types.append("social")
+
+        # Rule 1: intensity > 0.85 → Add grounding step and warmth if not already present
+        if intensity > 0.85 and "micro_task" not in plan_types and risk_level not in ["BOREDOM", "LOW_NORMAL"]:
             plan.insert(min(1, len(plan)), {
                 "type": "micro_task",
                 "description": "5-4-3-2-1 Grounding: Name 5 things you see, 4 you can touch, 3 you hear.",
                 "time_minutes": 2,
                 "purpose": "grounding"
             })
+            plan_types.insert(min(1, len(plan_types)), "micro_task")
 
-        # Rule 2: fear → Ensure breathing is Step 1
-        if emotion == "fear" and plan and plan[0].get("type") != "breathing":
-            plan.insert(0, {
-                "type": "breathing",
-                "description": "Slow, deep breaths. Inhale for 4, exhale for 6.",
-                "time_minutes": 2,
-                "purpose": "nervous_system_reset"
-            })
-
-        # Rule 3: sadness → Add warmth-based environment suggestion
-        if emotion == "sadness" and "environment_adjustment" not in plan_types and risk_level not in ["BOREDOM", "LOW_NORMAL"]:
+        if intensity > 0.85 and emotion == "sadness" and "environment_adjustment" not in plan_types and risk_level not in ["BOREDOM", "LOW_NORMAL"]:
             plan.append({
                 "type": "environment_adjustment",
                 "description": "Wrap yourself in a blanket or make some warm tea.",
                 "time_minutes": 2,
                 "purpose": "warmth_comfort"
             })
+            plan_types.append("environment_adjustment")
+
+        # Intensity > 0.95 -> Strengthen social support
+        if intensity > 0.95 and "social" not in plan_types and risk_level not in ["BOREDOM", "LOW_NORMAL"]:
+             plan.append({
+                "type": "social",
+                "description": "Reach out for stronger support. Call a friend or helpline.",
+                "time_minutes": 5,
+                "purpose": "connection"
+            })
+             plan_types.append("social")
+
+        # Rule 2: fear → Ensure breathing is Step 1, longer if high intensity
+        if emotion == "fear":
+            if plan and plan[0].get("type") != "breathing":
+                plan.insert(0, {
+                    "type": "breathing",
+                    "description": "Slow, deep breaths. Inhale for 4, exhale for 6.",
+                    "time_minutes": 3 if intensity > 0.85 else 2,
+                    "purpose": "nervous_system_reset"
+                })
+            elif plan and plan[0].get("type") == "breathing" and intensity > 0.85:
+                plan[0]["time_minutes"] = max(plan[0].get("time_minutes", 0), 3)
 
         # Rule 4: anger → Add physical reset
         if emotion == "anger" and "activity" not in plan_types and risk_level not in ["CRISIS"]:
@@ -105,14 +147,13 @@ class PlannerAgent:
                 "purpose": "physical_release"
             })
 
-        # Rule 5: loneliness detected → Add social step
-        loneliness_markers = ["lonely", "alone", "no one", "nobody", "isolated", "by myself"]
-        if any(m in text_lower for m in loneliness_markers) and "social" not in plan_types:
+        # Section 8: Recovery Loop Question
+        if risk_level not in ["BOREDOM", "LOW_NORMAL"] and "check_in" not in [s.get("type", "") for s in plan]:
             plan.append({
-                "type": "social",
-                "description": "Reach out to someone you trust — even a short text helps.",
-                "time_minutes": 5,
-                "purpose": "connection"
+                "type": "check_in",
+                "description": "Short check-in: Do you feel slightly better?",
+                "time_minutes": 1,
+                "purpose": "recovery_check"
             })
 
         return plan
@@ -126,13 +167,15 @@ class PlannerAgent:
         Follows the 5-section production specification.
         """
         # 1. RISK ASSESSMENT
-        analysis = emotion_analyzer.analyze(text) if text else {"risk_level": "LOW_NORMAL", "emotion": "neutral", "intensity": 0.5}
+        analysis = emotion_analyzer.analyze(text) if text else {"risk_level": "LOW_NORMAL", "emotion": "neutral", "intensity": 0.5, "subtype": None, "nervous_system_state": "regulated"}
         risk_level = analysis.get("risk_level", "LOW_NORMAL")
         emotion = analysis.get("emotion", "neutral")
+        subtype = analysis.get("subtype", None)
+        ns_state = analysis.get("nervous_system_state", "regulated")
         detected_intensity = analysis.get("intensity", intensity)
         needs_strengthening = analysis.get("needs_strengthening", False)
 
-        self.logger.info(f"Planner: risk={risk_level}, emotion={emotion}, intensity={detected_intensity}")
+        self.logger.info(f"Planner: risk={risk_level}, emotion={emotion}, subtype={subtype}, intensity={detected_intensity}, ns_state={ns_state}")
 
         # ⚖️ LAYER 2 SAFETY OVERRIDE: Work Context
         work_keywords = ["work", "assignment", "submit", "project", "deadline", "study", "exam", "task", "job"]
@@ -141,7 +184,7 @@ class PlannerAgent:
             risk_level = "TASK_BLOCKED"
 
         # Get emotion-matched music
-        music_info = self._get_emotion_music(emotion, risk_level)
+        music_info = self._get_emotion_music(emotion, risk_level, subtype)
 
         # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         # SECTION 3: Protocol-Based Plan Generation
@@ -166,7 +209,7 @@ class PlannerAgent:
                 {"type": "environment_adjustment", "description": "Go to a safe, comfortable space. Wrap yourself in a blanket.", "time_minutes": 0, "purpose": "safety_environment"},
                 {"type": "calming_audio", "description": f"{music_info['description']} — only after you feel grounded.", "time_minutes": 10, "purpose": "supportive_music"}
             ]
-            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level)
+            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
             return self._inject_spotify(plan, music_info['mood_key'])
 
         # 😰 HIGH DISTRESS PROTOCOL
@@ -176,7 +219,7 @@ class PlannerAgent:
                 {"type": "micro_task", "description": "5-4-3-2-1 Grounding: Name 5 things you see, 4 you feel, 3 you hear.", "time_minutes": 2, "purpose": "grounding"},
                 {"type": "calming_audio", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "nervous_system_regulation"}
             ]
-            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level)
+            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
             return self._inject_spotify(plan, music_info['mood_key'])
 
         # 💤 FATIGUE PROTOCOL
@@ -186,7 +229,7 @@ class PlannerAgent:
                 {"type": "activity", "description": "Drink a glass of water.", "time_minutes": 1, "purpose": "hydration"},
                 {"type": "calming_audio", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "soothing"}
             ]
-            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level)
+            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
             return self._inject_spotify(plan, music_info['mood_key'])
 
         # 🚧 TASK BLOCKED PROTOCOL
@@ -197,7 +240,7 @@ class PlannerAgent:
                 {"type": "activity", "description": "Work for 5 minutes only. You can stop after.", "time_minutes": 5, "purpose": "momentum"},
                 {"type": "calming_audio", "description": "Focus instrumental music — no lyrics.", "time_minutes": 10, "purpose": "focus_support"}
             ]
-            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level)
+            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
             return self._inject_spotify(plan, music_info['mood_key'])
 
         # 🎮 BOREDOM PROTOCOL
@@ -218,7 +261,7 @@ class PlannerAgent:
                 {"type": "calming_audio", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "emotional_regulation"},
                 {"type": "micro_task", "description": "Take a moment — place your hand on your chest and breathe slowly.", "time_minutes": 2, "purpose": "grounding"},
             ]
-            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level)
+            plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
             return self._inject_spotify(plan, music_info['mood_key'])
 
         # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

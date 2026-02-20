@@ -298,16 +298,24 @@ class _MoodDistributionChart extends StatelessWidget {
 
   Color _getColorForMood(String mood) {
     if (mood.contains('happy') || mood.contains('joy'))
-      return Colors.orangeAccent;
+      return const Color(0xFFFFB74D); // Warm Orange
     if (mood.contains('sad') || mood.contains('depress'))
-      return const Color(0xFF4E92FF);
-    if (mood.contains('ang') || mood.contains('frust')) return Colors.redAccent;
+      return const Color(0xFF4E92FF); // Soft Blue
+    if (mood.contains('ang') || mood.contains('frust'))
+      return const Color(0xFFFF5252); // Bright Red
     if (mood.contains('anx') || mood.contains('nerv'))
-      return Colors.purpleAccent;
+      return const Color(0xFFBA68C8); // Soft Purple
     if (mood.contains('calm') || mood.contains('relax'))
-      return Colors.tealAccent;
-    if (mood.contains('bored') || mood.contains('low')) return Colors.blueGrey;
-    return AppColors.primary;
+      return const Color(0xFF4DB6AC); // Teal
+    if (mood.contains('bored') ||
+        mood.contains('low') ||
+        mood.contains('tired') ||
+        mood.contains('fatigue'))
+      return const Color(0xFF7986CB); // Indigo
+    if (mood.contains('neutral') || mood.contains('none'))
+      return const Color(0xFF81C784); // Green
+    if (mood.contains('stress')) return const Color(0xFFFF8A65); // Deep Orange
+    return const Color(0xFFB0BEC5); // Blue Grey default
   }
 
   @override
@@ -430,8 +438,13 @@ class _IntensityChart extends StatelessWidget {
         first.day == last.day;
 
     return Container(
-      height: 200,
-      padding: const EdgeInsets.fromLTRB(12, 24, 24, 10),
+      height: 250, // Increased height for better proportions
+      padding: const EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 40,
+        bottom: 20,
+      ), // Equal padding for aesthetics
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(24),
@@ -449,20 +462,40 @@ class _IntensityChart extends StatelessWidget {
           titlesData: FlTitlesData(
             show: true,
             rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
+              sideTitles: SideTitles(showTitles: false, reservedSize: 0),
             ),
             topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
+              sideTitles: SideTitles(showTitles: false, reservedSize: 0),
             ),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
+                reservedSize: 36, // Allocate proper space for bottom text
                 getTitlesWidget: (value, meta) {
-                  if (value.toInt() >= 0 && value.toInt() < history.length) {
-                    // Show roughly 5 labels
-                    if (history.length > 5 &&
-                        value.toInt() % (history.length ~/ 5) != 0) {
-                      return const SizedBox.shrink();
+                  if (value.toInt() >= 0 &&
+                      value.toInt() < history.length &&
+                      value == value.toInt()) {
+                    int idx = value.toInt();
+                    int lastIdx = history.length - 1;
+
+                    if (history.length > 4) {
+                      int step = (history.length / 4).round();
+                      if (step < 1) step = 1;
+
+                      bool isFirst = idx == 0;
+                      bool isLast = idx == lastIdx;
+                      bool isMultiple = idx % step == 0;
+
+                      if (!isFirst && !isLast && !isMultiple) {
+                        return const SizedBox.shrink();
+                      }
+
+                      // Stop internal points from rendering if they are way too close to the last tag
+                      if (isMultiple &&
+                          !isLast &&
+                          (lastIdx - idx) <= (step / 1.5)) {
+                        return const SizedBox.shrink();
+                      }
                     }
                     final date = DateTime.parse(
                       history[value.toInt()]['created_at'],
@@ -472,13 +505,17 @@ class _IntensityChart extends StatelessWidget {
                         ? DateFormat('h:mm a').format(date)
                         : DateFormat('MM/dd').format(date);
 
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                    // Fit text in box to prevent cutoff
+                    return Container(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      alignment: Alignment.center,
+                      width: 60, // Limit width of text chunk
                       child: Text(
                         label,
                         style: GoogleFonts.inter(
                           color: Colors.white38,
                           fontSize: 10,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     );
@@ -489,12 +526,12 @@ class _IntensityChart extends StatelessWidget {
               ),
             ),
             leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
+              sideTitles: SideTitles(showTitles: false, reservedSize: 0),
             ),
           ),
           borderData: FlBorderData(show: false),
-          minX: 0,
-          maxX: (history.length - 1).toDouble(),
+          minX: -0.5, // Prevents left label clipping
+          maxX: (history.length - 1) + 0.5, // Prevents right label clipping
           minY: 0,
           maxY: 1.1,
           lineBarsData: [
@@ -510,12 +547,22 @@ class _IntensityChart extends StatelessWidget {
               ),
               barWidth: 3,
               isStrokeCapRound: true,
-              dotData: FlDotData(show: false),
+              dotData: FlDotData(
+                show: true,
+                getDotPainter: (spot, percent, barData, index) {
+                  return FlDotCirclePainter(
+                    radius: 3,
+                    color: Colors.white,
+                    strokeWidth: 2,
+                    strokeColor: AppColors.primary,
+                  );
+                },
+              ),
               belowBarData: BarAreaData(
                 show: true,
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.15),
+                    AppColors.primary.withOpacity(0.3),
                     AppColors.primary.withOpacity(0.0),
                   ],
                   begin: Alignment.topCenter,
@@ -538,20 +585,24 @@ class _HistoryItemCard extends StatelessWidget {
 
   Color _getMoodColor(String mood) {
     if (mood.contains('happy') || mood.contains('joy'))
-      return Colors.orangeAccent;
+      return const Color(0xFFFFB74D); // Warm Orange
     if (mood.contains('sad') || mood.contains('depress'))
-      return const Color(0xFF4E92FF);
-    if (mood.contains('ang') || mood.contains('frust')) return Colors.redAccent;
+      return const Color(0xFF4E92FF); // Soft Blue
+    if (mood.contains('ang') || mood.contains('frust'))
+      return const Color(0xFFFF5252); // Bright Red
     if (mood.contains('anx') || mood.contains('nerv'))
-      return Colors.purpleAccent;
+      return const Color(0xFFBA68C8); // Soft Purple
     if (mood.contains('calm') || mood.contains('relax'))
-      return Colors.tealAccent;
+      return const Color(0xFF4DB6AC); // Teal
     if (mood.contains('bored') ||
         mood.contains('low') ||
-        mood.contains('energy') ||
-        mood.contains('tired'))
-      return const Color(0xFF5C6BC0); // Indigo for low energy
-    return AppColors.primary;
+        mood.contains('tired') ||
+        mood.contains('fatigue'))
+      return const Color(0xFF7986CB); // Indigo
+    if (mood.contains('neutral') || mood.contains('none'))
+      return const Color(0xFF81C784); // Green
+    if (mood.contains('stress')) return const Color(0xFFFF8A65); // Deep Orange
+    return const Color(0xFFB0BEC5); // Blue Grey default
   }
 
   @override

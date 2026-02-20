@@ -46,6 +46,7 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
           'intensity': moodRes['intensity'],
           'time_available_minutes': 30,
           'text': text, // CRITICAL: Send raw text for risk analysis
+          'decision_source': moodRes['decision_source'] ?? '',
         },
       );
 

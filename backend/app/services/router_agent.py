@@ -28,8 +28,14 @@ class RouterAgent:
         mood = mood_data.get("mood", "neutral")
         emotion = mood_data.get("emotion", "neutral")
         intensity = mood_data.get("intensity", 0.5)
+        decision_source = mood_data.get("decision_source", "")
 
-        self.logger.info(f"Routing for Mood: {mood}, Emotion: {emotion}")
+        self.logger.info(f"Routing for Mood: {mood}, Emotion: {emotion}, Source: {decision_source}")
+
+        # 0. NO EMOTION DETECTED -> Planner Agent handles with "express your feelings" response
+        if decision_source == "no_emotion_detected":
+             self.logger.info("Selected Agent: PlannerAgent (No Emotion Detected)")
+             return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text)
 
         # 1. Critical/Heavy Emotions -> Planner Agent (Needs structured help)
         fatigue_keywords = ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything"]

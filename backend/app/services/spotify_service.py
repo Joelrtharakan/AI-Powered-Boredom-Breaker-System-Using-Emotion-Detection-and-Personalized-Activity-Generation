@@ -29,13 +29,30 @@ class SpotifyService:
             print("DEBUG: Spotify Client is None")
             return self._get_mock_data(mood)
 
-        search_query = f"{mood} energy" if mood in ["energize", "focus"] else f"{mood} chill"
+        # Curated search queries per mood for better playlist matching
+        mood_queries = {
+            "chill": "calming peaceful piano ambient relaxing",
+            "energize": "upbeat energy workout pop",
+            "happy": "happy feel good hits",
+            "focus": "deep focus study instrumental",
+            "sad": "soft emotional piano instrumental",
+        }
+        search_query = mood_queries.get(mood, f"{mood} music playlist")
+
+        # Playlists to exclude (not suitable for therapy context)
+        exclude_words = ["lullaby", "lullabies", "sleep", "baby", "asmr", "bedtime", "nursery", "kids"]
+
         try:
-            results = self.sp.search(q=search_query, type='playlist', limit=limit)
+            results = self.sp.search(q=search_query, type='playlist', limit=limit + 10)  # fetch extra to allow filtering
             playlists = []
             
             for item in results['playlists']['items']:
                 if not item: continue
+
+                name_lower = item['name'].lower()
+                # Skip playlists with excluded words
+                if any(ex in name_lower for ex in exclude_words):
+                    continue
                 
                 # Get high res image
                 img = item['images'][0]['url'] if item['images'] else "https://via.placeholder.com/300"
@@ -48,6 +65,10 @@ class SpotifyService:
                     "tracks_count": item['tracks']['total'],
                     "description": item.get('description', '')
                 })
+
+                if len(playlists) >= limit:
+                    break
+
             return playlists
         except Exception as e:
             print(f"Spotify Error: {e}")
