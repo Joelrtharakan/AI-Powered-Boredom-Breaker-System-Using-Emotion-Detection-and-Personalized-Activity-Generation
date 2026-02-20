@@ -122,7 +122,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     curve: Curves.easeOutBack, // Playful bounce
                     child: moodState.when(
                       data: (data) {
-                        if (data.isEmpty) return const SizedBox.shrink();
+                        if (data.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
                         return _GeneratedPlanCard(
                           data: data,
                           onReset: () {
@@ -820,8 +822,9 @@ class _GeneratedPlanCard extends StatelessWidget {
       String? trackName;
 
       if (metadata != null) {
-        if (metadata.containsKey('spotify_uri'))
+        if (metadata.containsKey('spotify_uri')) {
           spotifyUrl = metadata['spotify_uri'];
+        }
         if (metadata.containsKey('playlist_name')) {
           playlistName = metadata['playlist_name'];
           trackName = playlistName;
@@ -880,7 +883,9 @@ class _GeneratedPlanCard extends StatelessWidget {
       color = const Color(0xFF4FACFE);
     }
 
-    if (label == null) return const SizedBox.shrink();
+    if (label == null) {
+      return const SizedBox.shrink();
+    }
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),

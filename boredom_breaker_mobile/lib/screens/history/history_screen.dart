@@ -43,7 +43,9 @@ class HistoryScreen extends ConsumerWidget {
       ),
       body: historyState.when(
         data: (history) {
-          if (history.isEmpty) return _buildEmptyState();
+          if (history.isEmpty) {
+            return _buildEmptyState();
+          }
           // Calculate stats
           final stats = _calculateStats(history);
           return _buildContent(context, history, stats);
@@ -62,7 +64,9 @@ class HistoryScreen extends ConsumerWidget {
   }
 
   Map<String, dynamic> _calculateStats(List<dynamic> history) {
-    if (history.isEmpty) return {};
+    if (history.isEmpty) {
+      return {};
+    }
 
     double totalIntensity = 0;
     Map<String, int> moodCounts = {};
@@ -127,37 +131,40 @@ class HistoryScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 1. Key Metrics Row
-          Row(
-            children: [
-              Expanded(
-                child: _MetricCard(
-                  label: "Avg Intensity",
-                  value:
-                      "${(stats['avg_intensity'] * 100).toStringAsFixed(0)}%",
-                  icon: Icons.ssid_chart_rounded,
-                  color: const Color(0xFF6D4EFF),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _MetricCard(
+                    label: "Avg Intensity",
+                    value:
+                        "${(stats['avg_intensity'] * 100).toStringAsFixed(0)}%",
+                    icon: Icons.ssid_chart_rounded,
+                    color: const Color(0xFF6D4EFF),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _MetricCard(
-                  label: "Check-ins",
-                  value: "${stats['total_logs']}",
-                  icon: Icons.check_circle_outline_rounded,
-                  color: const Color(0xFF00C6FF),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MetricCard(
+                    label: "Check-ins",
+                    value: "${stats['total_logs']}",
+                    icon: Icons.check_circle_outline_rounded,
+                    color: const Color(0xFF00C6FF),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _MetricCard(
-                  label: "Dominant",
-                  value: stats['dominant_mood'].toString().toUpperCase(),
-                  icon: Icons.psychology_rounded,
-                  color: const Color(0xFFFF416C),
-                  isTextSmall: true,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MetricCard(
+                    label: "Dominant",
+                    value: stats['dominant_mood'].toString().toUpperCase(),
+                    icon: Icons.psychology_rounded,
+                    color: const Color(0xFFFF416C),
+                    isTextSmall: true,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1),
 
           const SizedBox(height: 24),
@@ -213,7 +220,7 @@ class HistoryScreen extends ConsumerWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: history.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final item = history[index];
               return _HistoryItemCard(item: item, index: index)
@@ -253,14 +260,15 @@ class _MetricCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 20),
@@ -297,24 +305,33 @@ class _MoodDistributionChart extends StatelessWidget {
   const _MoodDistributionChart({required this.stats});
 
   Color _getColorForMood(String mood) {
-    if (mood.contains('happy') || mood.contains('joy'))
-      return const Color(0xFFFFB74D); // Warm Orange
-    if (mood.contains('sad') || mood.contains('depress'))
-      return const Color(0xFF4E92FF); // Soft Blue
-    if (mood.contains('ang') || mood.contains('frust'))
-      return const Color(0xFFFF5252); // Bright Red
-    if (mood.contains('anx') || mood.contains('nerv'))
-      return const Color(0xFFBA68C8); // Soft Purple
-    if (mood.contains('calm') || mood.contains('relax'))
-      return const Color(0xFF4DB6AC); // Teal
+    if (mood.contains('happy') || mood.contains('joy')) {
+      return const Color(0xFFFFB74D);
+    }
+    if (mood.contains('sad') || mood.contains('depress')) {
+      return const Color(0xFF4E92FF);
+    }
+    if (mood.contains('ang') || mood.contains('frust')) {
+      return const Color(0xFFFF5252);
+    }
+    if (mood.contains('anx') || mood.contains('nerv')) {
+      return const Color(0xFFBA68C8);
+    }
+    if (mood.contains('calm') || mood.contains('relax')) {
+      return const Color(0xFF4DB6AC);
+    }
     if (mood.contains('bored') ||
         mood.contains('low') ||
         mood.contains('tired') ||
-        mood.contains('fatigue'))
-      return const Color(0xFF7986CB); // Indigo
-    if (mood.contains('neutral') || mood.contains('none'))
-      return const Color(0xFF81C784); // Green
-    if (mood.contains('stress')) return const Color(0xFFFF8A65); // Deep Orange
+        mood.contains('fatigue')) {
+      return const Color(0xFF7986CB);
+    }
+    if (mood.contains('neutral') || mood.contains('none')) {
+      return const Color(0xFF81C784);
+    }
+    if (mood.contains('stress')) {
+      return const Color(0xFFFF8A65);
+    }
     return const Color(0xFFB0BEC5); // Blue Grey default
   }
 
@@ -331,7 +348,7 @@ class _MoodDistributionChart extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -418,7 +435,7 @@ class _IntensityChart extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF141414),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: const Center(
           child: Text(
@@ -448,7 +465,7 @@ class _IntensityChart extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: LineChart(
         LineChartData(
@@ -456,8 +473,10 @@ class _IntensityChart extends StatelessWidget {
             show: true,
             drawVerticalLine: false,
             horizontalInterval: 0.25,
-            getDrawingHorizontalLine: (value) =>
-                FlLine(color: Colors.white.withOpacity(0.05), strokeWidth: 1),
+            getDrawingHorizontalLine: (value) => FlLine(
+              color: Colors.white.withValues(alpha: 0.05),
+              strokeWidth: 1,
+            ),
           ),
           lineTouchData: LineTouchData(
             handleBuiltInTouches: true,
@@ -584,8 +603,8 @@ class _IntensityChart extends StatelessWidget {
                 show: true,
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.3),
-                    AppColors.primary.withOpacity(0.0),
+                    AppColors.primary.withValues(alpha: 0.3),
+                    AppColors.primary.withValues(alpha: 0.0),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -606,24 +625,33 @@ class _HistoryItemCard extends StatelessWidget {
   const _HistoryItemCard({required this.item, required this.index});
 
   Color _getMoodColor(String mood) {
-    if (mood.contains('happy') || mood.contains('joy'))
-      return const Color(0xFFFFB74D); // Warm Orange
-    if (mood.contains('sad') || mood.contains('depress'))
-      return const Color(0xFF4E92FF); // Soft Blue
-    if (mood.contains('ang') || mood.contains('frust'))
-      return const Color(0xFFFF5252); // Bright Red
-    if (mood.contains('anx') || mood.contains('nerv'))
-      return const Color(0xFFBA68C8); // Soft Purple
-    if (mood.contains('calm') || mood.contains('relax'))
-      return const Color(0xFF4DB6AC); // Teal
+    if (mood.contains('happy') || mood.contains('joy')) {
+      return const Color(0xFFFFB74D);
+    }
+    if (mood.contains('sad') || mood.contains('depress')) {
+      return const Color(0xFF4E92FF);
+    }
+    if (mood.contains('ang') || mood.contains('frust')) {
+      return const Color(0xFFFF5252);
+    }
+    if (mood.contains('anx') || mood.contains('nerv')) {
+      return const Color(0xFFBA68C8);
+    }
+    if (mood.contains('calm') || mood.contains('relax')) {
+      return const Color(0xFF4DB6AC);
+    }
     if (mood.contains('bored') ||
         mood.contains('low') ||
         mood.contains('tired') ||
-        mood.contains('fatigue'))
-      return const Color(0xFF7986CB); // Indigo
-    if (mood.contains('neutral') || mood.contains('none'))
-      return const Color(0xFF81C784); // Green
-    if (mood.contains('stress')) return const Color(0xFFFF8A65); // Deep Orange
+        mood.contains('fatigue')) {
+      return const Color(0xFF7986CB);
+    }
+    if (mood.contains('neutral') || mood.contains('none')) {
+      return const Color(0xFF81C784);
+    }
+    if (mood.contains('stress')) {
+      return const Color(0xFFFF8A65);
+    }
     return const Color(0xFFB0BEC5); // Blue Grey default
   }
 
@@ -641,14 +669,14 @@ class _HistoryItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(Icons.circle, color: color, size: 12),
@@ -698,7 +726,7 @@ class _HistoryItemCard extends StatelessWidget {
           Column(
             children: [
               Text(
-                "${(intensity * 10).toStringAsFixed(1)}",
+                (intensity * 10).toStringAsFixed(1),
                 style: GoogleFonts.outfit(
                   color: Colors.white54,
                   fontSize: 12,
