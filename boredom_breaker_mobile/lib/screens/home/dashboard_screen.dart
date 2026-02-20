@@ -764,10 +764,14 @@ class _GeneratedPlanCard extends StatelessWidget {
       icon = Icons.air_rounded;
       color = const Color(0xFF00C6FF);
     } else if (type == 'music' ||
+        type == 'calming_audio' ||
         lowerDesc.contains('music') ||
         lowerDesc.contains('song') ||
         lowerDesc.contains('listen') ||
         lowerDesc.contains('playlist') ||
+        lowerDesc.contains('ambient') ||
+        lowerDesc.contains('white noise') ||
+        lowerDesc.contains('instrumental') ||
         (metadata != null &&
             (metadata.containsKey('spotify_uri') ||
                 metadata.containsKey('playlist_name')))) {

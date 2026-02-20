@@ -33,23 +33,52 @@ class SemanticEngine:
         
         return best_emotion, best_score
 
+    def has_any_emotional_content(self, text: str) -> bool:
+        """Check if text contains ANY emotional/meaningful language from any cluster."""
+        for emotion, patterns in self.compiled.items():
+            for p in patterns:
+                if p.search(text):
+                    return True
+        return False
+
 class RiskAssessment:
     """Classifies user input into risk levels based on keywords and intensity."""
     def __init__(self):
         self.patterns = {
             "CRISIS": [
-                "kill myself", "suicide", "want to die", "end it all", "better off dead", 
+                "kill myself", "suicide", "sucide", "want to die", "end it all", "better off dead", 
                 "no reason to live", "cutting myself", "overdose", "hanging myself", 
-                "wish i was dead", "hurt myself", "pain ends", "goodbye forever"
+                "wish i was dead", "hurt myself", "pain ends", "goodbye forever",
+                "end my life", "quit life", "i am done", "done with life",
+                "not worth living", "why am i alive", "don't want to exist",
+                "what's the point of living", "why do i exist", "no point in living"
             ],
             "HIGH_DISTRESS": [
                 "panic attack", "can't breathe", "falling apart", "shaking", "terrified",
                 "hopeless", "drowning in sorrow", "unbearable", "heart is ripping", 
-                "screaming", "can't take this", "breaking point", "mudiyala", "avalotha"
+                "screaming", "can't take this", "breaking point",
+                "mudiyala", "avalotha", "enaku mudiyala", "porum", "venam",
+                "naan sethuruvom", "azhugiren"
             ],
             "MODERATE_DISTRESS": [
-                "stressed", "anxious", "worried", "tired", "sad", "lonely", "frustrated", 
-                "annoyed", "exhausted", "fed up", "crying"
+                "stressed", "anxious", "worried", "sad", "lonely", "frustrated", 
+                "annoyed", "fed up", "crying"
+            ],
+            "FATIGUE": [
+                "brain is fried", "brain fog", "exhausted", "sleepy", "drained", "no energy",
+                "can't keep eyes open", "so tired", "burnout", "wiped out", "need a nap",
+                "need sleep", "fatigued", "too tired", "tired"
+            ],
+            "TASK_BLOCKED": [
+                "stuck on this", "can't focus", "procrastinating", "overwhelmed by work",
+                "too much to do", "writer's block", "can't start", "distracted", 
+                "losing focus", "brain dead", "can't complete", "can't finish", 
+                "frustrated with work", "stuck on work", "hard to focus", "not making progress",
+                "overwhelming", "can't do this assignment"
+            ],
+            "BOREDOM": [
+                "bored", "nothing to do", "so dull", "entertain me", "killing time",
+                "have nothing to do", "so boring", "i'm bored", "really bored"
             ]
         }
     
@@ -61,24 +90,50 @@ class RiskAssessment:
             if pattern in text_lower:
                 return "CRISIS"
         
-        # 2. HIGH DISTRESS Check
+        # 2. FATIGUE Check (Physical State Overrides Emotional)
+        for pattern in self.patterns["FATIGUE"]:
+             if pattern in text_lower:
+                return "FATIGUE"
+
+        # 3. TASK BLOCKED Check (Functional State Overrides Emotional Distress)
+        for pattern in self.patterns["TASK_BLOCKED"]:
+            if pattern in text_lower:
+                return "TASK_BLOCKED"
+
+        # 4. HIGH DISTRESS Check (Keyword-based)
         for pattern in self.patterns["HIGH_DISTRESS"]:
             if pattern in text_lower:
                 return "HIGH_DISTRESS"
-        
-        # 3. Contextual High Distress (High Intensity Negative Emotions)
-        if emotion in ["fear", "sadness", "anger"] and intensity > 0.8:
-            return "HIGH_DISTRESS"
 
-        # 4. MODERATE DISTRESS Check
+        # 5. BOREDOM Check (BEFORE intensity rule — prevents false escalation)
+        for pattern in self.patterns["BOREDOM"]:
+            if pattern in text_lower:
+                return "BOREDOM"
+        if emotion == "bored":
+            return "BOREDOM"
+
+        # 6. MODERATE DISTRESS Check (Keyword-based)
         for pattern in self.patterns["MODERATE_DISTRESS"]:
             if pattern in text_lower:
                 return "MODERATE_DISTRESS"
+
+        # 7. Contextual High Distress (Model intensity — raised threshold to reduce false positives)
+        if emotion in ["fear", "sadness", "anger"] and intensity > 0.95:
+            return "HIGH_DISTRESS"
         
-        if emotion in ["sadness", "fear", "anger", "fatigue"] and intensity > 0.5:
+        if emotion in ["sadness", "fear", "anger"] and intensity > 0.5:
              return "MODERATE_DISTRESS"
 
         return "LOW_NORMAL"
+
+    def has_any_pattern_match(self, text: str) -> bool:
+        """Check if text matches ANY risk pattern."""
+        text_lower = text.lower()
+        for category, patterns in self.patterns.items():
+            for pattern in patterns:
+                if pattern in text_lower:
+                    return True
+        return False
 
 class EmotionAnalyzer:
     def __init__(self):
@@ -163,7 +218,7 @@ class EmotionAnalyzer:
                     reason = "Contrastive logic detected ('but/however'), trusting Transformer context over Keywords."
 
         # Case B: Mundane/Neutral Handling
-        mundane_markers = ["toast", "breakfast", "lunch", "dinner", "walk the", "dog", "cat", "wall", "car", "parked", "reading", "book", "email", "chilling", "progress", "steady", "shopping"]
+        mundane_markers = ["toast", "breakfast", "lunch", "dinner", "walk the", "dog", "cat", "wall", "car", "parked", "reading", "book", "email", "chilling", "progress", "steady", "shopping", "weather", "temperature", "rain", "sunny", "cloudy day"]
         is_mundane = any(m in text_clean for m in mundane_markers)
         if is_mundane and model_score < 0.95 and final_emotion != "joy" and not semantic_emotion:
              final_emotion = "neutral"
@@ -178,6 +233,19 @@ class EmotionAnalyzer:
             decision_source = "uncertainty_handled"
             reason = "Weak emotional signals detected, defaulting to neutral."
 
+        # Case D: NO EMOTIONAL CONTENT — Random/Nonsensical words
+        # If the model assigned an emotion but there's ZERO semantic backup and
+        # the text has no recognized emotional language at all, it's noise.
+        if (decision_source == "model_primary" 
+            and not is_mundane
+            and not self.semantic.has_any_emotional_content(text_clean)
+            and not self.risk_assessor.has_any_pattern_match(text_clean)
+            and final_emotion not in ["neutral", "joy"]):
+            final_emotion = "neutral"
+            final_score = 0.0
+            decision_source = "no_emotion_detected"
+            reason = "No emotional content found in input. Random or non-emotional text."
+
         # 4. Ambivalent Anticipation Rule
         if "nervous" in text_clean and "excited" in text_clean:
             final_emotion = "fear"
@@ -185,8 +253,28 @@ class EmotionAnalyzer:
             decision_source = "heuristic_override"
             reason = "Detected 'Nervous Anticipation' pattern, prioritizing Anxiety over Excitement."
             
-        # 5. RISK ASSESSMENT (New V14 Feature)
+        # 5. SAFETY OVERRIDE: Joy cannot coexist with crisis/existential phrases
+        existential_phrases = ["why am i alive", "what's the point", "why do i exist", "not worth living",
+                               "want to die", "kill myself", "end it all", "better off dead", "done with life"]
+        if final_emotion == "joy" and any(p in text_clean for p in existential_phrases):
+            final_emotion = "sadness"
+            final_score = max(final_score, 0.95)
+            decision_source = "safety_override"
+            reason = "Joy overridden: existential/suicidal phrase detected. Safety first."
+
+        # 6. Neutral intensity cap (cannot exceed 0.85)
+        if final_emotion == "neutral" and final_score > 0.85:
+            final_score = 0.85
+
+        # 7. Intensity > 0.9 flag for plan strengthening
+        needs_strengthening = final_score > 0.9 and final_emotion in ["sadness", "fear", "anger"]
+
+        # 8. RISK ASSESSMENT
         risk_level = self.risk_assessor.assess(text_clean, final_emotion, final_score)
+
+        # 9. Override risk to NO_EMOTION if no emotional content was found
+        if decision_source == "no_emotion_detected":
+            risk_level = "NO_EMOTION"
         
         # Mapping to internal app moods
         mood_map = {
@@ -201,12 +289,19 @@ class EmotionAnalyzer:
 
         # Strategy Guidance for Agent
         strategy = "Provide clear, accurate, efficient help."
+        
         if risk_level == "CRISIS":
             strategy = "CRISIS PROTOCOL: Respond with empathy, validate feelings, slow the moment (grounding), encourage reaching trusted person. DO NOT give productivity tips."
+        elif risk_level == "FATIGUE":
+             strategy = "FATIGUE PROTOCOL: Goal -> Restore Energy. Acknowledge tiredness. Recommend rest/nap/hydration. NO GAMES. NO WORK."
         elif risk_level == "HIGH_DISTRESS":
             strategy = "HIGH DISTRESS: Validate emotion strongly. Provide grounding + one simple coping step."
+        elif risk_level == "TASK_BLOCKED":
+            strategy = "TASK BLOCKED: Acknowledge frustration. Identify blocker. Suggest 3 small, time-bound recovery steps. NO RELAXATION."
         elif risk_level == "MODERATE_DISTRESS":
             strategy = "MODERATE DISTRESS: Provide supportive guidance with emotional awareness."
+        elif risk_level == "BOREDOM":
+            strategy = "BOREDOM: Suggest engaging, interest-aligned activities (games/creative). Purposeful engagement."
 
         return {
             "mood": mood_map.get(final_emotion, "neutral"),
@@ -218,7 +313,9 @@ class EmotionAnalyzer:
             "strategy": strategy,
             "confidence_level": model_score if 'model_score' in locals() else final_score,
             "decision_source": decision_source,
-            "reason": reason
+            "reason": reason,
+            "needs_strengthening": needs_strengthening,
+            "text": text
         }
 
     def _neutral_response(self, reason):
