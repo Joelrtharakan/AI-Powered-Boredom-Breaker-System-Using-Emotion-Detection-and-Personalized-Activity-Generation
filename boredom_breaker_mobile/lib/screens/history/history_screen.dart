@@ -459,6 +459,26 @@ class _IntensityChart extends StatelessWidget {
             getDrawingHorizontalLine: (value) =>
                 FlLine(color: Colors.white.withOpacity(0.05), strokeWidth: 1),
           ),
+          lineTouchData: LineTouchData(
+            handleBuiltInTouches: true,
+            touchSpotThreshold:
+                50, // Massive touch area to make dragging/scrubbing act like hovering
+            touchTooltipData: LineTouchTooltipData(
+              getTooltipColor: (touchedSpot) => const Color(0xFF242424),
+              getTooltipItems: (touchedSpots) {
+                return touchedSpots.map((LineBarSpot touchedSpot) {
+                  return LineTooltipItem(
+                    touchedSpot.y.toStringAsFixed(2),
+                    GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  );
+                }).toList();
+              },
+            ),
+          ),
           titlesData: FlTitlesData(
             show: true,
             rightTitles: const AxisTitles(
@@ -478,23 +498,25 @@ class _IntensityChart extends StatelessWidget {
                     int idx = value.toInt();
                     int lastIdx = history.length - 1;
 
+                    bool isFirst = idx == 0;
+                    bool isLast = idx == lastIdx;
+
                     if (history.length > 4) {
                       int step = (history.length / 4).round();
                       if (step < 1) step = 1;
 
-                      bool isFirst = idx == 0;
-                      bool isLast = idx == lastIdx;
                       bool isMultiple = idx % step == 0;
 
                       if (!isFirst && !isLast && !isMultiple) {
                         return const SizedBox.shrink();
                       }
 
-                      // Stop internal points from rendering if they are way too close to the last tag
-                      if (isMultiple &&
-                          !isLast &&
-                          (lastIdx - idx) <= (step / 1.5)) {
-                        return const SizedBox.shrink();
+                      // Stop internal points from rendering if they are way too close to the end tags
+                      if (isMultiple && !isFirst && !isLast) {
+                        if ((lastIdx - idx) <= (step * 0.9) ||
+                            idx <= (step * 0.9)) {
+                          return const SizedBox.shrink();
+                        }
                       }
                     }
                     final date = DateTime.parse(
@@ -505,13 +527,13 @@ class _IntensityChart extends StatelessWidget {
                         ? DateFormat('h:mm a').format(date)
                         : DateFormat('MM/dd').format(date);
 
-                    // Fit text in box to prevent cutoff
                     return Container(
                       padding: const EdgeInsets.only(top: 10.0),
                       alignment: Alignment.center,
-                      width: 60, // Limit width of text chunk
+                      width: 50, // Limit width of text chunk slightly more
                       child: Text(
                         label,
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
                           color: Colors.white38,
                           fontSize: 10,
