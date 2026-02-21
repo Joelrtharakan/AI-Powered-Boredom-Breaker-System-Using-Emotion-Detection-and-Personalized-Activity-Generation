@@ -31,7 +31,8 @@ SPOTIFY_CLIENT_SECRET=
 ```bash
 cd backend
 # This will create tables on first run
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
 ```
 *Note: The first run will download the HuggingFace model (~500MB).*
 

@@ -5,6 +5,7 @@ class SessionManager {
   static const String _keyUserEmail = "user_email";
   static const String _keyUserName = "user_name";
   static const String _keyUserId = "user_id";
+  static const String _keyLockboxPasscode = "lockbox_passcode";
 
   static Future<void> saveSession(
     String token,
@@ -17,6 +18,16 @@ class SessionManager {
     await prefs.setString(_keyUserEmail, email);
     await prefs.setString(_keyUserName, name);
     await prefs.setInt(_keyUserId, userId);
+  }
+
+  static Future<void> saveLockboxPasscode(String passcode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyLockboxPasscode, passcode);
+  }
+
+  static Future<String?> getLockboxPasscode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyLockboxPasscode);
   }
 
   static Future<int?> getUserId() async {

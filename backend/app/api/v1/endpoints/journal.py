@@ -6,6 +6,7 @@ from datetime import datetime
 
 from app.db.session import SessionLocal
 from app.models.journal import Journal
+from app.services.emotion_ai import emotion_analyzer
 
 router = APIRouter()
 
@@ -31,6 +32,7 @@ class JournalOut(BaseModel):
     id: int
     title: str
     content: str
+    emotion: Optional[str] = None
     created_at: datetime
     is_encrypted: bool
     class Config:
@@ -38,10 +40,17 @@ class JournalOut(BaseModel):
 
 @router.post("/create")
 def create_journal(log: JournalCreate, db: Session = Depends(get_db)):
+    # Run emotion analysis on the journal content
+    try:
+        analysis = emotion_analyzer.analyze(log.content)
+        emotion_str = analysis.get("emotion", "Neutral").capitalize()
+    except Exception:
+        emotion_str = "Neutral"
     db_log = Journal(
         user_id=log.user_id,
         title=log.title,
         content=log.content,
+        emotion=emotion_str,
         is_encrypted=1 if log.is_encrypted else 0,
         created_at=datetime.utcnow()
     )

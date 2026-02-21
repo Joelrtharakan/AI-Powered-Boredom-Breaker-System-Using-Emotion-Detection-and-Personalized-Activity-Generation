@@ -64,3 +64,12 @@ def unlock_lockbox(req: LockboxUnlock, db: Session = Depends(get_db)):
     return {
         "encrypted_data_base64": base64.b64encode(lb.encrypted_data).decode('utf-8')
     }
+
+@router.delete("/{id}")
+def delete_lockbox(id: int, db: Session = Depends(get_db)):
+    lb = db.query(Lockbox).filter(Lockbox.id == id).first()
+    if not lb:
+        raise HTTPException(status_code=404, detail="Lockbox item not found")
+    db.delete(lb)
+    db.commit()
+    return {"ok": True}

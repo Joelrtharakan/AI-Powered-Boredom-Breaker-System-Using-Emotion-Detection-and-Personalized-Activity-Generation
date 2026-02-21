@@ -10,6 +10,7 @@ class Journal(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     title = Column(String)
     content = Column(Text)
+    emotion = Column(String(50), nullable=True)
     is_encrypted = Column(Integer, default=0) # 0 or 1
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

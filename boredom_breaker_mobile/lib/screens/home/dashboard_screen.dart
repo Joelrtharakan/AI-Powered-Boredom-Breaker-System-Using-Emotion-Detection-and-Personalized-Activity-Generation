@@ -9,7 +9,6 @@ import '../../providers/mood_provider.dart';
 import '../../providers/history_provider.dart';
 import '../../services/session_manager.dart';
 import '../../services/api_client.dart'; // Added ApiClient
-import '../chat/chat_screen.dart';
 import '../zen_screen.dart';
 import '../music/music_screen.dart';
 import '../games/games_screen.dart';
@@ -161,7 +160,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ],
       ),
-      floatingActionButton: _buildAIButton(),
     );
   }
 
@@ -332,25 +330,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final items = [
       {
         'title': 'Journal',
-        'icon': Icons.book_rounded,
+        'iconUrl': 'https://img.icons8.com/stickers/256/journal.png',
         'color': const Color(0xFF4FACFE),
         'screen': const JournalScreen(),
       },
       {
         'title': 'Voice',
-        'icon': Icons.graphic_eq_rounded,
+        'iconUrl':
+            'https://img.icons8.com/external-tal-revivo-filled-tal-revivo/96/external-inbuilt-voice-assistant-for-smartphones-isolated-on-a-white-background-house-filled-tal-revivo.png',
         'color': const Color(0xFFFF416C),
         'screen': const VoiceModeScreen(),
       },
       {
         'title': 'Lockbox',
-        'icon': Icons.lock_outline_rounded,
+        'iconUrl': 'https://img.icons8.com/clouds/256/lock--v1.png',
         'color': const Color(0xFF43E97B),
         'screen': const LockboxScreen(),
       },
       {
         'title': 'History',
-        'icon': Icons.schedule_rounded,
+        'iconUrl': 'https://img.icons8.com/clouds/256/time-machine.png',
         'color': const Color(0xFFFA709A),
         'screen': const HistoryScreen(),
       },
@@ -443,40 +442,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ),
       ),
     );
-  }
-
-  Widget _buildAIButton() {
-    return Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              colors: [Color(0xFF00C6FF), Color(0xFF0072FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF00C6FF).withValues(alpha: 0.5),
-                blurRadius: 25,
-                spreadRadius: 5,
-              ),
-            ],
-          ),
-          child: FloatingActionButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ChatScreen()),
-            ),
-            backgroundColor: Colors.transparent,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            child: const Icon(Icons.auto_awesome_rounded, size: 28),
-          ),
-        )
-        .animate()
-        .scale(delay: 1.seconds, duration: 600.ms, curve: Curves.elasticOut)
-        .shimmer(delay: 3.seconds, duration: 1.5.seconds);
   }
 }
 
@@ -1048,8 +1013,6 @@ class _ExploreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = item['color'] as Color;
-
     return InkWell(
       onTap: () => Navigator.push(
         context,
@@ -1067,13 +1030,15 @@ class _ExploreCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Image.network(
+                item['iconUrl'] as String,
+                width: 48,
+                height: 48,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
               ),
-              child: Icon(item['icon'] as IconData, color: color, size: 24),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
