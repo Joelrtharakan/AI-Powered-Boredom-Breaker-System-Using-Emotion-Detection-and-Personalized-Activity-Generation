@@ -112,3 +112,15 @@ def get_sessions(user_id: int, db: Session = Depends(get_db)):
     # Better logic: Find the FIRST user message for the title
     # But for now, let's just return unique sessions found.
     return list(sessions.values())
+
+@router.delete("/session/{session_id}")
+def delete_session(session_id: str, user_id: int, db: Session = Depends(get_db)):
+    db.query(ChatHistory).filter(ChatHistory.session_id == session_id, ChatHistory.user_id == user_id).delete()
+    db.commit()
+    return {"status": "deleted"}
+
+@router.delete("/history")
+def clear_all_history(user_id: int, db: Session = Depends(get_db)):
+    db.query(ChatHistory).filter(ChatHistory.user_id == user_id).delete()
+    db.commit()
+    return {"status": "cleared"}

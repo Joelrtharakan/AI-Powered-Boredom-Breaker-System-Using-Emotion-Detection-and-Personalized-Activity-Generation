@@ -1,21 +1,22 @@
 import re
 from app.services.llm_service import llm_service
-
 from app.services.emotion_ai import emotion_analyzer
+from app.services.guardrail_service import guardrail_service
 
 class ChatAgent:
     def __init__(self):
         # Base Persona
-        self.base_system_prompt = """You are a high-reliability AI assistant focused on understanding intent, context, and user wellbeing.
-Your objective is to produce the most helpful, accurate, and appropriate response for the user's situation.
-
-CORE RULES:
-1. **Understand before advising:** Validate feelings first if distress is present.
-2. **Be Natural & Concise:** Chat like a thoughtful human expert. Avoid robotic phrasing.
-3. **Safety First:** If risk is detected, prioritize safety over all else.
+        self.base_system_prompt = """You are Luno, an empathetic and supportive AI companion.
+Your objective is to provide a safe space, support the user's emotional wellbeing, and act as a gentle confidant.
+Always be warm, understanding, and validating.
 """
 
     async def generate_response(self, user_message: str, history: list = None) -> str:
+        # 0. Execute Robust Multi-Layer Guardrail
+        is_safe, refusal_reason = await guardrail_service.analyze(user_message)
+        if not is_safe:
+            return refusal_reason
+
         # 1. Analyze Emotion & Risk (V14 Model)
         try:
             analysis = emotion_analyzer.analyze(user_message)
@@ -26,7 +27,7 @@ CORE RULES:
             print(f"Emotion Analysis Failed: {e}")
             risk_level = "LOW_NORMAL"
             emotion = "neutral"
-            strategy = "Provide clear, accurate, efficient help."
+            strategy = "Provide warm, comforting support."
 
         # 2. Construct Context-Aware Prompt
         dynamic_instruction = f"""
@@ -41,19 +42,18 @@ Required Strategy: {strategy}
             dynamic_instruction += """
 1. Acknowledge & Validate (show deep empathy)
 2. Support/Grounding (slow the moment)
-3. Gentle Next Step (encourage safety/connection)
-Keep it under 3 sentences. Be warm and present.
+3. Gentle Next Step (encourage professional connection)
+Keep it under 3-4 sentences. Be exceptionally warm.
 """
         elif risk_level == "MODERATE_DISTRESS":
             dynamic_instruction += """
-1. Validate the feeling.
-2. Offer supportive guidance or a simple perspective.
-Keep it friendly and concise.
+1. Validate the feeling. Be extremely comforting.
+2. Offer supportive guidance or a therapeutic perspective.
+Keep it friendly and caring.
 """
         else:
             dynamic_instruction += """
-Directly answer the user's input. Be friendly and engaging.
-If it's a casual chat, just hang out.
+Check in warmly or continue the conversation. Be a comforting listener.
 """
 
         full_system_prompt = self.base_system_prompt + dynamic_instruction

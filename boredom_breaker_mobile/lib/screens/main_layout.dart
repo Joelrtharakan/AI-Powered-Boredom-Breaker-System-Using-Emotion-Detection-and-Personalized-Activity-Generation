@@ -29,7 +29,7 @@ class _MainLayoutState extends State<MainLayout> {
     const DashboardScreen(),
     const GamesScreen(),
     const MusicScreen(),
-    const ChatScreen(),
+    const SizedBox.shrink(),
   ];
 
   void _navigateTo(Widget screen) {
@@ -209,7 +209,17 @@ class _MainLayoutState extends State<MainLayout> {
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
+              onTap: (index) {
+                if (index == 3) {
+                  setState(() => _currentIndex = 0);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ChatScreen()),
+                  );
+                } else {
+                  setState(() => _currentIndex = index);
+                }
+              },
               backgroundColor: Colors.transparent,
               elevation: 0,
               selectedItemColor: AppColors.primary,
