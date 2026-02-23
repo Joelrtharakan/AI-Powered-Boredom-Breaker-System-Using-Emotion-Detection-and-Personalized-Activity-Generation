@@ -403,23 +403,13 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: const Color(0xFF09090B), // Very dark slate
       body: Stack(
         children: [
-          // Dynamic gradient background (Calming Emerald & Blue)
+          // Pure Black Background matching Dashboard
           Positioned.fill(
             child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF020617),
-                    Color(0xFF0F172A),
-                    Color(0xFF064E3B),
-                  ],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                ),
-              ),
+              color: const Color(0xFF000000), // OLED Black
             ),
           ),
-          // Floating glow accents
+          // Floating glow accents (Purple & Blue)
           Positioned(
             top: -150,
             left: -100,
@@ -430,7 +420,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF0EA5E9).withOpacity(0.15),
+                    color: const Color(0xFF8E2DE2).withOpacity(0.15), // Deep Purple
                     blurRadius: 200,
                   ),
                 ],
@@ -447,7 +437,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF10B981).withOpacity(0.15),
+                    color: const Color(0xFF6D4EFF).withOpacity(0.15), // Primary Purple
                     blurRadius: 200,
                   ),
                 ],
@@ -506,14 +496,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       border: Border.all(color: Colors.white.withOpacity(0.08)),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF10B981).withOpacity(0.1),
+                          color: const Color(0xFF6D4EFF).withOpacity(0.15),
                           blurRadius: 30,
                           spreadRadius: 10,
                         ),
                       ],
                     ),
                     child: Image.network(
-                      'https://img.icons8.com/fluency/48/chatbot--v1.png',
+                      'https://img.icons8.com/nolan/64/bot.png',
                       width: 64,
                       height: 64,
                     ),
@@ -580,7 +570,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 child: Center(
                   child: Image.network(
-                    'https://img.icons8.com/fluency/48/chatbot--v1.png',
+                    'https://img.icons8.com/nolan/64/bot.png',
                     width: 28,
                     height: 28,
                   ),
@@ -607,12 +597,12 @@ class _ChatScreenState extends State<ChatScreen> {
                               width: 8,
                               height: 8,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF10B981),
+                                color: const Color(0xFF6D4EFF),
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
                                     color: const Color(
-                                      0xFF10B981,
+                                      0xFF6D4EFF,
                                     ).withOpacity(0.6),
                                     blurRadius: 6,
                                   ),
@@ -661,10 +651,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   vertical: 16,
                 ),
                 decoration: BoxDecoration(
-                  // Calming Emerald gradient for user
+                  // Deep Purple gradient for user to match Dashboard
                   gradient: isUser
                       ? const LinearGradient(
-                          colors: [Color(0xFF059669), Color(0xFF10B981)],
+                          colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         )
@@ -682,7 +672,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   boxShadow: [
                     if (isUser)
                       BoxShadow(
-                        color: const Color(0xFF10B981).withOpacity(0.25),
+                        color: const Color(0xFF8E2DE2).withOpacity(0.25),
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
@@ -851,9 +841,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildActionChip(IconData icon, String label, Widget screen) {
     return ActionChip(
       backgroundColor: Colors.white.withOpacity(0.08),
-      side: BorderSide(color: const Color(0xFF10B981).withOpacity(0.5)),
+      side: BorderSide(color: const Color(0xFF6D4EFF).withOpacity(0.5)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      avatar: Icon(icon, color: const Color(0xFF10B981), size: 16),
+      avatar: Icon(icon, color: const Color(0xFF6D4EFF), size: 16),
       label: Text(
         label,
         style: GoogleFonts.inter(
@@ -889,7 +879,7 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.network(
-                  'https://img.icons8.com/fluency/48/chatbot--v1.png',
+                  'https://img.icons8.com/nolan/64/bot.png',
                   width: 18,
                   height: 18,
                 )
