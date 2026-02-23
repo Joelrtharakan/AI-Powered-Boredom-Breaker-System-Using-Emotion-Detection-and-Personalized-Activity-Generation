@@ -61,9 +61,13 @@ Respond warmly and conversationally in just 1 or 2 short sentences. Act like a f
 """
             
         dynamic_instruction += """
-When suggesting activities:
-- If suggesting music, explicitly name one of these EXACT playlists: Chill, Focus, Energize, Sad, Happy, Christian, or Top Hits. (e.g., "try the Chill playlist")
-- If suggesting a game, explicitly name one of these EXACT games: Snake, Tic Tac Toe, Memory Flip, or Aim Trainer. (e.g., "let's play Snake")
+When suggesting activities, you must map them properly to the user's current emotion:
+- If they are anxious, scared, worried, or panicked: SUGGEST the "Chill playlist" or "Zen Mode" (breathing). DO NOT suggest "Focus" or "Energize".
+- If they are sad, lonely, or depressed: SUGGEST the "Happy playlist", "Christian playlist", or "Chill playlist".
+- If they are bored or lack motivation: SUGGEST the "Energize playlist", "Top Hits playlist", or games like "Snake" or "Memory Flip".
+- If they are angry or frustrated: SUGGEST the "Focus playlist", "Zen Mode", or "Tic Tac Toe".
+ALWAYS explicitly name one of these EXACT playlists when suggesting music: Chill, Focus, Energize, Sad, Happy, Christian, or Top Hits. (e.g., "try the Chill playlist").
+ALWAYS explicitly name one of these EXACT games when suggesting games: Snake, Tic Tac Toe, Memory Flip, or Aim Trainer.
 """
 
         full_system_prompt = self.base_system_prompt + dynamic_instruction
