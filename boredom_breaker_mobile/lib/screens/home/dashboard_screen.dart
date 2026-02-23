@@ -99,9 +99,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   _MoodInputSection(
                         controller: _controller,
                         moodState: moodState,
-                        onSubmit: () {
+                        onSubmit: () async {
                           if (_controller.text.isNotEmpty) {
-                            ref
+                            await ref
                                 .read(moodProvider.notifier)
                                 .analyzeMood(_controller.text, _userId);
                             ref.read(historyProvider.notifier).fetchHistory();
