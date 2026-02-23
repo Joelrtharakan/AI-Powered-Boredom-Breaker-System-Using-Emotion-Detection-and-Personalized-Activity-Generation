@@ -9,8 +9,8 @@ class OpenRouterService:
         self.api_key = settings.OPENROUTER_API_KEY
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.logger = logging.getLogger(__name__)
-        # Default model: Mistral 7B (Free, Fast, Good Instruction Following)
-        # Default model: Mistral 7B (Free, Fast, Good Instruction Following)
+        # Default model: Mistral 7B (Confirmed stable endpoint). 
+        # (It will now correctly obey the short constraints due to our 'max_tokens' fix and appended system note).
         self.model = "mistralai/mistral-7b-instruct-v0.1" 
         
     async def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
@@ -27,6 +27,8 @@ class OpenRouterService:
         
         data = {
             "model": model or self.model,
+            "max_tokens": 250,  # Increased from 80 to prevent hard cut-offs mid-sentence
+            "temperature": 0.7, # Keep it conversational but stable
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}

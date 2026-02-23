@@ -32,6 +32,9 @@ SPOTIFY_CLIENT_SECRET=
 cd backend
 # This will create tables on first run
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+cd ../boredom_breaker_mobile
+flutter run -d EA66F2A1-0EE7-4017-8319-A09259A3E6D3
+
 
 ```
 *Note: The first run will download the HuggingFace model (~500MB).*
