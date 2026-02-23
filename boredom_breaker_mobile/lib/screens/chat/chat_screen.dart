@@ -4,6 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../services/api_client.dart';
 import '../../services/session_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../music/music_screen.dart';
+import '../games/games_screen.dart';
+import '../games/tic_tac_toe_screen.dart';
+import '../games/snake_game_screen.dart';
+import '../games/aim_trainer_screen.dart';
+import '../games/memory_flip_screen.dart';
+import '../zen_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -681,19 +688,184 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                   ],
                 ),
-                child: Text(
-                  text,
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 15,
-                    height: 1.5,
-                    fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      text,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontSize: 15,
+                        height: 1.5,
+                        fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
+                      ),
+                    ),
+                    if (!isUser) ..._buildActionButtons(text),
+                  ],
                 ),
               )
               .animate()
               .fadeIn(duration: 300.ms)
               .slideY(begin: 0.05, end: 0, duration: 300.ms),
+    );
+  }
+
+  List<Widget> _buildActionButtons(String text) {
+    final t = text.toLowerCase();
+    final List<Widget> buttons = [];
+
+    // Exact Playlist Routing
+    if (t.contains("chill playlist") || t.contains("chill music")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.music_note_rounded,
+          "Chill Playlist",
+          const MusicScreen(initialPlaylistName: 'Chill'),
+        ),
+      );
+    } else if (t.contains("focus playlist") || t.contains("focus music")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.center_focus_strong_rounded,
+          "Focus Playlist",
+          const MusicScreen(initialPlaylistName: 'Focus'),
+        ),
+      );
+    } else if (t.contains("energize playlist") ||
+        t.contains("energizing music")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.bolt_rounded,
+          "Energize Playlist",
+          const MusicScreen(initialPlaylistName: 'Energize'),
+        ),
+      );
+    } else if (t.contains("sad playlist") || t.contains("sad music")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.water_drop_rounded,
+          "Sad Playlist",
+          const MusicScreen(initialPlaylistName: 'Sad'),
+        ),
+      );
+    } else if (t.contains("happy playlist") || t.contains("happy music")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.wb_sunny_rounded,
+          "Happy Playlist",
+          const MusicScreen(initialPlaylistName: 'Happy'),
+        ),
+      );
+    } else if (t.contains("christian playlist") || t.contains("worship")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.auto_awesome_rounded,
+          "Christian Playlist",
+          const MusicScreen(initialPlaylistName: 'Christian'),
+        ),
+      );
+    } else if (t.contains("top hits")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.star_rounded,
+          "Top Hits Playlist",
+          const MusicScreen(initialPlaylistName: 'Top Hits'),
+        ),
+      );
+    } else if (t.contains("music") ||
+        t.contains("playlist") ||
+        t.contains("song")) {
+      // General Fallback
+      buttons.add(
+        _buildActionChip(
+          Icons.music_note_rounded,
+          "Listen to Music",
+          const MusicScreen(),
+        ),
+      );
+    }
+
+    // Zen Mode / Breathing Routing
+    if (t.contains("breathe") ||
+        t.contains("breathing") ||
+        t.contains("zen") ||
+        t.contains("meditate") ||
+        t.contains("exercise")) {
+      buttons.add(
+        _buildActionChip(Icons.air_rounded, "Zen Mode", const ZenScreen()),
+      );
+    }
+
+    // Specific Mini Games Routing
+    if (t.contains("snake")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.bug_report_rounded,
+          "Play Snake",
+          const SnakeGameScreen(),
+        ),
+      );
+    } else if (t.contains("tic tac toe")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.grid_3x3_rounded,
+          "Tic Tac Toe",
+          const TicTacToeScreen(),
+        ),
+      );
+    } else if (t.contains("memory flip") || t.contains("memory game")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.flip_to_front_rounded,
+          "Memory Flip",
+          const MemoryFlipScreen(),
+        ),
+      );
+    } else if (t.contains("aim trainer")) {
+      buttons.add(
+        _buildActionChip(
+          Icons.gps_fixed_rounded,
+          "Aim Trainer",
+          const AimTrainerScreen(),
+        ),
+      );
+    } else if (t.contains("game") || t.contains("play")) {
+      // General Fallback
+      buttons.add(
+        _buildActionChip(
+          Icons.sports_esports_rounded,
+          "Mini Games",
+          const GamesScreen(),
+        ),
+      );
+    }
+
+    if (buttons.isEmpty) return [];
+
+    return [
+      const SizedBox(height: 14),
+      Wrap(spacing: 8, runSpacing: 8, children: buttons),
+    ];
+  }
+
+  Widget _buildActionChip(IconData icon, String label, Widget screen) {
+    return ActionChip(
+      backgroundColor: Colors.white.withOpacity(0.08),
+      side: BorderSide(color: const Color(0xFF10B981).withOpacity(0.5)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      avatar: Icon(icon, color: const Color(0xFF10B981), size: 16),
+      label: Text(
+        label,
+        style: GoogleFonts.inter(
+          color: Colors.white,
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+      },
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
     );
   }
 

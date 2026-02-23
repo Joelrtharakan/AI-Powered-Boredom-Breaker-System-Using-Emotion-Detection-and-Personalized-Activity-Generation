@@ -59,6 +59,12 @@ Keep it strictly under 2 sentences.
             dynamic_instruction += """
 Respond warmly and conversationally in just 1 or 2 short sentences. Act like a friend texting back.
 """
+            
+        dynamic_instruction += """
+When suggesting activities:
+- If suggesting music, explicitly name one of these EXACT playlists: Chill, Focus, Energize, Sad, Happy, Christian, or Top Hits. (e.g., "try the Chill playlist")
+- If suggesting a game, explicitly name one of these EXACT games: Snake, Tic Tac Toe, Memory Flip, or Aim Trainer. (e.g., "let's play Snake")
+"""
 
         full_system_prompt = self.base_system_prompt + dynamic_instruction
         
@@ -68,8 +74,13 @@ Respond warmly and conversationally in just 1 or 2 short sentences. Act like a f
             # We already have the previous messages. Let's pick the last 6 for context depth.
             context_msgs = history[-6:]
             for msg in context_msgs:
+                content = msg.get('content', '')
+                # Prevent "API Error" fallback messages from poisoning the AI's contextual memory
+                if "API Error" in content or "Trouble connecting to my brain" in content:
+                    continue
+                    
                 role_label = "User" if msg.get("role") == "user" else "Assistant"
-                full_transcript += f"{role_label}: {msg.get('content')}\n"
+                full_transcript += f"{role_label}: {content}\n"
         
         full_transcript += f"User: {user_message}\nAssistant: [SYSTEM NOTE: Remember to reply with a maximum of 2 short sentences.]\n"
 
