@@ -15,7 +15,7 @@ Keep your responses EXTREMELY concise and conversational. Act like you are text 
 NEVER write more than 1 to 2 short sentences unless explicitly asked to explain something. Do not write multiple paragraphs.
 """
 
-    async def generate_response(self, user_message: str, history: list = None) -> str:
+    async def generate_response(self, user_message: str, history: list = None, session_context: str = "") -> str:
         # 0. Execute Robust Multi-Layer Guardrail
         is_safe, refusal_reason = await guardrail_service.analyze(user_message)
         if not is_safe:
@@ -36,6 +36,7 @@ NEVER write more than 1 to 2 short sentences unless explicitly asked to explain 
         # 2. Construct Context-Aware Prompt
         dynamic_instruction = f"""
 [CURRENT CONTEXT]
+Active Session Summary/Memory: {session_context if session_context else "New Session."}
 User Emotion: {emotion}
 Risk Level: {risk_level}
 Required Strategy: {strategy}

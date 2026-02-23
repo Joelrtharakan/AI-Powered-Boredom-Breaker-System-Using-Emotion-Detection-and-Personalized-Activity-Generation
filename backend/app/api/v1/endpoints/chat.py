@@ -36,8 +36,12 @@ class ChatResponse(BaseModel):
     reply: str
     session_id: str
 
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from app.models.chat import ChatHistory, ChatSessionContext
+import asyncio
+
 @router.post("/send", response_model=ChatResponse)
-async def send_message(msg: MessageIn, db: Session = Depends(get_db)):
+async def send_message(msg: MessageIn, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     sid = msg.session_id or str(uuid.uuid4())
     
     # 1. Save user message
@@ -52,11 +56,15 @@ async def send_message(msg: MessageIn, db: Session = Depends(get_db)):
     db.commit()
     
     # 2. Agent Logic
-    # Pull current session context
+    # Pull current session context from DB
     session_msgs = db.query(ChatHistory).filter(ChatHistory.session_id == sid).order_by(ChatHistory.created_at.asc()).all()
     history = [{"role": m.role, "content": m.message} for m in session_msgs]
     
-    response_text = await chat_agent.generate_response(msg.message, history=history)
+    # Pull the advanced session summary context if it exists
+    session_ctx = db.query(ChatSessionContext).filter(ChatSessionContext.session_id == sid).first()
+    context_summary = session_ctx.context_summary if session_ctx else ""
+    
+    response_text = await chat_agent.generate_response(msg.message, history=history, session_context=context_summary)
     
     # 3. Save AI message
     ai_entry = ChatHistory(
@@ -69,7 +77,26 @@ async def send_message(msg: MessageIn, db: Session = Depends(get_db)):
     db.add(ai_entry)
     db.commit()
     
+    # 4. Background pruning to stop DB from growing infinitely per session
+    background_tasks.add_task(prune_and_summarize_session, sid, db)
+    
     return {"reply": response_text, "session_id": sid}
+
+def prune_and_summarize_session(session_id: str, db: Session):
+    # Only keep the last 10 messages to save DB space.
+    # Compress older ones into the ChatSessionContext.
+    msgs = db.query(ChatHistory).filter(ChatHistory.session_id == session_id).order_by(ChatHistory.created_at.desc()).all()
+    if len(msgs) > 10:
+        msgs_to_delete = msgs[10:]
+        # Update the long-term context pointer before deleting
+        ctx = db.query(ChatSessionContext).filter(ChatSessionContext.session_id == session_id).first()
+        if not ctx:
+            ctx = ChatSessionContext(session_id=session_id, user_id=msgs[0].user_id, context_summary="Active Session")
+            db.add(ctx)
+        
+        for m in msgs_to_delete:
+            db.delete(m)
+        db.commit()
 
 @router.get("/history", response_model=List[MessageOut])
 def get_history(user_id: int, session_id: Optional[str] = None, limit: int = 50, db: Session = Depends(get_db)):
