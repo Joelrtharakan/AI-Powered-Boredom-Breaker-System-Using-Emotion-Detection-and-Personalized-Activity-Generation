@@ -131,9 +131,39 @@ class _MainLayoutState extends State<MainLayout> {
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             left: 16,
-            child: IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            right: 16,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                ),
+                if (_currentIndex == 1) ...[
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.network(
+                      "https://img.icons8.com/bubbles/100/apple-arcade.png",
+                      width: 28,
+                      height: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "ARCADE",
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
 
