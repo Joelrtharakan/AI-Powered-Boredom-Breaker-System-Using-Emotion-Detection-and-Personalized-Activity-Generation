@@ -145,10 +145,16 @@ class _GamesScreenState extends State<GamesScreen> {
       (g) => g.title == "Snake Evolution",
     );
 
+    // Exclude the featured game from the grid to prevent duplicates
+    // and preserve a perfect 2-column layout (8 remaining games)
+    final gridGames = allGames
+        .where((g) => g.title != featuredGame.title)
+        .toList();
+
     // Filtered games based on category
     final displayedGames = _selectedCategoryIndex == 0
-        ? allGames
-        : allGames
+        ? gridGames
+        : gridGames
               .where((g) => g.category == _categories[_selectedCategoryIndex])
               .toList();
 
