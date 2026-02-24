@@ -216,16 +216,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: const LinearGradient(
-                colors: [
-                  Color(0xFF8E2DE2),
-                  Color(0xFF4A00E0),
-                ], // Deep Purple gradient
+                colors: AppColors.primaryGradient,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF8E2DE2).withValues(alpha: 0.4),
+                  color: AppColors.primary.withValues(alpha: 0.4),
                   blurRadius: 20,
                   spreadRadius: 0,
                 ),
