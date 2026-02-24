@@ -226,68 +226,88 @@ class _MainLayoutState extends State<MainLayout> {
 
   Widget _buildBottomNav() {
     return Container(
-      padding: const EdgeInsets.only(bottom: 24, left: 24, right: 24),
+      padding: const EdgeInsets.only(bottom: 24, left: 32, right: 32),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(40),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
-            height: 72,
+            height: 74,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
+              color: Colors.white, // Ultra bright white base
+              borderRadius: BorderRadius.circular(40),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.8),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 20,
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                  blurRadius: 30,
                   offset: const Offset(0, 10),
                 ),
               ],
             ),
-            child: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                if (index == 3) {
-                  setState(() => _currentIndex = 0);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ChatScreen()),
-                  );
-                } else {
-                  setState(() => _currentIndex = index);
-                }
-              },
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              selectedItemColor: AppColors.primary,
-              unselectedItemColor: AppColors.textMuted,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              type: BottomNavigationBarType.fixed,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_filled),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.sports_esports_rounded),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.network(
-                    "https://img.icons8.com/color/32/musical-notes.png",
-                    height: 24,
-                    color: _currentIndex == 2 ? null : AppColors.textMuted,
-                  ),
-                  label: '',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.forum_rounded),
-                  label: '',
-                ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildNavItem(0, Icons.home_rounded),
+                _buildNavItem(1, Icons.sports_esports_rounded),
+                _buildNavItem(2, Icons.music_note_rounded),
+                _buildNavItem(3, Icons.forum_rounded),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        if (index == 3) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ChatScreen()),
+          );
+        } else {
+          setState(() => _currentIndex = index);
+        }
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        width: 60,
+        height: 60,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: isSelected
+                ? const LinearGradient(
+                    colors: AppColors.primaryGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Icon(
+            icon,
+            size: isSelected ? 24 : 26,
+            color: isSelected ? Colors.white : AppColors.textMuted,
           ),
         ),
       ),
