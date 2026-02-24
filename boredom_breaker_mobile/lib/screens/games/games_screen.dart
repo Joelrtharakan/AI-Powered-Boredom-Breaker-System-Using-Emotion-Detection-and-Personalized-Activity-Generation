@@ -556,9 +556,19 @@ class _GamesScreenState extends State<GamesScreen> {
       child:
           Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
                   borderRadius: BorderRadius.circular(32),
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(
+                    color: game.color.withValues(alpha: 0.2),
+                    width: 1.5,
+                  ),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF0F172A), // Premium Dark Slate
+                      Color(0xFF1E293B), // Premium Slate
+                    ],
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF1E293B).withValues(alpha: 0.08),
@@ -612,8 +622,11 @@ class _GamesScreenState extends State<GamesScreen> {
                             Container(
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Colors.white.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: game.color.withValues(alpha: 0.25),
@@ -644,7 +657,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             Text(
                               game.title,
                               style: GoogleFonts.outfit(
-                                color: const Color(0xFF1E293B),
+                                color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 height: 1.1,
@@ -655,7 +668,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             Text(
                               game.subtitle,
                               style: GoogleFonts.inter(
-                                color: const Color(0xFF64748B),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -670,8 +683,8 @@ class _GamesScreenState extends State<GamesScreen> {
                         right: 22,
                         child: Container(
                           padding: const EdgeInsets.all(6),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFF8FAFC),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -700,9 +713,19 @@ class _GamesScreenState extends State<GamesScreen> {
       child: Container(
         height: 115,
         decoration: BoxDecoration(
-          color: Colors.white,
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: Colors.white, width: 2),
+          border: Border.all(
+            color: game.color.withValues(alpha: 0.2),
+            width: 1.5,
+          ),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF0F172A), // Premium Dark Slate
+              Color(0xFF1E293B), // Premium Slate
+            ],
+          ),
           boxShadow: [
             BoxShadow(
               color: const Color(0xFF1E293B).withValues(alpha: 0.08),
@@ -738,8 +761,11 @@ class _GamesScreenState extends State<GamesScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Colors.white.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.15),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color: game.color.withValues(alpha: 0.25),
@@ -771,7 +797,7 @@ class _GamesScreenState extends State<GamesScreen> {
                           Text(
                             game.title,
                             style: GoogleFonts.outfit(
-                              color: const Color(0xFF1E293B),
+                              color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
                             ),
@@ -780,7 +806,7 @@ class _GamesScreenState extends State<GamesScreen> {
                           Text(
                             game.subtitle,
                             style: GoogleFonts.inter(
-                              color: const Color(0xFF64748B),
+                              color: Colors.white.withValues(alpha: 0.7),
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
