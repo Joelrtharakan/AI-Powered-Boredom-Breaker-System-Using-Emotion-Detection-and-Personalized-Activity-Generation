@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -48,57 +49,95 @@ class _MainLayoutState extends State<MainLayout> {
       drawer: _buildDrawer(),
       body: Stack(
         children: [
-          // Global Background Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: AppColors.darkGradient,
-              ),
-            ),
-          ),
-
-          // Subtle Ambient Glow
+          // 1. Vibrant Top Half Background
           Positioned(
-            top: -100,
-            right: -50,
+            top: 0,
+            left: 0,
+            right: 0,
+            height: MediaQuery.of(context).size.height * 0.45,
             child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.05),
-                    blurRadius: 150,
-                    spreadRadius: 50,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF5E60CE), // Indigo
+                    Color(0xFF4EA8DE), // Blue
+                    Color(0xFF56CFE1), // Cyan
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: MediaQuery.of(context).size.height * 0.05,
+                    right: -20,
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
           ),
 
-          // Main Content
-          SafeArea(
-            bottom:
-                false, // Allow content to flow behind nav bar area if needed, but we pad it
-            child: IndexedStack(
-              index: _currentIndex,
-              children: _screens.map((screen) {
-                // Wrap each screen in a container with bottom padding to clear the floating nav bar
-                // Nav bar height (72) + bottom padding (24) + extra buffer (24) = ~120
-                return Padding(
-                  padding: const EdgeInsets.only(
-                    bottom: 0,
-                  ), // Screens handle their own padding now (like ChatScreen)
-                  child: screen,
-                );
-              }).toList(),
+          // 2. White Curved Container holding the entire Main App Content
+          Positioned(
+            top:
+                MediaQuery.of(context).size.height *
+                0.15, // Pushes the curve up slightly
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(40),
+                ),
+                child: SafeArea(
+                  top: false,
+                  bottom: false,
+                  child: IndexedStack(
+                    index: _currentIndex,
+                    children: _screens.map((screen) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 0),
+                        child: screen,
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
             ),
           ),
 
-          // Floating Bottom Navigation Bar
+          // Custom Header actions floating inside the top gradient (Hamburger menu, etc)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 16,
+            child: IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
+          ),
+
+          // Floating Bottom Navigation Bar sitting above the white content
           Positioned(
             bottom: 0,
             left: 0,
@@ -119,7 +158,7 @@ class _MainLayoutState extends State<MainLayout> {
         children: [
           DrawerHeader(
             decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white10)),
+              border: Border(bottom: BorderSide(color: Colors.black12)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +175,10 @@ class _MainLayoutState extends State<MainLayout> {
                 const SizedBox(height: 8),
                 Text(
                   "Elevate your mood.",
-                  style: GoogleFonts.inter(color: Colors.white54, fontSize: 13),
+                  style: GoogleFonts.inter(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
@@ -161,7 +203,7 @@ class _MainLayoutState extends State<MainLayout> {
             "History",
             () => _navigateTo(const HistoryScreen()),
           ),
-          const Divider(color: Colors.white10, height: 40),
+          const Divider(color: Colors.black12, height: 40),
           _buildDrawerItem(Icons.logout_rounded, "Logout", () async {
             // Close drawer
             Navigator.pop(context);
@@ -188,20 +230,16 @@ class _MainLayoutState extends State<MainLayout> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(32),
         child: BackdropFilter(
-          filter: ColorFilter.mode(
-            Colors.black.withValues(alpha: 0.5), // Darker filter
-            BlendMode.darken,
-          ),
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             height: 72,
             decoration: BoxDecoration(
-              // Higher opacity for darker look
-              color: AppColors.surface.withValues(alpha: 0.85),
+              color: Colors.white.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(32),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -223,7 +261,7 @@ class _MainLayoutState extends State<MainLayout> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               selectedItemColor: AppColors.primary,
-              unselectedItemColor: Colors.white30,
+              unselectedItemColor: AppColors.textMuted,
               showSelectedLabels: false,
               showUnselectedLabels: false,
               type: BottomNavigationBarType.fixed,
@@ -238,11 +276,9 @@ class _MainLayoutState extends State<MainLayout> {
                 ),
                 BottomNavigationBarItem(
                   icon: Image.network(
-                    "https://img.icons8.com/liquid-glass-color/32/musical-notes.png",
+                    "https://img.icons8.com/color/32/musical-notes.png",
                     height: 24,
-                    color: _currentIndex == 2
-                        ? null
-                        : Colors.white.withValues(alpha: 0.3),
+                    color: _currentIndex == 2 ? null : AppColors.textMuted,
                   ),
                   label: '',
                 ),
@@ -260,10 +296,10 @@ class _MainLayoutState extends State<MainLayout> {
 
   Widget _buildDrawerItem(IconData icon, String label, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: Colors.white70),
+      leading: Icon(icon, color: AppColors.textSecondary),
       title: Text(
         label,
-        style: GoogleFonts.outfit(color: Colors.white, fontSize: 16),
+        style: GoogleFonts.outfit(color: AppColors.textPrimary, fontSize: 16),
       ),
       onTap: onTap,
     );
