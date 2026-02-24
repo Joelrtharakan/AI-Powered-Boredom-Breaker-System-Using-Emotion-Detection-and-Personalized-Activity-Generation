@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
-import '../../theme/app_theme.dart';
 
 import 'snake_game_screen.dart';
 import 'visual_memory_game.dart';
@@ -153,159 +152,67 @@ class _GamesScreenState extends State<GamesScreen> {
         .toList();
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          // 1. Dynamic Background Mesh
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.background,
-                    Colors.white,
-                    AppColors.background,
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: CustomScrollView(
+          controller: widget.scrollController,
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
+                child: Column(
+                  children: [
+                    // 3. Featured Hero Card
+                    _buildSectionHeader(
+                      "FEATURED",
+                      Icons.star_rounded,
+                      const Color(0xFF00FF94),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildHeroCard(
+                      context,
+                      featuredGame,
+                    ).animate().slideY(begin: 0.1, duration: 600.ms).fadeIn(),
+
+                    const SizedBox(height: 48),
+
+                    // 4. Brain Training (Large Grid)
+                    _buildSectionHeader(
+                      "BRAIN & LOGIC",
+                      Icons.psychology,
+                      const Color(0xFF00FF94),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildGridSection(context, brainGames),
+
+                    const SizedBox(height: 48),
+
+                    // 5. Action (Wide Cards)
+                    _buildSectionHeader(
+                      "ACTION ZONE",
+                      Icons.flash_on_rounded,
+                      const Color(0xFF00FF94),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildActionList(context, actionGames),
+
+                    const SizedBox(height: 48),
+
+                    // 6. Classics (Compact Grid)
+                    _buildSectionHeader(
+                      "CLASSICS",
+                      Icons.history_edu_rounded,
+                      const Color(0xFF00FF94),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildGridSection(context, classicGames),
                   ],
                 ),
               ),
             ),
-          ),
-          // Animated Glow Orbs
-          Positioned(
-            top: -150,
-            left: -100,
-            child:
-                Container(
-                      width: 500,
-                      height: 500,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            const Color(0xFF00FF94).withValues(alpha: 0.08),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .scale(
-                      duration: 4.seconds,
-                      begin: const Offset(1, 1),
-                      end: const Offset(1.1, 1.1),
-                    ),
-          ),
-          Positioned(
-            bottom: -50,
-            right: -100,
-            child:
-                Container(
-                      width: 450,
-                      height: 450,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            const Color(0xFF00FF94).withValues(alpha: 0.1),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .scale(
-                      duration: 5.seconds,
-                      begin: const Offset(1, 1),
-                      end: const Offset(1.2, 1.2),
-                    ),
-          ),
-          Positioned(
-            top: 250,
-            right: -200,
-            child:
-                Container(
-                      width: 400,
-                      height: 400,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: RadialGradient(
-                          colors: [
-                            const Color(0xFF00FF94).withValues(alpha: 0.06),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .scale(
-                      duration: 6.seconds,
-                      begin: const Offset(1, 1),
-                      end: const Offset(1.15, 1.15),
-                    ),
-          ),
-
-          CustomScrollView(
-            controller: widget.scrollController,
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 100),
-                  child: Column(
-                    children: [
-                      // 3. Featured Hero Card
-                      _buildSectionHeader(
-                        "FEATURED",
-                        Icons.star_rounded,
-                        const Color(0xFF00FF94),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildHeroCard(
-                        context,
-                        featuredGame,
-                      ).animate().slideY(begin: 0.1, duration: 600.ms).fadeIn(),
-
-                      const SizedBox(height: 48),
-
-                      // 4. Brain Training (Large Grid)
-                      _buildSectionHeader(
-                        "BRAIN & LOGIC",
-                        Icons.psychology,
-                        const Color(0xFF00FF94),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildGridSection(context, brainGames),
-
-                      const SizedBox(height: 48),
-
-                      // 5. Action (Wide Cards)
-                      _buildSectionHeader(
-                        "ACTION ZONE",
-                        Icons.flash_on_rounded,
-                        const Color(0xFF00FF94),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildActionList(context, actionGames),
-
-                      const SizedBox(height: 48),
-
-                      // 6. Classics (Compact Grid)
-                      _buildSectionHeader(
-                        "CLASSICS",
-                        Icons.history_edu_rounded,
-                        const Color(0xFF00FF94),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildGridSection(context, classicGames),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -357,20 +264,17 @@ class _GamesScreenState extends State<GamesScreen> {
         height: 320, // Increased height to prevent overflow
         width: double.infinity,
         decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(36),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0F172A), // Premium Dark Slate
-              Color(0xFF1E293B), // Premium Slate
-            ],
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+            width: 1.0,
           ),
           boxShadow: [
             BoxShadow(
-              color: game.color.withValues(alpha: 0.25),
-              blurRadius: 35,
-              offset: const Offset(0, 15),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
@@ -407,7 +311,7 @@ class _GamesScreenState extends State<GamesScreen> {
                   child: Icon(
                     game.icon ?? Icons.extension,
                     size: 240,
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: game.color.withValues(alpha: 0.1),
                   ),
                 ),
               ),
@@ -423,17 +327,13 @@ class _GamesScreenState extends State<GamesScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.25),
+                        color: game.color.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.4),
-                          width: 1.5,
-                        ),
                       ),
                       child: Text(
                         "MOST POPULAR",
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: game.color,
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.5,
@@ -448,7 +348,7 @@ class _GamesScreenState extends State<GamesScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 42,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           height: 1.0,
                         ),
                         maxLines: 2,
@@ -462,7 +362,7 @@ class _GamesScreenState extends State<GamesScreen> {
                         game.subtitle,
                         style: GoogleFonts.inter(
                           fontSize: 18,
-                          color: Colors.white.withValues(alpha: 0.9),
+                          color: const Color(0xFF64748B),
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 2,
@@ -474,13 +374,18 @@ class _GamesScreenState extends State<GamesScreen> {
                       height: 54,
                       width: 170,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        gradient: LinearGradient(
+                          colors: [
+                            game.color.withValues(alpha: 0.7),
+                            game.color,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.circular(100),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(
-                              0xFF1E293B,
-                            ).withValues(alpha: 0.15),
+                            color: game.color.withValues(alpha: 0.4),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -491,14 +396,14 @@ class _GamesScreenState extends State<GamesScreen> {
                         children: [
                           Icon(
                             Icons.play_arrow_rounded,
-                            color: game.color,
+                            color: Colors.white,
                             size: 26,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             "PLAY NOW",
                             style: GoogleFonts.outfit(
-                              color: game.color,
+                              color: Colors.white,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,
                               letterSpacing: 1.2,
@@ -556,24 +461,17 @@ class _GamesScreenState extends State<GamesScreen> {
       child:
           Container(
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(32),
                   border: Border.all(
-                    color: game.color.withValues(alpha: 0.2),
-                    width: 1.5,
-                  ),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF0F172A), // Premium Dark Slate
-                      Color(0xFF1E293B), // Premium Slate
-                    ],
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+                    width: 1.0,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF1E293B).withValues(alpha: 0.08),
-                      blurRadius: 25,
-                      offset: const Offset(0, 12),
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
                     ),
                   ],
                 ),
@@ -622,11 +520,8 @@ class _GamesScreenState extends State<GamesScreen> {
                             Container(
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.1),
+                                color: game.color.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.15),
-                                ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: game.color.withValues(alpha: 0.25),
@@ -657,7 +552,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             Text(
                               game.title,
                               style: GoogleFonts.outfit(
-                                color: Colors.white,
+                                color: const Color(0xFF1E293B),
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 height: 1.1,
@@ -668,7 +563,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             Text(
                               game.subtitle,
                               style: GoogleFonts.inter(
-                                color: Colors.white.withValues(alpha: 0.7),
+                                color: const Color(0xFF64748B),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -713,23 +608,16 @@ class _GamesScreenState extends State<GamesScreen> {
       child: Container(
         height: 115,
         decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(
-            color: game.color.withValues(alpha: 0.2),
-            width: 1.5,
-          ),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0F172A), // Premium Dark Slate
-              Color(0xFF1E293B), // Premium Slate
-            ],
+            color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+            width: 1.0,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1E293B).withValues(alpha: 0.08),
-              blurRadius: 25,
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 20,
               offset: const Offset(0, 10),
             ),
           ],
@@ -761,11 +649,8 @@ class _GamesScreenState extends State<GamesScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: game.color.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.15),
-                        ),
                         boxShadow: [
                           BoxShadow(
                             color: game.color.withValues(alpha: 0.25),
@@ -797,7 +682,7 @@ class _GamesScreenState extends State<GamesScreen> {
                           Text(
                             game.title,
                             style: GoogleFonts.outfit(
-                              color: Colors.white,
+                              color: const Color(0xFF1E293B),
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
                             ),
@@ -806,7 +691,7 @@ class _GamesScreenState extends State<GamesScreen> {
                           Text(
                             game.subtitle,
                             style: GoogleFonts.inter(
-                              color: Colors.white.withValues(alpha: 0.7),
+                              color: const Color(0xFF64748B),
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
