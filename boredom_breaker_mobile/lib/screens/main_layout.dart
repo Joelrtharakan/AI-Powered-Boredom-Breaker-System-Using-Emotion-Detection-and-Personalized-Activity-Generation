@@ -237,8 +237,8 @@ class _MainLayoutState extends State<MainLayout> {
               color: Colors.white, // Ultra bright white base
               borderRadius: BorderRadius.circular(40),
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.8),
-                width: 1.5,
+                color: AppColors.primary.withValues(alpha: 0.3),
+                width: 2.0,
               ),
               boxShadow: [
                 BoxShadow(
