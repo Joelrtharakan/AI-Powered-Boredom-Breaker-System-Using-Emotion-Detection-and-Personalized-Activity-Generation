@@ -232,10 +232,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ],
             ),
             child: Container(
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(3),
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.black,
+                color: Colors.white,
               ),
               child: CircleAvatar(
                 radius: 20,
@@ -590,9 +590,9 @@ class _GeneratedPlanCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 40,
-            spreadRadius: -10,
+            color: AppColors.primary.withValues(alpha: 0.15),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
           ),
         ],
       ),
@@ -961,9 +961,14 @@ class _DopamineCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: gradientStart.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: gradientEnd.withValues(alpha: 0.1),
               blurRadius: 10,
-              offset: const Offset(0, 5),
+              offset: const Offset(0, -2),
             ),
           ],
         ),
