@@ -32,19 +32,22 @@ class _MainLayoutState extends State<MainLayout> {
   String? _profilePicture;
   final ApiClient _apiClient = ApiClient();
 
-  late final List<ScrollController> _scrollControllers;
-  late final List<Widget> _screens;
+  final List<ScrollController> _scrollControllers = [
+    ScrollController(),
+    ScrollController(),
+    ScrollController(),
+  ];
+
+  late final List<Widget> _screens = [
+    DashboardScreen(scrollController: _scrollControllers[0]),
+    GamesScreen(scrollController: _scrollControllers[1]),
+    MusicScreen(scrollController: _scrollControllers[2]),
+    const SizedBox.shrink(), // Chat is pushed
+  ];
 
   @override
   void initState() {
     super.initState();
-    _scrollControllers = List.generate(3, (index) => ScrollController());
-    _screens = [
-      DashboardScreen(scrollController: _scrollControllers[0]),
-      GamesScreen(scrollController: _scrollControllers[1]),
-      MusicScreen(scrollController: _scrollControllers[2]),
-      const SizedBox.shrink(), // Chat is pushed
-    ];
     _loadUserData();
   }
 
