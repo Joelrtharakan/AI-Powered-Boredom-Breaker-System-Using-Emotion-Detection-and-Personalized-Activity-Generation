@@ -82,7 +82,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
@@ -116,8 +116,8 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                     center: Alignment.center,
                     radius: 1.5,
                     colors: [
-                      _getPhaseColor().withValues(alpha: 0.12),
-                      AppColors.background,
+                      _getPhaseColor().withValues(alpha: 0.08),
+                      Colors.white,
                     ],
                   ),
                 ),
@@ -171,9 +171,9 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                                       Text(
                                             _getPhaseInstruction(),
                                             style: GoogleFonts.inter(
-                                              color: const Color(0xFFCBD5E1),
+                                              color: const Color(0xFF64748B),
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w400,
+                                              fontWeight: FontWeight.w500,
                                               letterSpacing: 1,
                                             ),
                                           )
@@ -205,9 +205,19 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                                       height: 80,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
+                                        color: Colors.white,
                                         border: Border.all(
-                                          color: Colors.white10,
+                                          color: const Color(0xFFE2E8F0),
                                         ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: _getPhaseColor().withValues(
+                                              alpha: 0.15,
+                                            ),
+                                            blurRadius: 20,
+                                            offset: const Offset(0, 8),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     Text(
@@ -215,9 +225,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                                           style: GoogleFonts.outfit(
                                             fontSize: 40,
                                             fontWeight: FontWeight.bold,
-                                            color: _getPhaseColor().withValues(
-                                              alpha: 0.8,
-                                            ),
+                                            color: _getPhaseColor(),
                                           ),
                                         )
                                         .animate(key: ValueKey(_seconds))
@@ -309,8 +317,8 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: _getPhaseColor().withValues(alpha: 0.05),
-                    width: 1,
+                    color: _getPhaseColor().withValues(alpha: 0.15),
+                    width: 1.5,
                     strokeAlign: BorderSide.strokeAlignOutside,
                   ),
                 ),
@@ -324,7 +332,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: _getPhaseColor().withValues(alpha: 0.1),
+                  color: _getPhaseColor().withValues(alpha: 0.3),
                   width: 2,
                 ),
               ),
@@ -358,11 +366,18 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
               height: 80 * finalScale,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.background,
+                color: Colors.white,
                 border: Border.all(
                   color: _getPhaseColor().withValues(alpha: 0.6),
                   width: 3,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: _getPhaseColor().withValues(alpha: 0.2),
+                    blurRadius: 20 * finalScale,
+                    offset: Offset(0, 10 * finalScale),
+                  ),
+                ],
               ),
               child: Center(
                 child: Icon(
@@ -381,11 +396,11 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
   Color _getPhaseColor() {
     switch (_phase) {
       case "Inhale":
-        return Colors.cyanAccent;
+        return const Color(0xFF00C6FF);
       case "Hold":
-        return Colors.amberAccent;
+        return const Color(0xFF8E2DE2);
       case "Exhale":
-        return Colors.pinkAccent;
+        return const Color(0xFFFF416C);
       default:
         return AppColors.primary;
     }
