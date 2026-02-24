@@ -111,9 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 20),
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       size: 20,
                     ),
                     onPressed: () => Navigator.pop(context),
@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: GoogleFonts.outfit(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       height: 1.2,
                     ),
                   ).animate().fadeIn().slideX(begin: -0.1),
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           label,
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
             fontSize: 15,
           ),
@@ -203,14 +203,14 @@ class _LoginScreenState extends State<LoginScreen> {
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surface.withValues(alpha: 0.5),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+            border: Border.all(color: AppColors.border),
           ),
           child: TextField(
             controller: controller,
             obscureText: isPassword,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: AppColors.textPrimary),
             decoration: InputDecoration(
               prefixIcon: Icon(icon, color: AppColors.primary, size: 22),
               border: InputBorder.none,
