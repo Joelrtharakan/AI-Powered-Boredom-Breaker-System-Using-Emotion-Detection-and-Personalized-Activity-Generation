@@ -513,16 +513,25 @@ class _MoodInputSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          SizedBox(
+          Container(
             width: double.infinity,
             height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(colors: AppColors.primaryGradient),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
             child: ElevatedButton(
               onPressed: moodState.isLoading ? null : onSubmit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                elevation: 10,
-                shadowColor: AppColors.primary.withValues(alpha: 0.2),
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -1030,13 +1039,13 @@ class _ExploreCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+            color: (item['color'] as Color).withValues(alpha: 0.15),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
+              color: (item['color'] as Color).withValues(alpha: 0.1),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -1092,7 +1101,7 @@ class _SectionTitle extends StatelessWidget {
         style: GoogleFonts.outfit(
           fontSize: 13,
           fontWeight: FontWeight.w900,
-          color: const Color(0xFFCBD5E1),
+          color: AppColors.primary.withValues(alpha: 0.8),
           letterSpacing: 2.5,
         ),
       ),
