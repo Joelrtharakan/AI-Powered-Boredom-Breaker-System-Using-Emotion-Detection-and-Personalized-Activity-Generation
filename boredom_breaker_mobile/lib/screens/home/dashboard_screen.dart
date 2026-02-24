@@ -62,10 +62,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
-                  const SizedBox(height: 10),
-
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
 
                   // "The Pulse" - Mood Input Section
                   _MoodInputSection(
