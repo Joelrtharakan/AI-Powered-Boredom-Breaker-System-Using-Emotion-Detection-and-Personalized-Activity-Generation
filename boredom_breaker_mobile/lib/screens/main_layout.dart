@@ -293,7 +293,11 @@ class _MainLayoutState extends State<MainLayout> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   )
-                : null,
+                : const LinearGradient(
+                    colors: [Colors.transparent, Colors.transparent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
             boxShadow: [
               BoxShadow(
                 color: isSelected
@@ -316,16 +320,21 @@ class _MainLayoutState extends State<MainLayout> {
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,
+                alignment: Alignment.centerLeft,
                 child: isSelected
-                    ? Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          label,
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            letterSpacing: 0.5,
+                    ? SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const NeverScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text(
+                            label,
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                         ),
                       )
