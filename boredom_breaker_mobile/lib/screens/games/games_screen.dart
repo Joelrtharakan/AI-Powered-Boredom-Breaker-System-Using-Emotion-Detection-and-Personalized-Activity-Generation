@@ -184,7 +184,7 @@ class _GamesScreenState extends State<GamesScreen> {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            const Color(0xFF7B1FA2).withValues(alpha: 0.15),
+                            const Color(0xFFE040FB).withValues(alpha: 0.08),
                             Colors.transparent,
                           ],
                         ),
@@ -194,21 +194,21 @@ class _GamesScreenState extends State<GamesScreen> {
                     .scale(
                       duration: 4.seconds,
                       begin: const Offset(1, 1),
-                      end: const Offset(1.2, 1.2),
+                      end: const Offset(1.1, 1.1),
                     ),
           ),
           Positioned(
-            bottom: -150,
+            bottom: -50,
             right: -100,
             child:
                 Container(
-                      width: 500,
-                      height: 500,
+                      width: 450,
+                      height: 450,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            const Color(0xFF0091EA).withValues(alpha: 0.15),
+                            const Color(0xFF00E5FF).withValues(alpha: 0.1),
                             Colors.transparent,
                           ],
                         ),
@@ -218,7 +218,31 @@ class _GamesScreenState extends State<GamesScreen> {
                     .scale(
                       duration: 5.seconds,
                       begin: const Offset(1, 1),
-                      end: const Offset(1.3, 1.3),
+                      end: const Offset(1.2, 1.2),
+                    ),
+          ),
+          Positioned(
+            top: 250,
+            right: -200,
+            child:
+                Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            const Color(0xFF00E676).withValues(alpha: 0.06),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scale(
+                      duration: 6.seconds,
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.15, 1.15),
                     ),
           ),
 
@@ -289,25 +313,33 @@ class _GamesScreenState extends State<GamesScreen> {
   Widget _buildSectionHeader(String title, IconData icon, Color color) {
     return Row(
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(width: 12),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 14),
         Text(
           title,
           style: GoogleFonts.outfit(
-            color: const Color(0xFF1E293B).withValues(alpha: 0.9),
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2,
+            color: const Color(0xFF1E293B),
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 2.0,
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: Container(
-            height: 1,
+            height: 2,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [color.withValues(alpha: 0.5), Colors.transparent],
+                colors: [color.withValues(alpha: 0.3), Colors.transparent],
               ),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
         ),
@@ -322,136 +354,156 @@ class _GamesScreenState extends State<GamesScreen> {
         MaterialPageRoute(builder: (_) => game.screen),
       ),
       child: Container(
-        height: 260,
+        height: 320, // Increased height to prevent overflow
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          border: Border.all(
-            color: game.color.withValues(alpha: 0.3),
-            width: 1.5,
+          borderRadius: BorderRadius.circular(36),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              game.color,
+              HSLColor.fromColor(game.color)
+                  .withHue((HSLColor.fromColor(game.color).hue + 30) % 360)
+                  .toColor(),
+            ],
           ),
           boxShadow: [
             BoxShadow(
-              color: game.color.withValues(alpha: 0.15),
-              blurRadius: 40,
-              offset: const Offset(0, 10),
+              color: game.color.withValues(alpha: 0.4),
+              blurRadius: 35,
+              offset: const Offset(0, 15),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(36),
           child: Stack(
             children: [
-              // Background Gradient
-              Positioned.fill(
+              // Liquid Shimmer overlay
+              Positioned(
+                top: -50,
+                right: -50,
                 child: Container(
+                  width: 250,
+                  height: 250,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        game.color.withValues(alpha: 0.15),
-                        Colors.white,
-                      ],
-                      stops: const [0.0, 0.6],
-                    ),
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        blurRadius: 50,
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-              // Giant Icon Background
+              // Giant Abstract Icon Background
               Positioned(
-                right: -40,
-                bottom: -40,
+                right: -30,
+                bottom: -30,
                 child: Transform.rotate(
                   angle: -0.2,
                   child: Icon(
-                    game.icon,
-                    size: 200,
-                    color: game.color.withValues(alpha: 0.08),
+                    game.icon ?? Icons.extension,
+                    size: 240,
+                    color: Colors.white.withValues(alpha: 0.15),
                   ),
                 ),
               ),
 
               Padding(
-                padding: const EdgeInsets.all(28.0),
+                padding: const EdgeInsets.all(32.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                        horizontal: 14,
+                        vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: game.color.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: game.color.withValues(alpha: 0.3),
+                          color: Colors.white.withValues(alpha: 0.4),
+                          width: 1.5,
                         ),
                       ),
                       child: Text(
                         "MOST POPULAR",
                         style: GoogleFonts.outfit(
-                          color: game.color,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.5,
                         ),
                       ),
                     ),
                     const Spacer(),
-                    Text(
-                      game.title,
-                      style: GoogleFonts.outfit(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF1E293B),
-                        height: 1.0,
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        game.title,
+                        style: GoogleFonts.outfit(
+                          fontSize: 42,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          height: 1.0,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      game.subtitle,
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        color: const Color(0xFF64748B),
+                    Expanded(
+                      flex: 1,
+                      child: Text(
+                        game.subtitle,
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          color: Colors.white.withValues(alpha: 0.9),
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     Container(
-                      height: 50,
-                      width: 160,
+                      height: 54,
+                      width: 170,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: AppColors.primaryGradient,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(100),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.4),
+                            color: const Color(
+                              0xFF1E293B,
+                            ).withValues(alpha: 0.15),
                             blurRadius: 15,
-                            offset: const Offset(0, 4),
+                            offset: const Offset(0, 5),
                           ),
                         ],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.play_arrow_rounded,
-                            color: Colors.white,
-                            size: 24,
+                            color: game.color,
+                            size: 26,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             "PLAY NOW",
                             style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              color: game.color,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 16,
+                              letterSpacing: 1.2,
                             ),
                           ),
                         ],
@@ -507,57 +559,73 @@ class _GamesScreenState extends State<GamesScreen> {
           Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  borderRadius: BorderRadius.circular(32),
+                  border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+                      color: game.color.withValues(alpha: 0.15),
+                      blurRadius: 25,
+                      offset: const Offset(0, 12),
+                    ),
+                    BoxShadow(
+                      color: const Color(0xFF1E293B).withValues(alpha: 0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(30),
                   child: Stack(
                     children: [
-                      // Subtle colored glow at top
+                      // Vibrant corner glow
                       Positioned(
-                        top: -30,
-                        right: -30,
+                        top: -50,
+                        right: -50,
                         child: Container(
-                          width: 100,
-                          height: 100,
+                          width: 130,
+                          height: 130,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: game.color.withValues(alpha: 0.15),
+                            color: game.color.withValues(alpha: 0.2),
                             boxShadow: [
                               BoxShadow(
-                                color: game.color.withValues(alpha: 0.2),
+                                color: game.color.withValues(alpha: 0.3),
                                 blurRadius: 40,
                               ),
                             ],
                           ),
                         ),
                       ),
+                      // Bottom left subtle glow
+                      Positioned(
+                        bottom: -40,
+                        left: -40,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: game.color.withValues(alpha: 0.1),
+                          ),
+                        ),
+                      ),
 
                       Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.all(22.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: const Color(0xFFE2E8F0),
-                                ),
+                                shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: game.color.withValues(alpha: 0.15),
+                                    color: game.color.withValues(alpha: 0.25),
                                     blurRadius: 15,
+                                    offset: const Offset(0, 6),
                                   ),
                                 ],
                               ),
@@ -565,18 +633,18 @@ class _GamesScreenState extends State<GamesScreen> {
                                   ? (game.imageUrl!.startsWith("http")
                                         ? Image.network(
                                             game.imageUrl!,
-                                            width: 28,
-                                            height: 28,
+                                            width: 32,
+                                            height: 32,
                                           )
                                         : Image.asset(
                                             game.imageUrl!,
-                                            width: 28,
-                                            height: 28,
+                                            width: 32,
+                                            height: 32,
                                           ))
                                   : Icon(
                                       game.icon,
                                       color: game.color,
-                                      size: 28,
+                                      size: 32,
                                     ),
                             ),
                             const Spacer(),
@@ -585,7 +653,7 @@ class _GamesScreenState extends State<GamesScreen> {
                               style: GoogleFonts.outfit(
                                 color: const Color(0xFF1E293B),
                                 fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w800,
                                 height: 1.1,
                               ),
                               maxLines: 2,
@@ -595,7 +663,7 @@ class _GamesScreenState extends State<GamesScreen> {
                               game.subtitle,
                               style: GoogleFonts.inter(
                                 color: const Color(0xFF64748B),
-                                fontSize: 12,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -605,12 +673,19 @@ class _GamesScreenState extends State<GamesScreen> {
 
                       // Arrow overlay
                       Positioned(
-                        bottom: 20,
-                        right: 20,
-                        child: Icon(
-                          Icons.arrow_forward_rounded,
-                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
-                          size: 20,
+                        bottom: 22,
+                        right: 22,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF8FAFC),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: game.color,
+                            size: 14,
+                          ),
                         ),
                       ),
                     ],
@@ -630,76 +705,129 @@ class _GamesScreenState extends State<GamesScreen> {
         MaterialPageRoute(builder: (_) => game.screen),
       ),
       child: Container(
-        height: 100,
+        height: 115,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: Colors.white, width: 2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+              color: game.color.withValues(alpha: 0.15),
+              blurRadius: 25,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: const Color(0xFF1E293B).withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Row(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: Stack(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: game.color.withValues(alpha: 0.15),
-                      blurRadius: 15,
-                    ),
-                  ],
+              // Ambient background glow
+              Positioned(
+                right: -60,
+                top: -60,
+                child: Container(
+                  width: 160,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: game.color.withValues(alpha: 0.1),
+                  ),
                 ),
-                child: game.imageUrl != null
-                    ? (game.imageUrl!.startsWith("http")
-                          ? Image.network(game.imageUrl!, width: 28, height: 28)
-                          : Image.asset(game.imageUrl!, width: 28, height: 28))
-                    : Icon(game.icon, color: game.color, size: 28),
               ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
+                child: Row(
                   children: [
-                    Text(
-                      game.title,
-                      style: GoogleFonts.outfit(
-                        color: const Color(0xFF1E293B),
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: game.color.withValues(alpha: 0.25),
+                            blurRadius: 15,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: game.imageUrl != null
+                          ? (game.imageUrl!.startsWith("http")
+                                ? Image.network(
+                                    game.imageUrl!,
+                                    width: 32,
+                                    height: 32,
+                                  )
+                                : Image.asset(
+                                    game.imageUrl!,
+                                    width: 32,
+                                    height: 32,
+                                  ))
+                          : Icon(game.icon, color: game.color, size: 32),
+                    ),
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            game.title,
+                            style: GoogleFonts.outfit(
+                              color: const Color(0xFF1E293B),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            game.subtitle,
+                            style: GoogleFonts.inter(
+                              color: const Color(0xFF64748B),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      game.subtitle,
-                      style: GoogleFonts.inter(
-                        color: const Color(0xFF64748B),
-                        fontSize: 12,
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            game.color.withValues(alpha: 0.7),
+                            game.color,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: game.color.withValues(alpha: 0.4),
+                            blurRadius: 15,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        color: Colors.white,
+                        size: 28,
                       ),
                     ),
                   ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: game.color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.play_arrow_rounded,
-                  color: game.color,
-                  size: 20,
                 ),
               ),
             ],
