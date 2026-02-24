@@ -170,25 +170,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         Expanded(
           child: Row(
             children: [
-              GestureDetector(
-                onTap: () => Scaffold.of(context).openDrawer(),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.menu_rounded,
-                    color: const Color(0xFF1E293B),
-                    size: 24,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
+              // The global hamburger menu floating above the gradient in MainLayout replaces this duplicated one
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
