@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,6 +15,7 @@ import '../services/api_client.dart';
 import '../services/session_manager.dart';
 import '../theme/app_theme.dart';
 import 'landing_screen.dart';
+import 'profile/profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -25,6 +27,41 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  String _userName = "Friend";
+  String? _profilePicture;
+  final ApiClient _apiClient = ApiClient();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final name = await SessionManager.getUserName();
+
+    if (ApiClient.token != null) {
+      try {
+        final response = await _apiClient.client.get('/auth/me');
+        if (response.statusCode == 200 && response.data != null) {
+          if (mounted) {
+            setState(() {
+              _profilePicture = response.data['profile_picture'];
+            });
+          }
+        }
+      } catch (e) {
+        debugPrint("Failed to load profile picture: $e");
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        if (name != null) _userName = name;
+      });
+    }
+  }
 
   final List<Widget> _screens = [
     const DashboardScreen(),
@@ -138,6 +175,69 @@ class _MainLayoutState extends State<MainLayout> {
                   icon: const Icon(Icons.menu, color: Colors.white, size: 28),
                   onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                 ),
+                if (_currentIndex == 0) ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Hello, $_userName",
+                          style: GoogleFonts.outfit(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            height: 1.1,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          "Let's break the cycle.",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      // Navigate to profile and refresh when back
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfileScreen(),
+                        ),
+                      );
+                      _loadUserData(); // Refresh changes
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: const Color(0xFF1A1A1D),
+                        backgroundImage: _profilePicture != null
+                            ? MemoryImage(base64Decode(_profilePicture!))
+                            : null,
+                        child: _profilePicture == null
+                            ? const Icon(
+                                Icons.person_outline_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              )
+                            : null,
+                      ),
+                    ),
+                  ),
+                ],
                 if (_currentIndex == 1) ...[
                   const Spacer(),
                   Container(
