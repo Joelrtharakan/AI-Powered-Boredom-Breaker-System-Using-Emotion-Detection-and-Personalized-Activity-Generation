@@ -252,10 +252,10 @@ class _MainLayoutState extends State<MainLayout> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildNavItem(0, Icons.home_rounded),
-                _buildNavItem(1, Icons.sports_esports_rounded),
-                _buildNavItem(2, Icons.music_note_rounded),
-                _buildNavItem(3, Icons.forum_rounded),
+                _buildNavItem(0, Icons.home_rounded, "Home"),
+                _buildNavItem(1, Icons.sports_esports_rounded, "Games"),
+                _buildNavItem(2, Icons.music_note_rounded, "Music"),
+                _buildNavItem(3, Icons.forum_rounded, "Luno"),
               ],
             ),
           ),
@@ -264,7 +264,7 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon) {
+  Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () {
@@ -279,14 +279,14 @@ class _MainLayoutState extends State<MainLayout> {
       },
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: const EdgeInsets.all(12),
-        width: 60,
-        height: 60,
+        height: 74,
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutBack,
+          padding: EdgeInsets.symmetric(horizontal: isSelected ? 20 : 16),
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(100),
             gradient: isSelected
                 ? const LinearGradient(
                     colors: AppColors.primaryGradient,
@@ -297,17 +297,41 @@ class _MainLayoutState extends State<MainLayout> {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
-                      blurRadius: 12,
+                      color: AppColors.primary.withValues(alpha: 0.4),
+                      blurRadius: 15,
                       offset: const Offset(0, 6),
                     ),
                   ]
                 : null,
           ),
-          child: Icon(
-            icon,
-            size: isSelected ? 24 : 26,
-            color: isSelected ? Colors.white : AppColors.textMuted,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: isSelected ? 22 : 28,
+                color: isSelected ? Colors.white : AppColors.textMuted,
+              ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                child: isSelected
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          label,
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
           ),
         ),
       ),
