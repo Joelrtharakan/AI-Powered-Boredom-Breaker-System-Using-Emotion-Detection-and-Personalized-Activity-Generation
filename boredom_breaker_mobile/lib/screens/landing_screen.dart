@@ -10,120 +10,287 @@ class LandingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF09090B), // Very deep zinc/black
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(flex: 3),
+    final size = MediaQuery.of(context).size;
 
-              // Logo container - Clean, flat, rounded rectangle
-              Center(
-                child: Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    color: Colors.white, // Plain white background for the logo
-                    borderRadius: BorderRadius.circular(32),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          // 1. Vibrant Background Top Half
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: size.height * 0.65, // Extends a bit behind the bottom sheet
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF5E60CE), // Deep modern indigo
+                    Color(0xFF4EA8DE), // Bright ocean blue
+                    Color(0xFF56CFE1), // Cyan
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  // Subtle decorative shapes in the background to make it beautiful
+                  Positioned(
+                    top: size.height * 0.1,
+                    right: -50,
+                    child:
+                        Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.1),
+                          ),
+                        ).animate().scale(
+                          duration: 1.seconds,
+                          curve: Curves.easeOutBack,
+                        ),
+                  ),
+                  Positioned(
+                    top: size.height * 0.25,
+                    left: -30,
+                    child:
+                        Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withValues(alpha: 0.15),
+                              ),
+                            )
+                            .animate(delay: 200.ms)
+                            .scale(
+                              duration: 1.seconds,
+                              curve: Curves.easeOutBack,
+                            ),
+                  ),
+
+                  // Logo and Branding
+                  SafeArea(
+                    bottom: false,
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: size.height * 0.06),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                                  width: 130,
+                                  height: 130,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(32),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFF000000,
+                                        ).withValues(alpha: 0.15),
+                                        blurRadius: 30,
+                                        offset: const Offset(0, 15),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(32),
+                                    child: Image.asset(
+                                      'assets/logo.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                )
+                                .animate(onPlay: (c) => c.repeat(reverse: true))
+                                .slideY(
+                                  begin: -0.02,
+                                  end: 0.02,
+                                  duration: 2.seconds,
+                                  curve: Curves.easeInOutSine,
+                                ),
+
+                            const SizedBox(height: 24),
+
+                            Text(
+                                  "Boredom Breaker",
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                    letterSpacing: -1,
+                                  ),
+                                )
+                                .animate()
+                                .fadeIn(delay: 300.ms)
+                                .slideY(begin: 0.2),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // 2. Crisp White Bottom Sheet
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child:
+                Container(
+                  height: size.height * 0.45,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(40),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        blurRadius: 30,
-                        offset: const Offset(0, 15),
+                        color: Colors.black12,
+                        blurRadius: 20,
+                        offset: Offset(0, -5),
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(32),
-                    child: Image.asset(
-                      'assets/logo.png',
-                      fit: BoxFit.cover,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 40, 32, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Beat the loop.\nFind your focus.",
+                          style: GoogleFonts.outfit(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1E293B), // Slate 800
+                            height: 1.2,
+                            letterSpacing: -0.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+
+                        const SizedBox(height: 16),
+
+                        Text(
+                          "Dive into curated games, ambient music, and AI-guided mindfulness to reclaim your time.",
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            color: const Color(0xFF64748B), // Slate 500
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
+
+                        const Spacer(),
+
+                        // Action Buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF5E60CE),
+                                      Color(0xFF4EA8DE),
+                                    ],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFF4EA8DE,
+                                      ).withValues(alpha: 0.3),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const RegisterScreen(),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Get Started",
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
+
+                        const SizedBox(height: 12),
+
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 56,
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const LoginScreen(),
+                                      ),
+                                    );
+                                  },
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFF5E60CE),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "I already have an account",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.1),
+                      ],
                     ),
                   ),
-                ).animate()
-                 .scale(begin: const Offset(0.95, 0.95), duration: 500.ms, curve: Curves.easeOutBack)
-                 .fadeIn(),
-              ),
-
-              const SizedBox(height: 56),
-
-              // Simple, powerful title
-              Text(
-                "Boredom Breaker",
-                style: GoogleFonts.outfit(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: -0.5,
+                ).animate().slideY(
+                  begin: 1.0,
+                  end: 0,
+                  duration: 600.ms,
+                  curve: Curves.easeOutQuart,
                 ),
-                textAlign: TextAlign.center,
-              ).animate().slideY(begin: 0.1, end: 0, duration: 500.ms, curve: Curves.easeOutQuad).fadeIn(),
-
-              const SizedBox(height: 16),
-
-              // Minimalist subtitle
-              Text(
-                "Beat the loop.\nFind your focus.",
-                style: GoogleFonts.inter(
-                  fontSize: 18,
-                  color: const Color(0xFFA1A1AA), // Zinc 400
-                  height: 1.4,
-                  fontWeight: FontWeight.w400,
-                ),
-                textAlign: TextAlign.center,
-              ).animate().slideY(begin: 0.1, end: 0, delay: 100.ms, duration: 500.ms, curve: Curves.easeOutQuad).fadeIn(),
-
-              const Spacer(flex: 2),
-
-              // Clean solid white button (Very iOS/Premium feel)
-              SizedBox(
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen()));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: Text(
-                    "Create Account",
-                    style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ).animate().slideY(begin: 0.1, end: 0, delay: 200.ms, duration: 500.ms, curve: Curves.easeOutQuad).fadeIn(),
-
-              const SizedBox(height: 16),
-
-              // Minimal outlined secondary button
-              SizedBox(
-                height: 56,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Color(0xFF27272A), width: 1.5), // Zinc 800
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: Text(
-                    "Log In",
-                    style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ).animate().slideY(begin: 0.1, end: 0, delay: 300.ms, duration: 500.ms, curve: Curves.easeOutQuad).fadeIn(),
-
-              const Spacer(flex: 1),
-            ],
           ),
-        ),
+        ],
       ),
     );
   }
