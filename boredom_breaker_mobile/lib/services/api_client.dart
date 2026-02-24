@@ -14,8 +14,8 @@ class ApiClient {
 
   ApiClient() {
     _dio.options.baseUrl = ApiConfig.baseUrl; // Dynamically sets URL
-    _dio.options.connectTimeout = const Duration(seconds: 10);
-    _dio.options.receiveTimeout = const Duration(seconds: 30);
+    _dio.options.connectTimeout = const Duration(seconds: 30);
+    _dio.options.receiveTimeout = const Duration(seconds: 120);
 
     // Simple logging interceptor
     _dio.interceptors.add(
