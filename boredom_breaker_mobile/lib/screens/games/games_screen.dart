@@ -120,10 +120,10 @@ class _GamesScreenState extends State<GamesScreen> {
       GameData(
         "Tic Tac Toe",
         "Strategy",
-        null,
+        Icons.grid_3x3_rounded,
         const Color(0xFF3B82F6),
         const TicTacToeScreen(),
-        "https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/64/external-Tic-Tac-Toe-table-games-icongeek26-linear-colour-icongeek26.png",
+        null,
         "Classics",
       ),
       GameData(
@@ -132,7 +132,7 @@ class _GamesScreenState extends State<GamesScreen> {
         Icons.sports_mma_rounded,
         const Color(0xFFF43F5E),
         const RockPaperScissorsScreen(),
-        "assets/rock_paper.png",
+        null,
         "Classics",
       ),
     ];
