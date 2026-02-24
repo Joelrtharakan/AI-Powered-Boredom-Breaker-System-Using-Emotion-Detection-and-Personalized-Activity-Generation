@@ -32,10 +32,28 @@ class _MainLayoutState extends State<MainLayout> {
   String? _profilePicture;
   final ApiClient _apiClient = ApiClient();
 
+  late final List<ScrollController> _scrollControllers;
+  late final List<Widget> _screens;
+
   @override
   void initState() {
     super.initState();
+    _scrollControllers = List.generate(3, (index) => ScrollController());
+    _screens = [
+      DashboardScreen(scrollController: _scrollControllers[0]),
+      GamesScreen(scrollController: _scrollControllers[1]),
+      MusicScreen(scrollController: _scrollControllers[2]),
+      const SizedBox.shrink(), // Chat is pushed
+    ];
     _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _scrollControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -62,13 +80,6 @@ class _MainLayoutState extends State<MainLayout> {
       });
     }
   }
-
-  final List<Widget> _screens = [
-    const DashboardScreen(),
-    const GamesScreen(),
-    const MusicScreen(),
-    const SizedBox.shrink(),
-  ];
 
   void _navigateTo(Widget screen) {
     // Close the drawer first
@@ -405,6 +416,13 @@ class _MainLayoutState extends State<MainLayout> {
           );
         } else {
           setState(() => _currentIndex = index);
+          if (_scrollControllers[index].hasClients) {
+            _scrollControllers[index].animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutCubic,
+            );
+          }
         }
       },
       behavior: HitTestBehavior.opaque,

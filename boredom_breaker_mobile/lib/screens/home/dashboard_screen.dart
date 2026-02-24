@@ -17,7 +17,8 @@ import '../lockbox/lockbox_screen.dart';
 import '../voice/voice_mode_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
-  const DashboardScreen({super.key});
+  final ScrollController? scrollController;
+  const DashboardScreen({super.key, this.scrollController});
 
   @override
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
@@ -57,6 +58,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           // 2. Main Content
           SafeArea(
             child: SingleChildScrollView(
+              controller: widget.scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 24),
               physics: const BouncingScrollPhysics(),
               child: Column(

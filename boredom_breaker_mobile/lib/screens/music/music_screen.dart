@@ -10,12 +10,14 @@ class MusicScreen extends StatefulWidget {
   final String? initialPlaylistName;
   final String? initialSpotifyUrl;
   final String? initialTitle;
+  final ScrollController? scrollController;
 
   const MusicScreen({
     super.key,
     this.initialPlaylistName,
     this.initialSpotifyUrl,
     this.initialTitle,
+    this.scrollController,
   });
 
   @override
@@ -203,6 +205,7 @@ class _MusicScreenState extends State<MusicScreen> {
 
           // 2. Main Content
           CustomScrollView(
+            controller: widget.scrollController,
             physics: const BouncingScrollPhysics(),
             slivers: [
               _buildSliverAppBar(),

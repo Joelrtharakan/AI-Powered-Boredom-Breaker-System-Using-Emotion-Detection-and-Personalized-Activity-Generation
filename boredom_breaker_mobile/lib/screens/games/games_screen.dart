@@ -16,7 +16,8 @@ import 'memory_flip_screen.dart';
 
 class GamesScreen extends StatefulWidget {
   final String? initialGameTitle;
-  const GamesScreen({super.key, this.initialGameTitle});
+  final ScrollController? scrollController;
+  const GamesScreen({super.key, this.initialGameTitle, this.scrollController});
 
   @override
   State<GamesScreen> createState() => _GamesScreenState();
@@ -222,6 +223,7 @@ class _GamesScreenState extends State<GamesScreen> {
           ),
 
           CustomScrollView(
+            controller: widget.scrollController,
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(
