@@ -358,19 +358,17 @@ class _GamesScreenState extends State<GamesScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(36),
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              game.color,
-              HSLColor.fromColor(game.color)
-                  .withHue((HSLColor.fromColor(game.color).hue + 30) % 360)
-                  .toColor(),
+              Color(0xFF0F172A), // Premium Dark Slate
+              Color(0xFF1E293B), // Premium Slate
             ],
           ),
           boxShadow: [
             BoxShadow(
-              color: game.color.withValues(alpha: 0.4),
+              color: game.color.withValues(alpha: 0.25),
               blurRadius: 35,
               offset: const Offset(0, 15),
             ),
@@ -380,7 +378,7 @@ class _GamesScreenState extends State<GamesScreen> {
           borderRadius: BorderRadius.circular(36),
           child: Stack(
             children: [
-              // Liquid Shimmer overlay
+              // Vibrant Accent Glow
               Positioned(
                 top: -50,
                 right: -50,
@@ -389,11 +387,11 @@ class _GamesScreenState extends State<GamesScreen> {
                   height: 250,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: game.color.withValues(alpha: 0.15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        blurRadius: 50,
+                        color: game.color.withValues(alpha: 0.2),
+                        blurRadius: 60,
                       ),
                     ],
                   ),
@@ -409,7 +407,7 @@ class _GamesScreenState extends State<GamesScreen> {
                   child: Icon(
                     game.icon ?? Icons.extension,
                     size: 240,
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: Colors.white.withValues(alpha: 0.05),
                   ),
                 ),
               ),
@@ -563,14 +561,9 @@ class _GamesScreenState extends State<GamesScreen> {
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: game.color.withValues(alpha: 0.15),
+                      color: const Color(0xFF1E293B).withValues(alpha: 0.08),
                       blurRadius: 25,
                       offset: const Offset(0, 12),
-                    ),
-                    BoxShadow(
-                      color: const Color(0xFF1E293B).withValues(alpha: 0.04),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
@@ -587,10 +580,10 @@ class _GamesScreenState extends State<GamesScreen> {
                           height: 130,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: game.color.withValues(alpha: 0.2),
+                            color: game.color.withValues(alpha: 0.1),
                             boxShadow: [
                               BoxShadow(
-                                color: game.color.withValues(alpha: 0.3),
+                                color: game.color.withValues(alpha: 0.15),
                                 blurRadius: 40,
                               ),
                             ],
@@ -606,7 +599,7 @@ class _GamesScreenState extends State<GamesScreen> {
                           height: 100,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: game.color.withValues(alpha: 0.1),
+                            color: game.color.withValues(alpha: 0.05),
                           ),
                         ),
                       ),
@@ -712,14 +705,9 @@ class _GamesScreenState extends State<GamesScreen> {
           border: Border.all(color: Colors.white, width: 2),
           boxShadow: [
             BoxShadow(
-              color: game.color.withValues(alpha: 0.15),
+              color: const Color(0xFF1E293B).withValues(alpha: 0.08),
               blurRadius: 25,
               offset: const Offset(0, 10),
-            ),
-            BoxShadow(
-              color: const Color(0xFF1E293B).withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
             ),
           ],
         ),
@@ -815,7 +803,7 @@ class _GamesScreenState extends State<GamesScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: game.color.withValues(alpha: 0.4),
+                            color: game.color.withValues(alpha: 0.2),
                             blurRadius: 15,
                             offset: const Offset(0, 6),
                           ),
