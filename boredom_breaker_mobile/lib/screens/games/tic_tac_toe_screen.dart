@@ -216,7 +216,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                 Text(
                   title,
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2,
@@ -235,13 +235,17 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                         },
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: const Color(
+                              0xFF1E293B,
+                            ).withValues(alpha: 0.2),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: Text(
                           "EXIT",
-                          style: GoogleFonts.outfit(color: Colors.white),
+                          style: GoogleFonts.outfit(
+                            color: const Color(0xFF1E293B),
+                          ),
                         ),
                       ),
                     ),
@@ -338,19 +342,22 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             children: [
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, color: Colors.white54),
+                icon: const Icon(Icons.close, color: const Color(0xFF94A3B8)),
               ),
               Text(
                 "HARD MODE",
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
               ),
               IconButton(
                 onPressed: _resetGame,
-                icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                icon: const Icon(
+                  Icons.refresh_rounded,
+                  color: const Color(0xFF1E293B),
+                ),
               ),
             ],
           ),
@@ -362,7 +369,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(30),
             border: Border.all(color: Colors.white10),
           ),
@@ -496,7 +503,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               "TIC TAC TOE",
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 28,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 2,
@@ -504,7 +511,10 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             ),
             Text(
               "vs Minimax AI",
-              style: GoogleFonts.spaceMono(color: Colors.white38, fontSize: 14),
+              style: GoogleFonts.spaceMono(
+                color: const Color(0xFFCBD5E1),
+                fontSize: 14,
+              ),
             ),
 
             const SizedBox(height: 48),
@@ -547,7 +557,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               child: Text(
                 "EXIT",
                 style: GoogleFonts.spaceMono(
-                  color: Colors.white38,
+                  color: const Color(0xFFCBD5E1),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -564,7 +574,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       child: Text(
         text,
         style: GoogleFonts.inter(
-          color: Colors.white70,
+          color: const Color(0xFF64748B),
           fontSize: 16,
           fontWeight: FontWeight.w500,
         ),

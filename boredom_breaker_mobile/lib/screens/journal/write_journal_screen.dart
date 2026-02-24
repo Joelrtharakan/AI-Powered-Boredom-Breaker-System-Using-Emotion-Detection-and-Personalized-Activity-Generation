@@ -87,13 +87,13 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
         title: Text(
           "New Entry",
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: Colors.white),
+          icon: const Icon(Icons.close_rounded, color: const Color(0xFF1E293B)),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Colors.transparent,
@@ -132,7 +132,9 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
               decoration: BoxDecoration(
                 color: AppColors.surface.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(
+                  color: const Color(0xFF1E293B).withOpacity(0.05),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,7 +154,7 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
                       Text(
                         "Privacy Protected",
                         style: GoogleFonts.inter(
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
@@ -178,7 +180,7 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
             TextField(
               controller: _titleController,
               style: GoogleFonts.inter(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -196,7 +198,7 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
             TextField(
               controller: _contentController,
               style: GoogleFonts.inter(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 18,
                 height: 1.6,
               ),

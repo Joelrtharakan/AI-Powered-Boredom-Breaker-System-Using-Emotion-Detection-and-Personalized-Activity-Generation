@@ -15,12 +15,12 @@ class HistoryScreen extends ConsumerWidget {
     final historyState = ref.watch(historyProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF000000), // OLED Black
+      backgroundColor: Colors.transparent, // OLED Black
       appBar: AppBar(
         title: Text(
           "Mental Insights",
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -28,7 +28,7 @@ class HistoryScreen extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -36,7 +36,10 @@ class HistoryScreen extends ConsumerWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.white54),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: const Color(0xFF94A3B8),
+            ),
             onPressed: () => ref.read(historyProvider.notifier).fetchHistory(),
           ),
         ],
@@ -56,7 +59,7 @@ class HistoryScreen extends ConsumerWidget {
         error: (err, stack) => Center(
           child: Text(
             "Error loading insights",
-            style: GoogleFonts.inter(color: Colors.white54),
+            style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
           ),
         ),
       ),
@@ -104,12 +107,18 @@ class HistoryScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           Text(
             "No data to analyze yet",
-            style: GoogleFonts.outfit(color: Colors.white54, fontSize: 18),
+            style: GoogleFonts.outfit(
+              color: const Color(0xFF94A3B8),
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             "Check in with your mood to see insights",
-            style: GoogleFonts.inter(color: Colors.white38, fontSize: 14),
+            style: GoogleFonts.inter(
+              color: const Color(0xFFCBD5E1),
+              fontSize: 14,
+            ),
           ),
         ],
       ),
@@ -173,7 +182,7 @@ class HistoryScreen extends ConsumerWidget {
           Text(
             "Emotional Spectrum",
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -189,7 +198,7 @@ class HistoryScreen extends ConsumerWidget {
           Text(
             "Intensity Trend",
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -197,7 +206,10 @@ class HistoryScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             "Your emotional intensity over the last 20 sessions",
-            style: GoogleFonts.inter(color: Colors.white38, fontSize: 12),
+            style: GoogleFonts.inter(
+              color: const Color(0xFFCBD5E1),
+              fontSize: 12,
+            ),
           ),
           const SizedBox(height: 16),
           _IntensityChart(
@@ -210,7 +222,7 @@ class HistoryScreen extends ConsumerWidget {
           Text(
             "Recent Logs",
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -260,7 +272,9 @@ class _MetricCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -277,7 +291,7 @@ class _MetricCard extends StatelessWidget {
           Text(
             value,
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               fontSize: isTextSmall ? 14 : 20,
               fontWeight: FontWeight.bold,
             ),
@@ -288,7 +302,7 @@ class _MetricCard extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.inter(
-              color: Colors.white38,
+              color: const Color(0xFFCBD5E1),
               fontSize: 11,
               fontWeight: FontWeight.w500,
             ),
@@ -348,7 +362,9 @@ class _MoodDistributionChart extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+        ),
       ),
       child: Row(
         children: [
@@ -398,7 +414,7 @@ class _MoodDistributionChart extends StatelessWidget {
                         child: Text(
                           mood.toUpperCase(),
                           style: GoogleFonts.inter(
-                            color: Colors.white70,
+                            color: const Color(0xFF64748B),
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -407,7 +423,7 @@ class _MoodDistributionChart extends StatelessWidget {
                       Text(
                         "$percent%",
                         style: GoogleFonts.inter(
-                          color: Colors.white38,
+                          color: const Color(0xFFCBD5E1),
                           fontSize: 12,
                         ),
                       ),
@@ -435,12 +451,14 @@ class _IntensityChart extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF141414),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+          ),
         ),
         child: const Center(
           child: Text(
             "Check in more times to see your trend",
-            style: TextStyle(color: Colors.white38),
+            style: TextStyle(color: const Color(0xFFCBD5E1)),
           ),
         ),
       );
@@ -465,7 +483,9 @@ class _IntensityChart extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+        ),
       ),
       child: LineChart(
         LineChartData(
@@ -474,7 +494,7 @@ class _IntensityChart extends StatelessWidget {
             drawVerticalLine: false,
             horizontalInterval: 0.25,
             getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: const Color(0xFF1E293B).withValues(alpha: 0.05),
               strokeWidth: 1,
             ),
           ),
@@ -489,7 +509,7 @@ class _IntensityChart extends StatelessWidget {
                   return LineTooltipItem(
                     touchedSpot.y.toStringAsFixed(2),
                     GoogleFonts.inter(
-                      color: Colors.white,
+                      color: const Color(0xFF1E293B),
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -554,7 +574,7 @@ class _IntensityChart extends StatelessWidget {
                         label,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
-                          color: Colors.white38,
+                          color: const Color(0xFFCBD5E1),
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
                         ),
@@ -593,7 +613,7 @@ class _IntensityChart extends StatelessWidget {
                 getDotPainter: (spot, percent, barData, index) {
                   return FlDotCirclePainter(
                     radius: 3,
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     strokeWidth: 2,
                     strokeColor: AppColors.primary,
                   );
@@ -669,7 +689,9 @@ class _HistoryItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+        ),
       ),
       child: Row(
         children: [
@@ -692,7 +714,7 @@ class _HistoryItemCard extends StatelessWidget {
                     Text(
                       mood.toUpperCase(),
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1,
@@ -702,7 +724,7 @@ class _HistoryItemCard extends StatelessWidget {
                       Text(
                         DateFormat('MMM d, h:mm a').format(date),
                         style: GoogleFonts.inter(
-                          color: Colors.white38,
+                          color: const Color(0xFFCBD5E1),
                           fontSize: 11,
                         ),
                       ),
@@ -713,7 +735,7 @@ class _HistoryItemCard extends StatelessWidget {
                   Text(
                     emotion,
                     style: GoogleFonts.inter(
-                      color: Colors.white70,
+                      color: const Color(0xFF64748B),
                       fontSize: 12,
                     ),
                   ),
@@ -728,7 +750,7 @@ class _HistoryItemCard extends StatelessWidget {
               Text(
                 (intensity * 10).toStringAsFixed(1),
                 style: GoogleFonts.outfit(
-                  color: Colors.white54,
+                  color: const Color(0xFF94A3B8),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),

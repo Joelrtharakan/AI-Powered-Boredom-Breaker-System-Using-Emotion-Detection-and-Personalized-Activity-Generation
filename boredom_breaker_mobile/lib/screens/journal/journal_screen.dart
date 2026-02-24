@@ -56,7 +56,7 @@ class _JournalScreenState extends State<JournalScreen> {
         title: Text(
           "Mindful Journal",
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
             fontSize: 26,
             fontWeight: FontWeight.bold,
           ),
@@ -64,7 +64,7 @@ class _JournalScreenState extends State<JournalScreen> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -72,7 +72,10 @@ class _JournalScreenState extends State<JournalScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.white70),
+            icon: const Icon(
+              Icons.refresh_rounded,
+              color: const Color(0xFF64748B),
+            ),
             onPressed: _fetchEntries,
           ),
         ],
@@ -86,7 +89,10 @@ class _JournalScreenState extends State<JournalScreen> {
               child: Text(
                 "No journal entries yet.\nStart writing now!",
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(color: Colors.white54, fontSize: 18),
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF94A3B8),
+                  fontSize: 18,
+                ),
               ),
             )
           : ListView.builder(
@@ -190,7 +196,7 @@ class _JournalScreenState extends State<JournalScreen> {
         decoration: BoxDecoration(
           color: AppColors.surface.withOpacity(0.5),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: const Color(0xFF1E293B).withOpacity(0.05)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,11 +234,11 @@ class _JournalScreenState extends State<JournalScreen> {
                   imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Container(
                     padding: const EdgeInsets.all(8),
-                    color: Colors.white.withOpacity(0.05),
+                    color: const Color(0xFF1E293B).withOpacity(0.05),
                     child: Text(
                       "This entry is locked. Tap to view the contents of $title...",
                       style: GoogleFonts.inter(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 16,
                         height: 1.6,
                       ),
@@ -250,7 +256,7 @@ class _JournalScreenState extends State<JournalScreen> {
                       child: Text(
                         title,
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -259,7 +265,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   Text(
                     content,
                     style: GoogleFonts.inter(
-                      color: Colors.white,
+                      color: const Color(0xFF1E293B),
                       fontSize: 16,
                       height: 1.6,
                     ),

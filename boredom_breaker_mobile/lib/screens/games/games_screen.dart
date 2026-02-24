@@ -228,7 +228,7 @@ class _GamesScreenState extends State<GamesScreen> {
                 expandedHeight: 100.0,
                 floating: false,
                 pinned: true,
-                backgroundColor: Colors.black.withValues(alpha: 0.6),
+                backgroundColor: Colors.transparent.withValues(alpha: 0.6),
                 surfaceTintColor: Colors.transparent,
                 leading: Padding(
                   padding: const EdgeInsets.only(left: 20),
@@ -240,15 +240,17 @@ class _GamesScreenState extends State<GamesScreen> {
                         height: 48,
                         width: 48,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: const Color(
+                              0xFF1E293B,
+                            ).withValues(alpha: 0.1),
                           ),
                         ),
                         child: const Icon(
                           Icons.menu_rounded,
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           size: 20,
                         ),
                       ),
@@ -260,7 +262,7 @@ class _GamesScreenState extends State<GamesScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Image.network(
@@ -275,7 +277,7 @@ class _GamesScreenState extends State<GamesScreen> {
                       style: GoogleFonts.outfit(
                         fontWeight: FontWeight.w900,
                         letterSpacing: 3.0,
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 20,
                       ),
                     ),
@@ -357,7 +359,7 @@ class _GamesScreenState extends State<GamesScreen> {
         Text(
           title,
           style: GoogleFonts.outfit(
-            color: Colors.white.withValues(alpha: 0.9),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.9),
             fontSize: 14,
             fontWeight: FontWeight.bold,
             letterSpacing: 2,
@@ -469,7 +471,7 @@ class _GamesScreenState extends State<GamesScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 36,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         height: 1.0,
                       ),
                     ),
@@ -568,7 +570,7 @@ class _GamesScreenState extends State<GamesScreen> {
                   color: const Color(0xFF121212),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.08),
                   ),
                 ),
                 child: ClipRRect(
@@ -629,7 +631,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             Text(
                               game.title,
                               style: GoogleFonts.outfit(
-                                color: Colors.white,
+                                color: const Color(0xFF1E293B),
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 height: 1.1,
@@ -640,7 +642,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             Text(
                               game.subtitle,
                               style: GoogleFonts.inter(
-                                color: Colors.white38,
+                                color: const Color(0xFFCBD5E1),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -655,7 +657,7 @@ class _GamesScreenState extends State<GamesScreen> {
                         right: 20,
                         child: Icon(
                           Icons.arrow_forward_rounded,
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                           size: 20,
                         ),
                       ),
@@ -680,7 +682,9 @@ class _GamesScreenState extends State<GamesScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF121212),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -714,7 +718,7 @@ class _GamesScreenState extends State<GamesScreen> {
                     Text(
                       game.title,
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -722,7 +726,7 @@ class _GamesScreenState extends State<GamesScreen> {
                     Text(
                       game.subtitle,
                       style: GoogleFonts.inter(
-                        color: Colors.white38,
+                        color: const Color(0xFFCBD5E1),
                         fontSize: 12,
                       ),
                     ),
@@ -732,12 +736,12 @@ class _GamesScreenState extends State<GamesScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.play_arrow_rounded,
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   size: 20,
                 ),
               ),

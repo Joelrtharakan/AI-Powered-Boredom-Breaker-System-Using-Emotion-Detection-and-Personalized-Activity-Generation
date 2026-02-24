@@ -129,7 +129,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                 "MEMORY OVERLOAD!",
                 textAlign: TextAlign.center,
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.w900,
                   fontSize: 24,
                   letterSpacing: 1,
@@ -138,7 +138,10 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
               const SizedBox(height: 12),
               Text(
                 "You reached Level $_level",
-                style: GoogleFonts.inter(color: Colors.white70, fontSize: 16),
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF64748B),
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 32),
               Row(
@@ -151,7 +154,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                       },
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.2),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -161,7 +164,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                       child: Text(
                         "EXIT",
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -208,7 +211,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           // 1. Cyberpunk Background
@@ -253,13 +256,15 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.05),
+                                color: const Color(
+                                  0xFF1E293B,
+                                ).withValues(alpha: 0.05),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new_rounded,
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                   size: 20,
                                 ),
                                 onPressed: () => Navigator.pop(context),
@@ -404,9 +409,9 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                       boxShadow: [
                                         if (_showingPattern && isTarget)
                                           BoxShadow(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.4,
-                                            ),
+                                            color: const Color(
+                                              0xFF1E293B,
+                                            ).withValues(alpha: 0.4),
                                             blurRadius: 10,
                                             spreadRadius: 1,
                                           ),
@@ -472,7 +477,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
               Text(
                 "VISUAL MEMORY",
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.w900,
                   fontSize: 28,
                   letterSpacing: 2,
@@ -549,7 +554,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                 child: Text(
                   "ABORT",
                   style: GoogleFonts.outfit(
-                    color: Colors.white38,
+                    color: const Color(0xFFCBD5E1),
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                   ),
@@ -580,7 +585,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
             child: Text(
               text,
               style: GoogleFonts.inter(
-                color: Colors.white70,
+                color: const Color(0xFF64748B),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 height: 1.4,

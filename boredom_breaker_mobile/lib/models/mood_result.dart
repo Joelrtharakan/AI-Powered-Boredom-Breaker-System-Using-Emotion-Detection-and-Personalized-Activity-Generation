@@ -3,7 +3,11 @@ class MoodResult {
   final String emotion;
   final double intensity;
 
-  MoodResult({required this.mood, required this.emotion, required this.intensity});
+  MoodResult({
+    required this.mood,
+    required this.emotion,
+    required this.intensity,
+  });
 
   factory MoodResult.fromJson(Map<String, dynamic> json) {
     return MoodResult(
@@ -19,7 +23,11 @@ class PlanItem {
   final String description;
   final int timeMinutes;
 
-  PlanItem({required this.type, required this.description, required this.timeMinutes});
+  PlanItem({
+    required this.type,
+    required this.description,
+    required this.timeMinutes,
+  });
 
   factory PlanItem.fromJson(Map<String, dynamic> json) {
     return PlanItem(

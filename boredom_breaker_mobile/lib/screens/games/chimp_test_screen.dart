@@ -105,7 +105,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 "BRAIN OVERLOAD!",
                 textAlign: TextAlign.center,
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.w900,
                   fontSize: 24,
                   letterSpacing: 1,
@@ -114,7 +114,10 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
               const SizedBox(height: 12),
               Text(
                 "You memorized $_level numbers.",
-                style: GoogleFonts.inter(color: Colors.white70, fontSize: 16),
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF64748B),
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 32),
               Row(
@@ -126,7 +129,9 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                         Navigator.pop(context); // Exit screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        side: BorderSide(
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.2),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -135,7 +140,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                       child: Text(
                         "EXIT",
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -181,7 +186,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           // 1. Sleek Background
@@ -228,13 +233,15 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                             // Back Button
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.05),
+                                color: const Color(
+                                  0xFF1E293B,
+                                ).withValues(alpha: 0.05),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new_rounded,
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                   size: 20,
                                 ),
                                 onPressed: () => Navigator.pop(context),
@@ -277,7 +284,9 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                                 color: Colors.cyanAccent.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.cyanAccent.withValues(alpha: 0.3),
+                                  color: Colors.cyanAccent.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Text(
@@ -336,13 +345,17 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                           },
                           icon: Icon(
                             Icons.refresh_rounded,
-                            color: Colors.white.withValues(alpha: 0.3),
+                            color: const Color(
+                              0xFF1E293B,
+                            ).withValues(alpha: 0.3),
                             size: 18,
                           ),
                           label: Text(
                             "RESET",
                             style: GoogleFonts.outfit(
-                              color: Colors.white.withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFF1E293B,
+                              ).withValues(alpha: 0.3),
                               letterSpacing: 1.5,
                               fontSize: 12,
                             ),
@@ -446,7 +459,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
             child: Text(
               text,
               style: GoogleFonts.inter(
-                color: Colors.white70,
+                color: const Color(0xFF64748B),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 height: 1.4,
@@ -471,7 +484,9 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.cyanAccent.withValues(alpha: 0.05),
-                  border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: Colors.cyanAccent.withValues(alpha: 0.2),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.cyanAccent.withValues(alpha: 0.1),
@@ -491,7 +506,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
               Text(
                 "PRIMATE MEMORY",
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.w900,
                   fontSize: 28,
                   letterSpacing: 3,
@@ -563,7 +578,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 child: Text(
                   "ABORT",
                   style: GoogleFonts.outfit(
-                    color: Colors.white38,
+                    color: const Color(0xFFCBD5E1),
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                   ),

@@ -141,7 +141,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               Text(
                 playerWon ? "MATCH WON!" : "MATCH LOST",
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 2,
@@ -150,7 +150,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               Text(
                 "$_playerScore - $_aiScore",
                 style: GoogleFonts.spaceMono(
-                  color: Colors.white70,
+                  color: const Color(0xFF64748B),
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -168,13 +168,15 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                       },
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.2),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
                         "EXIT",
-                        style: GoogleFonts.outfit(color: Colors.white),
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF1E293B),
+                        ),
                       ),
                     ),
                   ),
@@ -301,7 +303,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, color: Colors.white54),
+                icon: const Icon(Icons.close, color: const Color(0xFF94A3B8)),
               ),
               _buildScoreBadge(
                 "AI",
@@ -368,7 +370,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                               child: Text(
                                 "PLAY AGAIN",
                                 style: GoogleFonts.outfit(
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -438,7 +440,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
           Text(
             "$label: $score",
             style: GoogleFonts.spaceMono(
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               fontWeight: FontWeight.bold,
               fontSize: 12,
             ),
@@ -458,7 +460,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         width: size * 0.7,
         height: size,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.02),
+          color: const Color(0xFF1E293B).withValues(alpha: 0.02),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white10),
         ),
@@ -490,12 +492,16 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(_getIcon(choice), size: size * 0.4, color: Colors.white),
+          Icon(
+            _getIcon(choice),
+            size: size * 0.4,
+            color: const Color(0xFF1E293B),
+          ),
           SizedBox(height: size * 0.1),
           Text(
             choice,
             style: GoogleFonts.outfit(
-              color: Colors.white70,
+              color: const Color(0xFF64748B),
               fontSize: size * 0.15,
               fontWeight: FontWeight.bold,
             ),
@@ -519,12 +525,19 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white24),
             ),
-            child: Icon(_getIcon(choice), color: Colors.white, size: 28),
+            child: Icon(
+              _getIcon(choice),
+              color: const Color(0xFF1E293B),
+              size: 28,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             choice,
-            style: GoogleFonts.spaceMono(color: Colors.white54, fontSize: 10),
+            style: GoogleFonts.spaceMono(
+              color: const Color(0xFF94A3B8),
+              fontSize: 10,
+            ),
           ),
         ],
       ),
@@ -565,7 +578,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
             Text(
               "R P S",
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 48,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
@@ -573,7 +586,10 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
             ),
             Text(
               "Rock \u2022 Paper \u2022 Scissors",
-              style: GoogleFonts.spaceMono(color: Colors.white38, fontSize: 14),
+              style: GoogleFonts.spaceMono(
+                color: const Color(0xFFCBD5E1),
+                fontSize: 14,
+              ),
             ),
 
             const SizedBox(height: 48),
@@ -617,7 +633,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               child: Text(
                 "RETREAT",
                 style: GoogleFonts.spaceMono(
-                  color: Colors.white38,
+                  color: const Color(0xFFCBD5E1),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -634,12 +650,12 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center, // Center align
         children: [
-          Icon(icon, color: Colors.white70, size: 24),
+          Icon(icon, color: const Color(0xFF64748B), size: 24),
           const SizedBox(width: 16),
           Text(
             text,
             style: GoogleFonts.inter(
-              color: Colors.white70,
+              color: const Color(0xFF64748B),
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),

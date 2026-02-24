@@ -192,7 +192,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
         title: Text(
           "Voice Mode",
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -200,7 +200,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -293,7 +293,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
                                         ? Icons.mic_rounded
                                         : Icons.mic_off_rounded),
                               size: 60,
-                              color: Colors.white,
+                              color: const Color(0xFF1E293B),
                             ),
                           ),
                         ],
@@ -313,7 +313,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
                       style: GoogleFonts.outfit(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                       ),
                     )
                     .animate(target: (_isListening || _isProcessing) ? 1 : 0)
@@ -330,7 +330,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
                       style: GoogleFonts.inter(
                         fontSize: 18,
                         fontStyle: FontStyle.italic,
-                        color: Colors.white70,
+                        color: const Color(0xFF64748B),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -353,7 +353,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
                     child: Text(
                       _lunoReply,
                       style: GoogleFonts.inter(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         height: 1.4,
@@ -372,7 +372,11 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
         onPressed: () => Navigator.pop(context),
         backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
         elevation: 0,
-        child: const Icon(Icons.close_rounded, color: Colors.white, size: 36),
+        child: const Icon(
+          Icons.close_rounded,
+          color: const Color(0xFF1E293B),
+          size: 36,
+        ),
       ).animate().scale(delay: 1.seconds),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

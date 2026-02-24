@@ -161,7 +161,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           // Cyberpunk Grid Background
@@ -189,13 +189,13 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
                           icon: const Icon(
                             Icons.arrow_back_ios_new_rounded,
-                            color: Colors.white,
+                            color: const Color(0xFF1E293B),
                           ),
                           onPressed: () => Navigator.pop(context),
                         ),
@@ -231,7 +231,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                               style: GoogleFonts.outfit(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: const Color(0xFF1E293B),
                               ),
                             ).animate(key: ValueKey(_score)).scale(),
                           ],
@@ -355,7 +355,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                             "Final Score: $_score",
                             style: GoogleFonts.outfit(
                               fontSize: 20,
-                              color: Colors.white70,
+                              color: const Color(0xFF64748B),
                             ),
                           ),
                           const SizedBox(height: 32),
@@ -382,7 +382,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                                 style: GoogleFonts.outfit(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                 ),
                               ),
                               const SizedBox(height: 32),
@@ -425,7 +425,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                             child: Text(
                               "EXIT GAME",
                               style: GoogleFonts.outfit(
-                                color: Colors.white54,
+                                color: const Color(0xFF94A3B8),
                                 fontSize: 14,
                                 letterSpacing: 1,
                               ),

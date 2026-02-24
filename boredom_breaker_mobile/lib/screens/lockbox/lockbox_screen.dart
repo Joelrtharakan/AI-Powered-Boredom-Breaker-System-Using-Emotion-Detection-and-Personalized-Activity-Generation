@@ -82,14 +82,17 @@ class _LockboxScreenState extends State<LockboxScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: Text(title, style: GoogleFonts.outfit(color: Colors.white)),
+          title: Text(
+            title,
+            style: GoogleFonts.outfit(color: const Color(0xFF1E293B)),
+          ),
           content: TextField(
             controller: passcodeController,
             obscureText: true,
             maxLength: 6,
             keyboardType: TextInputType.number,
             style: GoogleFonts.inter(
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               letterSpacing: 8,
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -97,7 +100,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
             textAlign: TextAlign.center,
             decoration: InputDecoration(
               hintText: "••••••",
-              hintStyle: GoogleFonts.inter(color: Colors.white30),
+              hintStyle: GoogleFonts.inter(color: const Color(0xFFCBD5E1)),
               counterText: "",
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white24),
@@ -112,7 +115,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
               onPressed: () => Navigator.pop(context, null),
               child: Text(
                 "Cancel",
-                style: GoogleFonts.inter(color: Colors.white54),
+                style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
               ),
             ),
             ElevatedButton(
@@ -127,7 +130,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
               child: Text(
                 "Submit",
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -185,7 +188,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
             Text(
               "Add to Vault",
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -193,10 +196,10 @@ class _LockboxScreenState extends State<LockboxScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: titleController,
-              style: GoogleFonts.inter(color: Colors.white),
+              style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
               decoration: InputDecoration(
                 hintText: "Label (e.g. Diary, Passwords)",
-                hintStyle: GoogleFonts.inter(color: Colors.white54),
+                hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white24),
                 ),
@@ -208,11 +211,11 @@ class _LockboxScreenState extends State<LockboxScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: secretController,
-              style: GoogleFonts.inter(color: Colors.white),
+              style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: "Your deepest secret...",
-                hintStyle: GoogleFonts.inter(color: Colors.white54),
+                hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.white24),
                   borderRadius: BorderRadius.circular(12),
@@ -240,7 +243,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
                 child: Text(
                   "Encrypt & Save",
                   style: GoogleFonts.inter(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -354,7 +357,10 @@ class _LockboxScreenState extends State<LockboxScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            title: Text(label, style: GoogleFonts.outfit(color: Colors.white)),
+            title: Text(
+              label,
+              style: GoogleFonts.outfit(color: const Color(0xFF1E293B)),
+            ),
             content: SingleChildScrollView(
               child: Text(
                 secretText,
@@ -412,7 +418,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
         title: Text(
           _isLocked ? "Private Lockbox" : "Unlocked Vault",
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -420,7 +426,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -484,7 +490,9 @@ class _LockboxScreenState extends State<LockboxScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surface.withOpacity(0.5),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(
+                    color: const Color(0xFF1E293B).withOpacity(0.05),
+                  ),
                 ),
                 child: const Icon(
                   Icons.lock_person_rounded,
@@ -501,7 +509,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                   ),
                 ).animate().fadeIn().slideY(begin: 0.1),
                 const SizedBox(height: 16),
@@ -542,7 +550,10 @@ class _LockboxScreenState extends State<LockboxScreen> {
         child: Text(
           "Your vault is empty.\nStore your innermost secrets here.",
           textAlign: TextAlign.center,
-          style: GoogleFonts.inter(color: Colors.white54, fontSize: 16),
+          style: GoogleFonts.inter(
+            color: const Color(0xFF94A3B8),
+            fontSize: 16,
+          ),
         ),
       );
     }
@@ -584,7 +595,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
                       Text(
                         item['label'],
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -593,14 +604,17 @@ class _LockboxScreenState extends State<LockboxScreen> {
                       Text(
                         "Stored on ${DateFormat('MMM dd, yyyy').format(cDate)}",
                         style: GoogleFonts.inter(
-                          color: Colors.white54,
+                          color: const Color(0xFF94A3B8),
                           fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.remove_red_eye_rounded, color: Colors.white30),
+                const Icon(
+                  Icons.remove_red_eye_rounded,
+                  color: const Color(0xFFCBD5E1),
+                ),
               ],
             ),
           ).animate().fadeIn(delay: (index * 100).ms).slideX(begin: 0.1),
@@ -638,7 +652,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
           style: GoogleFonts.outfit(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
           ),
         ),
       ),

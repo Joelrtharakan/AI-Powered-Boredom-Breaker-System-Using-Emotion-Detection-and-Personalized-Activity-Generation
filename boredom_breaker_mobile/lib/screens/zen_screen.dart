@@ -88,7 +88,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
         title: Text(
           "Zen Mode",
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -97,7 +97,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -150,7 +150,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                                             style: GoogleFonts.outfit(
                                               fontSize: 52,
                                               fontWeight: FontWeight.w900,
-                                              color: Colors.white,
+                                              color: const Color(0xFF1E293B),
                                               letterSpacing: 12,
                                             ),
                                           )
@@ -171,7 +171,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
                                       Text(
                                             _getPhaseInstruction(),
                                             style: GoogleFonts.inter(
-                                              color: Colors.white38,
+                                              color: const Color(0xFFCBD5E1),
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
                                               letterSpacing: 1,

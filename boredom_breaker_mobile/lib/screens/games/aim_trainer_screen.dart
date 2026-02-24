@@ -122,7 +122,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
               Text(
                 "MISSION COMPLETE",
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 2,
@@ -149,12 +149,16 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                         Navigator.pop(context); // Pop screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        side: BorderSide(
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.2),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
                         "EXIT",
-                        style: GoogleFonts.outfit(color: Colors.white),
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF1E293B),
+                        ),
                       ),
                     ),
                   ),
@@ -194,7 +198,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
           Text(
             label,
             style: GoogleFonts.inter(
-              color: Colors.white54,
+              color: const Color(0xFF94A3B8),
               fontSize: 12,
               letterSpacing: 1,
             ),
@@ -215,7 +219,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           // 1. Tactical Grid Background
@@ -290,13 +294,17 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                                                       shape: BoxShape.circle,
                                                       border: Border.all(
                                                         color: _targetColor
-                                                            .withValues(alpha: 0.5),
+                                                            .withValues(
+                                                              alpha: 0.5,
+                                                            ),
                                                         width: 2,
                                                       ),
                                                       boxShadow: [
                                                         BoxShadow(
                                                           color: _targetColor
-                                                              .withValues(alpha: 0.3),
+                                                              .withValues(
+                                                                alpha: 0.3,
+                                                              ),
                                                           blurRadius: 10,
                                                         ),
                                                       ],
@@ -353,7 +361,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                           width: 1,
                         ),
                       ),
@@ -361,7 +369,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                         child: Container(
                           width: 2,
                           height: 2,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.2),
                         ),
                       ),
                     ),
@@ -393,7 +401,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                   child: IconButton(
                     icon: const Icon(
                       Icons.close_rounded,
-                      color: Colors.white,
+                      color: const Color(0xFF1E293B),
                       size: 20,
                     ),
                     onPressed: () {
@@ -435,7 +443,10 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
         children: [
           Text(
             "$label: ",
-            style: GoogleFonts.spaceMono(color: Colors.white54, fontSize: 12),
+            style: GoogleFonts.spaceMono(
+              color: const Color(0xFF94A3B8),
+              fontSize: 12,
+            ),
           ),
           Text(
             value,
@@ -480,7 +491,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
             Text(
               "AIM TRAINER",
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 32,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 4,
@@ -551,7 +562,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
               child: Text(
                 "ABORT MISSION",
                 style: GoogleFonts.spaceMono(
-                  color: Colors.white38,
+                  color: const Color(0xFFCBD5E1),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -571,7 +582,10 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
           const SizedBox(width: 16),
           Text(
             text,
-            style: GoogleFonts.inter(color: Colors.white70, fontSize: 16),
+            style: GoogleFonts.inter(
+              color: const Color(0xFF64748B),
+              fontSize: 16,
+            ),
           ),
         ],
       ),

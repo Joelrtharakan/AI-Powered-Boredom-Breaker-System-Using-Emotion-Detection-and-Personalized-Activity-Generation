@@ -72,12 +72,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final moodState = ref.watch(moodProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF000000), // Pure OLED Black
+      backgroundColor: Colors.transparent, // Pure OLED Black
       resizeToAvoidBottomInset: false, // Prevents keyboard resizing background
       body: Stack(
         children: [
           // 1. Dynamic Ambient Background
-          const _AmbientBackground(),
 
           // 2. Main Content
           SafeArea(
@@ -175,15 +174,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
+                      color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                     ),
                   ),
                   child: const Icon(
                     Icons.menu_rounded,
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     size: 24,
                   ),
                 ),
@@ -198,7 +197,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         height: 1.1,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -208,7 +207,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       "Let's break the cycle.",
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.6),
+                        color: const Color(0xFF1E293B).withValues(alpha: 0.6),
                         fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -264,7 +263,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 child: _profilePicture == null
                     ? const Icon(
                         Icons.person_outline_rounded,
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         size: 20,
                       )
                     : null,
@@ -399,13 +398,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Text(
                   "Crafting your escape...",
                   style: GoogleFonts.outfit(
-                    color: Colors.white54,
+                    color: const Color(0xFF94A3B8),
                     fontSize: 14,
                     letterSpacing: 1,
                   ),
                 )
                 .animate(onPlay: (c) => c.repeat())
-                .shimmer(duration: 2.seconds, color: Colors.white),
+                .shimmer(duration: 2.seconds, color: const Color(0xFF1E293B)),
             const SizedBox(height: 20),
           ],
         ),
@@ -428,7 +427,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Text(
               "Oops! Something went wrong.",
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -436,7 +435,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             const SizedBox(height: 8),
             Text(
               "Please try again.",
-              style: GoogleFonts.inter(color: Colors.white54, fontSize: 14),
+              style: GoogleFonts.inter(
+                color: const Color(0xFF94A3B8),
+                fontSize: 14,
+              ),
             ),
           ],
         ),
@@ -464,7 +466,9 @@ class _MoodInputSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF121212),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.5),
@@ -497,7 +501,7 @@ class _MoodInputSection extends StatelessWidget {
                 style: GoogleFonts.outfit(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                 ),
               ),
             ],
@@ -511,7 +515,10 @@ class _MoodInputSection extends StatelessWidget {
             ),
             child: TextField(
               controller: controller,
-              style: GoogleFonts.inter(color: Colors.white, fontSize: 16),
+              style: GoogleFonts.inter(
+                color: const Color(0xFF1E293B),
+                fontSize: 16,
+              ),
               decoration: InputDecoration(
                 hintText: "I'm feeling a bit anxious and bored...",
                 hintStyle: GoogleFonts.inter(color: Colors.white24),
@@ -586,7 +593,9 @@ class _GeneratedPlanCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF141414), // Dark Grey for contrast
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+        ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF6D4EFF).withValues(alpha: 0.08),
@@ -607,7 +616,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -618,7 +627,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                     onPressed: onReset,
                     icon: const Icon(
                       Icons.refresh_rounded,
-                      color: Colors.white54,
+                      color: const Color(0xFF94A3B8),
                       size: 20,
                     ),
                     tooltip: "New Plan",
@@ -651,7 +660,7 @@ class _GeneratedPlanCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Divider(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: const Color(0xFF1E293B).withValues(alpha: 0.05),
               height: 1,
             ),
           ),
@@ -663,7 +672,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.sentiment_neutral_rounded,
-                    color: Colors.white38,
+                    color: const Color(0xFFCBD5E1),
                     size: 48,
                   ),
                   const SizedBox(height: 16),
@@ -721,13 +730,13 @@ class _GeneratedPlanCard extends StatelessWidget {
                                   Icon(
                                     Icons.timer_outlined,
                                     size: 14,
-                                    color: Colors.white38,
+                                    color: const Color(0xFFCBD5E1),
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
                                     "${item['time_minutes']} MIN",
                                     style: GoogleFonts.outfit(
-                                      color: Colors.white38,
+                                      color: const Color(0xFFCBD5E1),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: 1,
@@ -951,7 +960,9 @@ class _DopamineCard extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
           color: const Color(0xFF161618),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+          ),
         ),
         child: Stack(
           children: [
@@ -992,7 +1003,7 @@ class _DopamineCard extends StatelessWidget {
                 Text(
                   title,
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
@@ -1024,7 +1035,9 @@ class _ExploreCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF161618),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1046,7 +1059,7 @@ class _ExploreCard extends StatelessWidget {
                 Text(
                   item['title'] as String,
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
@@ -1078,7 +1091,7 @@ class _SectionTitle extends StatelessWidget {
         style: GoogleFonts.outfit(
           fontSize: 13,
           fontWeight: FontWeight.w900,
-          color: Colors.white38,
+          color: const Color(0xFFCBD5E1),
           letterSpacing: 2.5,
         ),
       ),

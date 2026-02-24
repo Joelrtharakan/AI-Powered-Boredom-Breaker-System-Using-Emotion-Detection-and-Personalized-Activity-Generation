@@ -90,7 +90,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                     style: GoogleFonts.outfit(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: const Color(0xFF1E293B),
                       height: 1.1,
                     ),
                   ).animate().fadeIn().slideY(begin: -0.1),
@@ -197,7 +197,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   strokeWidth: 2,
                 ),
               )

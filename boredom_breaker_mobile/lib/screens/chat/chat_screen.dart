@@ -130,7 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
             const SnackBar(
               content: Text(
                 "Chat history cleared. Start a new chat!",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: const Color(0xFF1E293B)),
               ),
               backgroundColor: Colors.teal,
             ),
@@ -171,7 +171,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       offset: const Offset(0, -5),
                     ),
                   ],
-                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  border: Border.all(
+                    color: const Color(0xFF1E293B).withOpacity(0.1),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -180,7 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       width: 40,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
+                        color: const Color(0xFF1E293B).withOpacity(0.3),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -195,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           Text(
                             "Previous Chats",
                             style: GoogleFonts.outfit(
-                              color: Colors.white,
+                              color: const Color(0xFF1E293B),
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
@@ -203,7 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           IconButton(
                             icon: const Icon(
                               Icons.close,
-                              color: Colors.white54,
+                              color: const Color(0xFF94A3B8),
                             ),
                             onPressed: () => Navigator.pop(context),
                           ),
@@ -215,7 +217,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           ? Center(
                               child: Text(
                                 "No previous chats found.",
-                                style: GoogleFonts.inter(color: Colors.white54),
+                                style: GoogleFonts.inter(
+                                  color: const Color(0xFF94A3B8),
+                                ),
                               ),
                             )
                           : ListView.builder(
@@ -245,7 +249,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   subtitle: Text(
                                     s['created_at'].toString().split('T')[0],
                                     style: GoogleFonts.inter(
-                                      color: Colors.white38,
+                                      color: const Color(0xFFCBD5E1),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -282,7 +286,7 @@ class _ChatScreenState extends State<ChatScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF0F172A),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: const Color(0xFF1E293B).withOpacity(0.1)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -292,18 +296,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 width: 40,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: const Color(0xFF1E293B).withOpacity(0.3),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               ListTile(
                 leading: const Icon(
                   Icons.add_circle_outline,
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                 ),
                 title: Text(
                   "Start New Chat",
-                  style: GoogleFonts.inter(color: Colors.white),
+                  style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -311,10 +315,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.history, color: Colors.white),
+                leading: const Icon(
+                  Icons.history,
+                  color: const Color(0xFF1E293B),
+                ),
                 title: Text(
                   "View Previous Chats",
-                  style: GoogleFonts.inter(color: Colors.white),
+                  style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -359,20 +366,20 @@ class _ChatScreenState extends State<ChatScreen> {
           title: Text(
             "Clear History",
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               fontWeight: FontWeight.bold,
             ),
           ),
           content: Text(
             "Are you sure you want to clear all your chat history with Luno? This cannot be undone.",
-            style: GoogleFonts.inter(color: Colors.white70),
+            style: GoogleFonts.inter(color: const Color(0xFF64748B)),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
                 "Cancel",
-                style: GoogleFonts.inter(color: Colors.white54),
+                style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
               ),
             ),
             ElevatedButton(
@@ -388,7 +395,7 @@ class _ChatScreenState extends State<ChatScreen> {
               },
               child: Text(
                 "Clear Everything",
-                style: GoogleFonts.inter(color: Colors.white),
+                style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
               ),
             ),
           ],
@@ -400,7 +407,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF09090B), // Very dark slate
+      backgroundColor: Colors.transparent, // Very dark slate
       body: Stack(
         children: [
           // Pure Black Background matching Dashboard
@@ -420,7 +427,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF8E2DE2).withOpacity(0.15), // Deep Purple
+                    color: const Color(
+                      0xFF8E2DE2,
+                    ).withOpacity(0.15), // Deep Purple
                     blurRadius: 200,
                   ),
                 ],
@@ -437,7 +446,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF6D4EFF).withOpacity(0.15), // Primary Purple
+                    color: const Color(
+                      0xFF6D4EFF,
+                    ).withOpacity(0.15), // Primary Purple
                     blurRadius: 200,
                   ),
                 ],
@@ -492,8 +503,10 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.03),
-                      border: Border.all(color: Colors.white.withOpacity(0.08)),
+                      color: const Color(0xFF1E293B).withOpacity(0.03),
+                      border: Border.all(
+                        color: const Color(0xFF1E293B).withOpacity(0.08),
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFF6D4EFF).withOpacity(0.15),
@@ -512,7 +525,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Text(
                     "Your Safe Space",
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: const Color(0xFF1E293B),
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
@@ -544,7 +557,7 @@ class _ChatScreenState extends State<ChatScreen> {
             color: Colors.black.withOpacity(0.25),
             border: Border(
               bottom: BorderSide(
-                color: Colors.white.withOpacity(0.05),
+                color: const Color(0xFF1E293B).withOpacity(0.05),
                 width: 1,
               ),
             ),
@@ -554,7 +567,7 @@ class _ChatScreenState extends State<ChatScreen> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   size: 20,
                 ),
                 onPressed: () => Navigator.pop(context),
@@ -565,8 +578,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.1),
-                  border: Border.all(color: Colors.white.withOpacity(0.15)),
+                  color: const Color(0xFF1E293B).withOpacity(0.1),
+                  border: Border.all(
+                    color: const Color(0xFF1E293B).withOpacity(0.15),
+                  ),
                 ),
                 child: Center(
                   child: Image.network(
@@ -584,7 +599,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Text(
                       "Luno",
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
@@ -626,7 +641,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
+                icon: const Icon(
+                  Icons.more_vert_rounded,
+                  color: const Color(0xFF1E293B),
+                ),
                 onPressed: _showMenu,
               ),
             ],
@@ -668,7 +686,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   border: isUser
                       ? null
-                      : Border.all(color: Colors.white.withOpacity(0.1)),
+                      : Border.all(
+                          color: const Color(0xFF1E293B).withOpacity(0.1),
+                        ),
                   boxShadow: [
                     if (isUser)
                       BoxShadow(
@@ -684,7 +704,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Text(
                       text,
                       style: GoogleFonts.inter(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 15,
                         height: 1.5,
                         fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
@@ -847,7 +867,7 @@ class _ChatScreenState extends State<ChatScreen> {
       label: Text(
         label,
         style: GoogleFonts.inter(
-          color: Colors.white,
+          color: const Color(0xFF1E293B),
           fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
@@ -866,14 +886,14 @@ class _ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.only(bottom: 16, right: 60),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
+          color: const Color(0xFF1E293B).withOpacity(0.08),
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
             bottomLeft: Radius.circular(6),
             bottomRight: Radius.circular(20),
           ),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: const Color(0xFF1E293B).withOpacity(0.1)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -906,7 +926,10 @@ class _ChatScreenState extends State<ChatScreen> {
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.3),
         border: Border(
-          top: BorderSide(color: Colors.white.withOpacity(0.05), width: 1),
+          top: BorderSide(
+            color: const Color(0xFF1E293B).withOpacity(0.05),
+            width: 1,
+          ),
         ),
       ),
       child: Row(
@@ -919,19 +942,26 @@ class _ChatScreenState extends State<ChatScreen> {
                 filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.06),
+                    color: const Color(0xFF1E293B).withOpacity(0.06),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                    border: Border.all(
+                      color: const Color(0xFF1E293B).withOpacity(0.1),
+                    ),
                   ),
                   child: TextField(
                     controller: _controller,
-                    style: GoogleFonts.inter(color: Colors.white, fontSize: 16),
+                    style: GoogleFonts.inter(
+                      color: const Color(0xFF1E293B),
+                      fontSize: 16,
+                    ),
                     maxLines: 4,
                     minLines: 1,
                     textInputAction: TextInputAction.send,
                     decoration: InputDecoration(
                       hintText: "Share your thoughts...",
-                      hintStyle: GoogleFonts.inter(color: Colors.white38),
+                      hintStyle: GoogleFonts.inter(
+                        color: const Color(0xFFCBD5E1),
+                      ),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -969,7 +999,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: IconButton(
               icon: const Icon(
                 Icons.arrow_upward_rounded,
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 size: 22,
               ),
               onPressed: _sendMessage,

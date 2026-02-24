@@ -228,7 +228,9 @@ class _MusicScreenState extends State<MusicScreen> {
                                 style: GoogleFonts.outfit(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.white.withValues(alpha: 0.3),
+                                  color: const Color(
+                                    0xFF1E293B,
+                                  ).withValues(alpha: 0.3),
                                   letterSpacing: 4,
                                 ),
                               ),
@@ -238,7 +240,7 @@ class _MusicScreenState extends State<MusicScreen> {
                                 style: GoogleFonts.playfairDisplay(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                   fontStyle: FontStyle.italic,
                                 ),
                               ),
@@ -265,11 +267,17 @@ class _MusicScreenState extends State<MusicScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: const Color(0xFF1E293B).withValues(alpha: 0.03),
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+        ),
       ),
-      child: const Icon(Icons.waves_rounded, color: Colors.white30, size: 20),
+      child: const Icon(
+        Icons.waves_rounded,
+        color: const Color(0xFFCBD5E1),
+        size: 20,
+      ),
     );
   }
 
@@ -332,15 +340,17 @@ class _MusicScreenState extends State<MusicScreen> {
               height: 48,
               width: 48,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                border: Border.all(
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.1),
+                ),
               ),
               child: Icon(
                 Navigator.canPop(context)
                     ? Icons.arrow_back_ios_new_rounded
                     : Icons.menu_rounded,
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 size: 20,
               ),
             ),
@@ -397,9 +407,11 @@ class _MusicScreenState extends State<MusicScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.02),
+        color: const Color(0xFF1E293B).withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(44),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,7 +438,7 @@ class _MusicScreenState extends State<MusicScreen> {
               fontSize: 72,
               fontWeight: FontWeight.w900,
               height: 0.8,
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               letterSpacing: -2,
             ),
           ),
@@ -438,7 +450,7 @@ class _MusicScreenState extends State<MusicScreen> {
                 fontSize: 56,
                 fontWeight: FontWeight.w200,
                 height: 0.9,
-                color: Colors.white.withValues(alpha: 0.2),
+                color: const Color(0xFF1E293B).withValues(alpha: 0.2),
                 letterSpacing: 6,
               ),
             ),
@@ -447,16 +459,18 @@ class _MusicScreenState extends State<MusicScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.03),
+              color: const Color(0xFF1E293B).withValues(alpha: 0.03),
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+              border: Border.all(
+                color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+              ),
             ),
             child: Text(
               "LOSSLESS AUDIO ENGINE • 44.1KHZ",
               style: GoogleFonts.inter(
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
-                color: Colors.white38,
+                color: const Color(0xFFCBD5E1),
                 letterSpacing: 1,
               ),
             ),
@@ -500,7 +514,9 @@ class _MusicScreenState extends State<MusicScreen> {
           ],
         ),
         borderRadius: BorderRadius.circular(40),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
+        ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF1DB954).withValues(alpha: 0.05),
@@ -526,7 +542,7 @@ class _MusicScreenState extends State<MusicScreen> {
             ),
             child: const Icon(
               Icons.bolt_rounded,
-              color: Colors.white,
+              color: const Color(0xFF1E293B),
               size: 28,
             ),
           ),
@@ -540,7 +556,7 @@ class _MusicScreenState extends State<MusicScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -550,7 +566,7 @@ class _MusicScreenState extends State<MusicScreen> {
                       : "Unlock the full high-fidelity library",
                   style: GoogleFonts.inter(
                     fontSize: 13,
-                    color: Colors.white.withValues(alpha: 0.4),
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.4),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -566,7 +582,7 @@ class _MusicScreenState extends State<MusicScreen> {
                   vertical: 14,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -779,8 +795,10 @@ class _MusicScreenState extends State<MusicScreen> {
       default:
         cardDecoration = BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          color: Colors.white.withValues(alpha: 0.03),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+          color: const Color(0xFF1E293B).withValues(alpha: 0.03),
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+          ),
         );
     }
 
@@ -827,7 +845,9 @@ class _MusicScreenState extends State<MusicScreen> {
                             color: Colors.black.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.1),
+                              color: const Color(
+                                0xFF1E293B,
+                              ).withValues(alpha: 0.1),
                             ),
                             boxShadow: [
                               BoxShadow(
@@ -887,7 +907,7 @@ class _MusicScreenState extends State<MusicScreen> {
                                 style: GoogleFonts.playfairDisplay(
                                   fontSize: 42,
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                   fontStyle: FontStyle.italic,
                                   height: 1,
                                 ),
@@ -898,7 +918,9 @@ class _MusicScreenState extends State<MusicScreen> {
                               mood['desc'],
                               style: GoogleFonts.inter(
                                 fontSize: 13,
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: const Color(
+                                  0xFF1E293B,
+                                ).withValues(alpha: 0.3),
                                 fontWeight: FontWeight.w500,
                                 height: 1.4,
                               ),
@@ -914,7 +936,9 @@ class _MusicScreenState extends State<MusicScreen> {
                         width: 56,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.05),
+                          color: const Color(
+                            0xFF1E293B,
+                          ).withValues(alpha: 0.05),
                           border: Border.all(
                             color: accentColor.withValues(alpha: 0.2),
                           ),

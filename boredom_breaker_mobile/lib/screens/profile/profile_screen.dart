@@ -104,21 +104,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF000000),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           "My Profile",
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: const Color(0xFF1E293B),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -132,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ? const Center(
               child: Text(
                 "No profile data found",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: const Color(0xFF1E293B)),
               ),
             )
           : SingleChildScrollView(
@@ -155,7 +155,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF8E2DE2).withValues(alpha: 0.4),
+                                color: const Color(
+                                  0xFF8E2DE2,
+                                ).withValues(alpha: 0.4),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -174,7 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? const Icon(
                                     Icons.person,
                                     size: 60,
-                                    color: Colors.white54,
+                                    color: const Color(0xFF94A3B8),
                                   )
                                 : null,
                           ),
@@ -187,7 +189,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(10),
                               decoration: const BoxDecoration(
-                                color: Colors.white,
+                                color: const Color(0xFF1E293B),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -218,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Text(
                       "Your Interests",
                       style: GoogleFonts.outfit(
-                        color: Colors.white54,
+                        color: const Color(0xFF94A3B8),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1,
@@ -238,13 +240,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 label: Text(
                                   interest.toString(),
                                   style: GoogleFonts.inter(
-                                    color: Colors.white,
+                                    color: const Color(0xFF1E293B),
                                     fontSize: 14,
                                   ),
                                 ),
                                 backgroundColor: const Color(0xFF1E1E22),
                                 side: BorderSide(
-                                  color: Colors.white.withValues(alpha: 0.1),
+                                  color: const Color(
+                                    0xFF1E293B,
+                                  ).withValues(alpha: 0.1),
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -267,7 +271,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF141414),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -279,7 +285,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   label.toUpperCase(),
                   style: GoogleFonts.outfit(
-                    color: Colors.white54,
+                    color: const Color(0xFF94A3B8),
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1,
@@ -289,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   value,
                   style: GoogleFonts.inter(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),

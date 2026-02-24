@@ -165,13 +165,13 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
                   icon: const Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     size: 20,
                   ),
                   onPressed: () => Navigator.pop(context),
@@ -180,7 +180,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
               Text(
                 "GUESS THE NUMBER",
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                   letterSpacing: 1,
@@ -192,13 +192,13 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   "Attempts: $_attempts",
                   style: GoogleFonts.outfit(
-                    color: Colors.white70,
+                    color: const Color(0xFF64748B),
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
@@ -266,9 +266,11 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                   // Nice modern input
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.05),
+                      color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      border: Border.all(
+                        color: const Color(0xFF1E293B).withValues(alpha: 0.1),
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
@@ -278,7 +280,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                       controller: _controller,
                       keyboardType: TextInputType.number,
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontSize: 48,
                         fontWeight: FontWeight.bold,
                       ),
@@ -287,7 +289,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                         border: InputBorder.none,
                         hintText: "?",
                         hintStyle: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                         ),
                         counterText: "",
                       ),
@@ -317,7 +319,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                         style: GoogleFonts.outfit(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           letterSpacing: 1,
                         ),
                       ),
@@ -375,7 +377,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                         child: Text(
                           "HISTORY",
                           style: GoogleFonts.inter(
-                            color: Colors.white30,
+                            color: const Color(0xFFCBD5E1),
                             fontSize: 12,
                             letterSpacing: 2,
                             fontWeight: FontWeight.bold,
@@ -420,7 +422,9 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: color.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: color.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -428,7 +432,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                             Text(
                               "$h",
                               style: GoogleFonts.spaceMono(
-                                color: Colors.white,
+                                color: const Color(0xFF1E293B),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
@@ -480,7 +484,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
             Text(
               "NUMBER GUESS",
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontWeight: FontWeight.w900,
                 fontSize: 28,
                 letterSpacing: 2,
@@ -536,7 +540,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                   child: Text(
                     "START GUESSING",
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: const Color(0xFF1E293B),
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                       letterSpacing: 1.5,
@@ -552,7 +556,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
               child: Text(
                 "BACK TO ARCADE",
                 style: GoogleFonts.outfit(
-                  color: Colors.white38,
+                  color: const Color(0xFFCBD5E1),
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                 ),
@@ -572,17 +576,17 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: const Color(0xFF1E293B).withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: Colors.white, size: 24),
+            child: Icon(icon, color: const Color(0xFF1E293B), size: 24),
           ),
           const SizedBox(width: 20),
           Expanded(
             child: Text(
               text,
               style: GoogleFonts.inter(
-                color: Colors.white70,
+                color: const Color(0xFF64748B),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 height: 1.4,

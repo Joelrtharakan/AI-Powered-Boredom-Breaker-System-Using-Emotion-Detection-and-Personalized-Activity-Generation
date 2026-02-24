@@ -186,7 +186,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
               Text(
                 title,
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontWeight: FontWeight.w900,
                   fontSize: 24,
                   letterSpacing: 1,
@@ -207,7 +207,10 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                 ),
               Text(
                 "Solved in $_moves moves",
-                style: GoogleFonts.inter(color: Colors.white70, fontSize: 16),
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF64748B),
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 32),
 
@@ -220,7 +223,9 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                         Navigator.pop(context); // Exit screen
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        side: BorderSide(
+                          color: const Color(0xFF1E293B).withValues(alpha: 0.2),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -229,7 +234,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                       child: Text(
                         "EXIT",
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: const Color(0xFF1E293B),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -275,7 +280,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           // Dynamic Background
@@ -336,13 +341,15 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFF1E293B,
+                                ).withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new_rounded,
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                 ),
                                 onPressed: () => Navigator.pop(context),
                               ),
@@ -361,7 +368,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                                 Text(
                                   "MEMORY FLIP",
                                   style: GoogleFonts.outfit(
-                                    color: Colors.white,
+                                    color: const Color(0xFF1E293B),
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -370,7 +377,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                                 Text(
                                   "Tap pairs to match",
                                   style: GoogleFonts.inter(
-                                    color: Colors.white38,
+                                    color: const Color(0xFFCBD5E1),
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -383,16 +390,20 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.05),
+                                color: const Color(
+                                  0xFF1E293B,
+                                ).withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.1),
+                                  color: const Color(
+                                    0xFF1E293B,
+                                  ).withValues(alpha: 0.1),
                                 ),
                               ),
                               child: Text(
                                 "$_moves MOVES",
                                 style: GoogleFonts.outfit(
-                                  color: Colors.white,
+                                  color: const Color(0xFF1E293B),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
                                 ),
@@ -431,12 +442,12 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                           onPressed: () => _startLevel(_level),
                           icon: const Icon(
                             Icons.refresh_rounded,
-                            color: Colors.white38,
+                            color: const Color(0xFFCBD5E1),
                           ),
                           label: Text(
                             "RESTART LEVEL",
                             style: GoogleFonts.outfit(
-                              color: Colors.white38,
+                              color: const Color(0xFFCBD5E1),
                               letterSpacing: 1.5,
                             ),
                           ),
@@ -466,7 +477,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
             Text(
               "HOW TO PLAY",
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontWeight: FontWeight.w900,
                 fontSize: 28,
                 letterSpacing: 2,
@@ -513,7 +524,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                 child: Text(
                   "START GAME",
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     letterSpacing: 1,
@@ -527,7 +538,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
               child: Text(
                 "BACK TO ARCADE",
                 style: GoogleFonts.outfit(
-                  color: Colors.white54,
+                  color: const Color(0xFF94A3B8),
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                 ),
@@ -545,7 +556,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: Colors.pinkAccent, size: 24),
@@ -555,7 +566,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
           child: Text(
             text,
             style: GoogleFonts.inter(
-              color: Colors.white70,
+              color: const Color(0xFF64748B),
               fontSize: 16,
               height: 1.4,
             ),
@@ -600,7 +611,9 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A20),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.3),
@@ -612,7 +625,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
       child: Center(
         child: Icon(
           Icons.question_mark_rounded,
-          color: Colors.white.withValues(alpha: 0.05),
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
           size: 24,
         ),
       ),

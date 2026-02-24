@@ -201,7 +201,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                             child: Text(
                               "Preview only · Open in Spotify for full playback",
                               style: GoogleFonts.inter(
-                                color: Colors.white70,
+                                color: const Color(0xFF64748B),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -258,7 +258,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
               widget.isLoginOnly
                   ? Icons.arrow_back_ios_new_rounded
                   : Icons.close_rounded,
-              color: Colors.white70,
+              color: const Color(0xFF64748B),
               size: 22,
             ),
             onPressed: () => _handlePop(false),
@@ -272,7 +272,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                 Text(
                   widget.title.toUpperCase(),
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2,
@@ -293,7 +293,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
           IconButton(
             icon: const Icon(
               Icons.refresh_rounded,
-              color: Colors.white38,
+              color: const Color(0xFFCBD5E1),
               size: 22,
             ),
             onPressed: () => _controller.reload(),
@@ -301,7 +301,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
           IconButton(
             icon: const Icon(
               Icons.open_in_new_rounded,
-              color: Colors.white38,
+              color: const Color(0xFFCBD5E1),
               size: 22,
             ),
             onPressed: () => _launchInFullApp(),

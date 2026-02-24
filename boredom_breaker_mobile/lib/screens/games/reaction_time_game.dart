@@ -172,7 +172,9 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                         Icon(
                               _getIcon(),
                               size: 100,
-                              color: Colors.white.withValues(alpha: 0.9),
+                              color: const Color(
+                                0xFF1E293B,
+                              ).withValues(alpha: 0.9),
                             )
                             .animate(target: _state == 'active' ? 1 : 0)
                             .scale(duration: 100.ms, curve: Curves.easeOutBack),
@@ -184,7 +186,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                           style: GoogleFonts.outfit(
                             fontSize: 48,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white,
+                            color: const Color(0xFF1E293B),
                             letterSpacing: -1,
                           ),
                           textAlign: TextAlign.center,
@@ -197,7 +199,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                             _getSubMessage(),
                             style: GoogleFonts.inter(
                               fontSize: 18,
-                              color: Colors.white70,
+                              color: const Color(0xFF64748B),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -232,7 +234,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   size: 20,
                 ),
               ),
@@ -252,7 +254,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
           "RECENT SCORES",
           style: GoogleFonts.spaceMono(
             fontSize: 12,
-            color: Colors.white38,
+            color: const Color(0xFFCBD5E1),
             letterSpacing: 2,
             fontWeight: FontWeight.bold,
           ),
@@ -268,12 +270,14 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
                     "$t ms",
-                    style: GoogleFonts.spaceMono(color: Colors.white),
+                    style: GoogleFonts.spaceMono(
+                      color: const Color(0xFF1E293B),
+                    ),
                   ),
                 ),
               )
@@ -319,7 +323,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
               Text(
                 "REACTION TEST",
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: const Color(0xFF1E293B),
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 2,
@@ -361,7 +365,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                     child: Text(
                       "START TEST",
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         letterSpacing: 1.5,
@@ -382,13 +386,13 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white70, size: 28),
+          Icon(icon, color: const Color(0xFF64748B), size: 28),
           const SizedBox(width: 20),
           Expanded(
             child: Text(
               text,
               style: GoogleFonts.inter(
-                color: Colors.white,
+                color: const Color(0xFF1E293B),
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),
