@@ -11,142 +11,182 @@ class LandingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
+      backgroundColor: const Color(0xFF000000), // Pure OLED black
       body: Stack(
         children: [
-          // Background Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: AppColors.darkGradient,
-              ),
-            ),
-          ),
-
-          // High-end Ambient Glows
+          // Dynamic Mesh Gradient Background
           Positioned(
-            top: -100,
-            left: -50,
-            child: _AmbientGlow(color: AppColors.primary.withValues(alpha: 0.2)),
+            top: -150,
+            left: -150,
+            child: const _GlowingOrb(
+              color: Color(0xFF8E2DE2),
+            ).animate(onPlay: (c) => c.repeat()).rotate(duration: 20.seconds),
           ),
           Positioned(
-            bottom: -150,
-            right: -50,
-            child: _AmbientGlow(color: AppColors.secondary.withValues(alpha: 0.2)),
+            bottom: -200,
+            right: -100,
+            child: const _GlowingOrb(
+              color: Color(0xFF6D4EFF),
+            ).animate(onPlay: (c) => c.repeat()).rotate(duration: 25.seconds),
+          ),
+          Positioned(
+            top: size.height * 0.3,
+            right: -250,
+            child: const _GlowingOrb(color: Color(0xFF00C6FF))
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .slideX(begin: 0, end: 0.1, duration: 8.seconds),
           ),
 
           SafeArea(
-            child: SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight:
-                      MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top -
-                      MediaQuery.of(context).padding.bottom,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40),
-
-                      // Glassmorphism Logo Container
-                      Container(
-                            width: 180,
-                            height: 180,
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(44),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.white.withValues(alpha: 0.1),
-                                  Colors.white.withValues(alpha: 0.02),
-                                ],
-                              ),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.1),
-                              ),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(40),
-                              child: Image.asset(
-                                'assets/logo.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          )
-                          .animate()
-                          .scale(
-                            duration: 800.ms,
-                            curve: Curves.easeOutBack,
-                            begin: const Offset(0.5, 0.5),
-                          )
-                          .fadeIn(duration: 600.ms)
-                          .shimmer(delay: 2.seconds, duration: 2.seconds),
-
-                      const SizedBox(height: 48),
-
-                      // Title with Gradient Effect
-                      ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [Colors.white, Color(0xFF94A3B8)],
-                        ).createShader(bounds),
-                        child: Text(
-                          "Boredom Breaker",
-                          style: GoogleFonts.outfit(
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -1.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2),
-
-                      const SizedBox(height: 16),
-
-                      Text(
-                        "Your AI companion for breaking the loop and rediscovering joy.",
-                        style: GoogleFonts.inter(
-                          fontSize: 18,
-                          color: AppColors.textSecondary,
-                          height: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.2),
-
-                      const SizedBox(height: 60),
-
-                      // Action Buttons
-                      Column(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildPrimaryButton(context, "Get Started", () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const LoginScreen(),
-                              ),
-                            );
-                          }),
-                          const SizedBox(height: 20),
-                          _buildSecondaryButton(context, "Create Account", () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const RegisterScreen(),
-                              ),
-                            );
-                          }),
-                        ],
-                      ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.3),
+                          const Spacer(),
 
-                      const SizedBox(height: 40),
-                    ],
+                          // Floating App Logo
+                          Center(
+                                child: Hero(
+                                  tag: 'app_logo',
+                                  child:
+                                      Container(
+                                            width: 140,
+                                            height: 140,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(36),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(
+                                                    0xFF6D4EFF,
+                                                  ).withValues(alpha: 0.4),
+                                                  blurRadius: 40,
+                                                  spreadRadius: 10,
+                                                  offset: const Offset(0, 10),
+                                                ),
+                                                BoxShadow(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.1),
+                                                  blurRadius: 10,
+                                                  spreadRadius: -5,
+                                                  offset: const Offset(0, -5),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(36),
+                                              child: Image.asset(
+                                                'assets/logo.png',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          )
+                                          .animate(
+                                            onPlay: (c) =>
+                                                c.repeat(reverse: true),
+                                          )
+                                          .slideY(
+                                            begin: -0.03,
+                                            end: 0.03,
+                                            duration: 3.seconds,
+                                            curve: Curves.easeInOutSine,
+                                          ),
+                                ),
+                              )
+                              .animate()
+                              .fadeIn(duration: 800.ms)
+                              .scale(begin: const Offset(0.8, 0.8)),
+
+                          const Spacer(),
+
+                          // High-Impact Typography
+                          Text(
+                            "Reclaim\nYour Time.",
+                            style: GoogleFonts.outfit(
+                              fontSize: 56,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              height: 1.0,
+                              letterSpacing: -2,
+                            ),
+                          ).animate().fadeIn(delay: 300.ms).slideX(begin: -0.1),
+
+                          const SizedBox(height: 16),
+
+                          Text(
+                            "Break the doom-scrolling loop and dive into curated games, ambient music, and AI-guided mental clarity.",
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              color: Colors.white70,
+                              height: 1.5,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ).animate().fadeIn(delay: 500.ms).slideX(begin: -0.1),
+
+                          const SizedBox(height: 48),
+
+                          // Modern Buttons Layout
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildPrimaryButton(
+                                  context,
+                                  "Get Started",
+                                  () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const RegisterScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.2),
+
+                          const SizedBox(height: 16),
+
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildSecondaryButton(
+                                  context,
+                                  "I already have an account",
+                                  () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const LoginScreen(),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
+
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ],
@@ -160,16 +200,19 @@ class LandingScreen extends StatelessWidget {
     VoidCallback onPressed,
   ) {
     return Container(
-      width: double.infinity,
       height: 64,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(colors: AppColors.primaryGradient),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: const Color(0xFF8E2DE2).withValues(alpha: 0.4),
             blurRadius: 24,
-            offset: const Offset(0, 12),
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -182,9 +225,25 @@ class LandingScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
           ),
         ),
-        child: Text(
-          label,
-          style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ],
         ),
       ),
     );
@@ -196,42 +255,52 @@ class LandingScreen extends StatelessWidget {
     VoidCallback onPressed,
   ) {
     return Container(
-      width: double.infinity,
-      height: 64,
+      height: 56,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withValues(alpha: 0.03),
         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-        color: Colors.white.withValues(alpha: 0.05),
       ),
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
         child: Text(
           label,
-          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w600),
+          style: GoogleFonts.inter(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: Colors.white70,
+          ),
         ),
       ),
     );
   }
 }
 
-class _AmbientGlow extends StatelessWidget {
+class _GlowingOrb extends StatelessWidget {
   final Color color;
-  const _AmbientGlow({required this.color});
+  const _GlowingOrb({required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 450,
-      height: 450,
+      width: 500,
+      height: 500,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color, blurRadius: 200, spreadRadius: 50)],
+        gradient: RadialGradient(
+          colors: [
+            color.withValues(alpha: 0.3),
+            color.withValues(alpha: 0.05),
+            Colors.transparent,
+          ],
+          stops: const [0.1, 0.5, 1.0],
+        ),
       ),
     );
   }
