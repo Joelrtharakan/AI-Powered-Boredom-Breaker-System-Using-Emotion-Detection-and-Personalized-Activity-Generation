@@ -144,12 +144,6 @@ class _GamesScreenState extends State<GamesScreen> {
     final featuredGame = allGames.firstWhere(
       (g) => g.title == "Snake Evolution",
     );
-    final quickPlayGames = allGames
-        .where(
-          (g) =>
-              ["Memory Flip", "Aim Trainer", "Tic Tac Toe"].contains(g.title),
-        )
-        .toList();
 
     // Filtered games based on category
     final displayedGames = _selectedCategoryIndex == 0
@@ -175,14 +169,6 @@ class _GamesScreenState extends State<GamesScreen> {
                   .animate()
                   .fadeIn(delay: 200.ms)
                   .scale(begin: const Offset(0.95, 0.95)),
-
-              const SizedBox(height: 32),
-
-              const _SectionTitle(title: "QUICK PLAY"),
-              const SizedBox(height: 16),
-              _buildQuickPlayRow(
-                quickPlayGames,
-              ).animate().fadeIn(delay: 400.ms).slideX(begin: 0.1),
 
               const SizedBox(height: 32),
 
@@ -310,144 +296,50 @@ class _GamesScreenState extends State<GamesScreen> {
     );
   }
 
-  Widget _buildQuickPlayRow(List<GameData> games) {
-    return SizedBox(
-      height: 140,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: games.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final game = games[index];
-          return GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => game.screen),
-            ),
-            child: Container(
-              width: 130,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    game.color,
-                    HSLColor.fromColor(game.color).withLightness(0.4).toColor(),
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: game.color.withValues(alpha: 0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    right: -20,
-                    bottom: -20,
-                    child: Icon(
-                      game.icon ?? Icons.extension,
-                      size: 100,
-                      color: Colors.white.withValues(alpha: 0.15),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.play_arrow_rounded,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        Text(
-                          game.title,
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                            height: 1.1,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildCategoryChips() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: List.generate(_categories.length, (index) {
-          final isSelected = _selectedCategoryIndex == index;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedCategoryIndex = index;
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF1E293B) : Colors.white,
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.transparent
-                        : const Color(0xFF1E293B).withValues(alpha: 0.08),
-                  ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF1E293B,
-                            ).withValues(alpha: 0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : [],
-                ),
-                child: Text(
-                  _categories[index],
-                  style: GoogleFonts.inter(
-                    color: isSelected ? Colors.white : const Color(0xFF64748B),
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 12.0,
+      children: List.generate(_categories.length, (index) {
+        final isSelected = _selectedCategoryIndex == index;
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedCategoryIndex = index;
+            });
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFF1E293B) : Colors.white,
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: isSelected
+                    ? Colors.transparent
+                    : const Color(0xFF1E293B).withValues(alpha: 0.08),
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFF1E293B).withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : [],
+            ),
+            child: Text(
+              _categories[index],
+              style: GoogleFonts.inter(
+                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                fontSize: 14,
               ),
             ),
-          );
-        }),
-      ),
+          ),
+        );
+      }),
     );
   }
 
@@ -486,79 +378,104 @@ class _GamesScreenState extends State<GamesScreen> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
               borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  game.color,
+                  HSLColor.fromColor(game.color).withLightness(0.4).toColor(),
+                ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: game.color.withValues(alpha: 0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
               ],
             ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Stack(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: game.color.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: game.imageUrl != null
-                          ? (game.imageUrl!.startsWith("http")
-                                ? Image.network(
-                                    game.imageUrl!,
-                                    width: 24,
-                                    height: 24,
-                                  )
-                                : Image.asset(
-                                    game.imageUrl!,
-                                    width: 24,
-                                    height: 24,
-                                  ))
-                          : Icon(game.icon, color: game.color, size: 24),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: Color(0xFFCBD5E1),
-                      size: 14,
-                    ),
-                  ],
+                Positioned(
+                  right: -15,
+                  bottom: -15,
+                  child: Icon(
+                    game.icon ?? Icons.extension,
+                    size: 80,
+                    color: Colors.white.withValues(alpha: 0.15),
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      game.title,
-                      style: GoogleFonts.outfit(
-                        color: const Color(0xFF1E293B),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        height: 1.1,
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: game.imageUrl != null
+                                ? (game.imageUrl!.startsWith("http")
+                                      ? Image.network(
+                                          game.imageUrl!,
+                                          width: 24,
+                                          height: 24,
+                                          color: Colors.white,
+                                        )
+                                      : Image.asset(
+                                          game.imageUrl!,
+                                          width: 24,
+                                          height: 24,
+                                          color: Colors.white,
+                                        ))
+                                : Icon(
+                                    game.icon,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.white54,
+                            size: 14,
+                          ),
+                        ],
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      game.category,
-                      style: GoogleFonts.inter(
-                        color: game.color,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            game.title,
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              height: 1.1,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            game.category,
+                            style: GoogleFonts.inter(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
