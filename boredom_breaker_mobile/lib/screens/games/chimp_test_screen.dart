@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/games_api.dart';
 
 class ChimpTestScreen extends StatefulWidget {
   const ChimpTestScreen({super.key});
@@ -73,6 +74,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
   }
 
   void _showGameOverDialog() {
+    GamesApi.submitScore('chimp_test', _level > 1 ? _level - 1 : 0);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -81,12 +83,12 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(32),
             border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: Colors.cyanAccent.withValues(alpha: 0.2),
+                color: Colors.cyanAccent.withValues(alpha: 0.05),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -196,10 +198,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 gradient: RadialGradient(
                   center: Alignment(0, -0.2),
                   radius: 1.5,
-                  colors: [
-                    Color(0xFF0D1B2A), // Dark Blue
-                    Color(0xFF000000), // Black
-                  ],
+                  colors: [Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
                 ),
               ),
             ),
@@ -266,7 +265,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                                   style: GoogleFonts.spaceMono(
                                     color: _hideNumbers
                                         ? Colors.redAccent
-                                        : Colors.white54,
+                                        : const Color(0xFF64748B),
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -377,28 +376,27 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           color: _hideNumbers
-              ? Colors
-                    .white // The "Cover" color
-              : const Color(0xFF1A2C42), // The "Card" color
+              ? const Color(0xFFE2E8F0) // The "Cover" color
+              : Colors.white, // The "Card" color
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _hideNumbers
-                ? Colors.white
-                : Colors.cyanAccent.withValues(alpha: 0.3),
+                ? const Color(0xFFE2E8F0)
+                : const Color(0xFF06B6D4).withValues(alpha: 0.3),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
               color: _hideNumbers
-                  ? Colors.white.withValues(alpha: 0.3)
-                  : Colors.cyanAccent.withValues(alpha: 0.15),
+                  ? Colors.transparent
+                  : const Color(0xFF06B6D4).withValues(alpha: 0.15),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
           ],
           gradient: _hideNumbers
               ? const LinearGradient(
-                  colors: [Colors.white, Color(0xFFE0E0E0)],
+                  colors: [Color(0xFFE2E8F0), Color(0xFFCBD5E1)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 )
@@ -406,7 +404,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.cyanAccent.withValues(alpha: 0.1),
+                    const Color(0xFF06B6D4).withValues(alpha: 0.1),
                     Colors.blue.withValues(alpha: 0.05),
                   ],
                 ),
@@ -427,10 +425,10 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.cyanAccent,
+                    color: const Color(0xFF06B6D4),
                     shadows: [
                       Shadow(
-                        color: Colors.blue.withValues(alpha: 0.5),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         blurRadius: 10,
                       ),
                     ],
@@ -516,7 +514,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
               Text(
                 "Can you beat the chimp?",
                 style: GoogleFonts.inter(
-                  color: Colors.cyanAccent,
+                  color: const Color(0xFF06B6D4),
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,
@@ -562,7 +560,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                     child: Text(
                       "START EXPERIMENT",
                       style: GoogleFonts.outfit(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         letterSpacing: 1.5,
@@ -578,7 +576,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 child: Text(
                   "ABORT",
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFFCBD5E1),
+                    color: const Color(0xFF64748B),
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                   ),

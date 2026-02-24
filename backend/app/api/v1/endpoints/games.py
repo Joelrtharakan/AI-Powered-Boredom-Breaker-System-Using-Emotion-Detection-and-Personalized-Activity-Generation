@@ -52,6 +52,30 @@ def submit_score(game_name: str, item: ScoreSubmit, db: Session = Depends(get_db
     db.refresh(gs)
     return {"success": True, "score": score_val}
 
+@router.get("/highscores/global")
+def get_global_highscores(db: Session = Depends(get_db)):
+    all_scores = db.query(GameScore).all()
+    best_scores = {}
+    
+    for s in all_scores:
+        name = s.game_name
+        score = s.score
+        username = s.user.username if s.user else "Unknown"
+        
+        if name not in best_scores:
+            best_scores[name] = {"score": score, "username": username}
+        else:
+            if name == 'reaction':
+                # Lower is better
+                if score < best_scores[name]["score"]:
+                    best_scores[name] = {"score": score, "username": username}
+            else:
+                # Higher is better
+                if score > best_scores[name]["score"]:
+                    best_scores[name] = {"score": score, "username": username}
+                    
+    return best_scores
+
 @router.get("/scores/{user_id}")
 def get_user_scores(user_id: int, db: Session = Depends(get_db)):
     all_scores = db.query(GameScore).filter(GameScore.user_id == user_id).all()

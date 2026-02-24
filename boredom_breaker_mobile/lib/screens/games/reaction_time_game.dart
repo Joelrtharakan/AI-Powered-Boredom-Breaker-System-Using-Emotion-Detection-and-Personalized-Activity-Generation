@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/games_api.dart';
 
 class ReactionTimeGame extends StatefulWidget {
   const ReactionTimeGame({super.key});
@@ -20,7 +21,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
   bool _gameStarted = false; // Instructions overlay
   Timer? _waitTimer;
 
-  final Color _idleColor = const Color(0xFF18181B); // Zinc 900
+  final Color _idleColor = const Color(0xFFF8FAFC); // Light Slate 50
   final Color _readyColor = const Color(0xFFEF4444); // Red 500
   final Color _activeColor = const Color(0xFF22C55E); // Green 500
   final Color _earlyColor = const Color(0xFFF59E0B); // Amber 500 (Warning)
@@ -76,6 +77,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
           _lastTime = now.difference(_startTime!).inMilliseconds;
           _history.insert(0, _lastTime);
           if (_history.length > 5) _history.removeLast();
+          GamesApi.submitScore('reaction', _lastTime);
           _state = 'result';
         }
       }
@@ -172,9 +174,11 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                         Icon(
                               _getIcon(),
                               size: 100,
-                              color: const Color(
-                                0xFF1E293B,
-                              ).withValues(alpha: 0.9),
+                              color: _state == 'idle'
+                                  ? const Color(
+                                      0xFF1E293B,
+                                    ).withValues(alpha: 0.9)
+                                  : Colors.white,
                             )
                             .animate(target: _state == 'active' ? 1 : 0)
                             .scale(duration: 100.ms, curve: Curves.easeOutBack),
@@ -186,7 +190,9 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                           style: GoogleFonts.outfit(
                             fontSize: 48,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF1E293B),
+                            color: _state == 'idle'
+                                ? const Color(0xFF1E293B)
+                                : Colors.white,
                             letterSpacing: -1,
                           ),
                           textAlign: TextAlign.center,
@@ -199,7 +205,9 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                             _getSubMessage(),
                             style: GoogleFonts.inter(
                               fontSize: 18,
-                              color: const Color(0xFF64748B),
+                              color: _state == 'idle'
+                                  ? const Color(0xFF64748B)
+                                  : Colors.white70,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -228,9 +236,9 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.black26,
+                  color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white24, width: 1),
+                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios_new_rounded,
@@ -254,7 +262,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
           "RECENT SCORES",
           style: GoogleFonts.spaceMono(
             fontSize: 12,
-            color: const Color(0xFFCBD5E1),
+            color: const Color(0xFF64748B),
             letterSpacing: 2,
             fontWeight: FontWeight.bold,
           ),
@@ -289,7 +297,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
 
   Widget _buildInstructions() {
     return Container(
-      color: const Color(0xFF09090B),
+      color: const Color(0xFFF8FAFC),
       child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32),
@@ -306,7 +314,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.blueAccent.withValues(alpha: 0.2),
+                      color: Colors.blueAccent.withValues(alpha: 0.05),
                       blurRadius: 40,
                     ),
                   ],
@@ -365,7 +373,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                     child: Text(
                       "START TEST",
                       style: GoogleFonts.outfit(
-                        color: const Color(0xFF1E293B),
+                        color: Colors.white,
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         letterSpacing: 1.5,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/games_api.dart';
 
 class VisualMemoryGame extends StatefulWidget {
   const VisualMemoryGame({super.key});
@@ -94,6 +95,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
   }
 
   void _gameOver() {
+    GamesApi.submitScore('visual_memory', _level > 1 ? _level - 1 : 0);
     setState(() => _isPlaying = false);
     showDialog(
       context: context,
@@ -103,14 +105,14 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(32),
             border: Border.all(
               color: Colors.amberAccent.withValues(alpha: 0.3),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.amberAccent.withValues(alpha: 0.2),
+                color: Colors.amberAccent.withValues(alpha: 0.05),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -193,7 +195,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                       child: Text(
                         "RETRY",
                         style: GoogleFonts.outfit(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -221,10 +223,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF1A1005), // Dark Gold
-                    Color(0xFF000000),
-                  ],
+                  colors: [Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
                 ),
               ),
             ),
@@ -264,7 +263,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                               child: IconButton(
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new_rounded,
-                                  color: const Color(0xFF1E293B),
+                                  color: Color(0xFF1E293B),
                                   size: 20,
                                 ),
                                 onPressed: () => Navigator.pop(context),
@@ -288,7 +287,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                       style: GoogleFonts.spaceMono(
                                         color: _showingPattern
                                             ? Colors.amberAccent
-                                            : Colors.white54,
+                                            : const Color(0xFF64748B),
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -346,7 +345,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                         child: Text(
                           "LEVEL $_level",
                           style: GoogleFonts.outfit(
-                            color: Colors.white24,
+                            color: const Color(0xFFCBD5E1),
                             fontSize: 40,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 4,
@@ -379,10 +378,10 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                 );
 
                                 // Animation States
-                                Color color = const Color(0xFF2A2A2A); // Base
+                                Color color = Colors.white; // Base
 
                                 if (_showingPattern && isTarget) {
-                                  color = Colors.white; // Flash White
+                                  color = const Color(0xFF1E293B); // Flash Dark
                                 } else if (isSelected && isTarget) {
                                   color =
                                       Colors.amberAccent; // Correct Selection
@@ -400,10 +399,8 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
                                         color: (_showingPattern && isTarget)
-                                            ? Colors.white
-                                            : Colors.white.withValues(
-                                                alpha: 0.05,
-                                              ),
+                                            ? const Color(0xFF1E293B)
+                                            : const Color(0xFFE2E8F0),
                                         width: 1,
                                       ),
                                       boxShadow: [
@@ -411,14 +408,14 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                           BoxShadow(
                                             color: const Color(
                                               0xFF1E293B,
-                                            ).withValues(alpha: 0.4),
+                                            ).withValues(alpha: 0.15),
                                             blurRadius: 10,
                                             spreadRadius: 1,
                                           ),
                                         if (isSelected && isTarget)
                                           BoxShadow(
                                             color: Colors.amberAccent
-                                                .withValues(alpha: 0.4),
+                                                .withValues(alpha: 0.2),
                                             blurRadius: 10,
                                             spreadRadius: 1,
                                           ),
@@ -487,7 +484,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
               Text(
                 "Pattern Recognition Test",
                 style: GoogleFonts.inter(
-                  color: Colors.amberAccent,
+                  color: const Color(0xFFD97706),
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,
@@ -498,7 +495,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
 
               _buildInstructionItem(
                 Icons.visibility_rounded,
-                "Watch the white tiles flash.",
+                "Watch the dark tiles flash.",
               ),
               _buildInstructionItem(
                 Icons.timer_rounded,
@@ -538,7 +535,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                     child: Text(
                       "START TEST",
                       style: GoogleFonts.outfit(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         letterSpacing: 1.5,
@@ -547,14 +544,12 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   "ABORT",
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFFCBD5E1),
+                    color: const Color(0xFF64748B),
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1,
                   ),

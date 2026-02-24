@@ -11,6 +11,7 @@ import 'rock_paper_scissors_screen.dart';
 import 'chimp_test_screen.dart';
 import 'aim_trainer_screen.dart';
 import 'memory_flip_screen.dart';
+import '../../services/games_api.dart';
 
 class GamesScreen extends StatefulWidget {
   final String? initialGameTitle;
@@ -23,6 +24,8 @@ class GamesScreen extends StatefulWidget {
 
 class _GamesScreenState extends State<GamesScreen> {
   int _selectedCategoryIndex = 0;
+  Map<String, Map<String, dynamic>> _highScores = {};
+
   final List<String> _categories = [
     "All",
     "Brain & Logic",
@@ -33,6 +36,7 @@ class _GamesScreenState extends State<GamesScreen> {
   @override
   void initState() {
     super.initState();
+    _loadHighScores();
     if (widget.initialGameTitle != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _navigateToGame(widget.initialGameTitle!);
@@ -40,7 +44,16 @@ class _GamesScreenState extends State<GamesScreen> {
     }
   }
 
-  void _navigateToGame(String title) {
+  Future<void> _loadHighScores() async {
+    final scores = await GamesApi.getGlobalHighScores();
+    if (mounted) {
+      setState(() {
+        _highScores = scores;
+      });
+    }
+  }
+
+  void _navigateToGame(String title) async {
     final allGames = _getAllGames();
     final game = allGames.firstWhere(
       (g) => g.title.toLowerCase() == title.toLowerCase(),
@@ -48,8 +61,32 @@ class _GamesScreenState extends State<GamesScreen> {
     );
 
     if (game.title.toLowerCase() == title.toLowerCase()) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => game.screen));
+      await Navigator.push(context, _createRoute(game.screen));
+      _loadHighScores();
     }
+  }
+
+  Route _createRoute(Widget screen) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => screen,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide from right
+        const end = Offset.zero;
+        const curve = Curves.easeOutQuart;
+
+        var slideTween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(slideTween),
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 350),
+      reverseTransitionDuration: const Duration(milliseconds: 350),
+    );
   }
 
   List<GameData> _getAllGames() {
@@ -62,6 +99,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const SnakeGameScreen(),
         "https://img.icons8.com/3d-fluency/94/snake.png",
         "Classics",
+        "snake",
       ),
       GameData(
         "Memory Flip",
@@ -71,6 +109,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const MemoryFlipScreen(),
         null,
         "Brain & Logic",
+        "memory_flip",
       ),
       GameData(
         "Chimp Test",
@@ -80,6 +119,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const ChimpTestScreen(),
         null,
         "Brain & Logic",
+        "chimp_test",
       ),
       GameData(
         "Visual Memory",
@@ -89,6 +129,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const VisualMemoryGame(),
         null,
         "Brain & Logic",
+        "visual_memory",
       ),
       GameData(
         "Guess Number",
@@ -98,6 +139,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const NumberGuessGame(),
         null,
         "Brain & Logic",
+        "number_guess",
       ),
       GameData(
         "Aim Trainer",
@@ -107,6 +149,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const AimTrainerScreen(),
         null,
         "Action",
+        "aim_trainer",
       ),
       GameData(
         "Reaction Time",
@@ -116,6 +159,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const ReactionTimeGame(),
         null,
         "Action",
+        "reaction",
       ),
       GameData(
         "Tic Tac Toe",
@@ -125,6 +169,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const TicTacToeScreen(),
         null,
         "Classics",
+        "tic_tac_toe",
       ),
       GameData(
         "Rock Paper Scissors",
@@ -134,6 +179,7 @@ class _GamesScreenState extends State<GamesScreen> {
         const RockPaperScissorsScreen(),
         null,
         "Classics",
+        "rock_paper_scissors",
       ),
     ];
   }
@@ -200,10 +246,10 @@ class _GamesScreenState extends State<GamesScreen> {
 
   Widget _buildFeaturedCard(GameData game) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => game.screen),
-      ),
+      onTap: () async {
+        await Navigator.push(context, _createRoute(game.screen));
+        _loadHighScores();
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -250,13 +296,37 @@ class _GamesScreenState extends State<GamesScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        game.title,
-                        style: GoogleFonts.outfit(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1E293B),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            game.title,
+                            style: GoogleFonts.outfit(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1E293B),
+                            ),
+                          ),
+                          if (_highScores.containsKey(game.backendId))
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: game.color.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                "Top: ${_highScores[game.backendId]!['score']}${game.backendId == 'reaction' ? 'ms' : ''} - ${_highScores[game.backendId]!['username']}",
+                                style: GoogleFonts.outfit(
+                                  color: game.color,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -378,10 +448,10 @@ class _GamesScreenState extends State<GamesScreen> {
       itemBuilder: (context, index) {
         final game = games[index];
         return GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => game.screen),
-          ),
+          onTap: () async {
+            await Navigator.push(context, _createRoute(game.screen));
+            _loadHighScores();
+          },
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(28),
@@ -457,26 +527,53 @@ class _GamesScreenState extends State<GamesScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            game.title,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              height: 1.1,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  game.title,
+                                  style: GoogleFonts.outfit(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.1,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            game.category,
-                            style: GoogleFonts.inter(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.5,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                game.category,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white.withValues(alpha: 0.8),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              if (_highScores.containsKey(game.backendId))
+                                const SizedBox(width: 4),
+                              if (_highScores.containsKey(game.backendId))
+                                Flexible(
+                                  child: Text(
+                                    "🔥 ${_highScores[game.backendId]!['score']}${game.backendId == 'reaction' ? 'ms' : ''} by ${_highScores[game.backendId]!['username']}",
+                                    style: GoogleFonts.outfit(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       ),
@@ -525,6 +622,7 @@ class GameData {
   final Widget screen;
   final String? imageUrl;
   final String category;
+  final String backendId;
 
   GameData(
     this.title,
@@ -534,5 +632,6 @@ class GameData {
     this.screen,
     this.imageUrl,
     this.category,
+    this.backendId,
   );
 }

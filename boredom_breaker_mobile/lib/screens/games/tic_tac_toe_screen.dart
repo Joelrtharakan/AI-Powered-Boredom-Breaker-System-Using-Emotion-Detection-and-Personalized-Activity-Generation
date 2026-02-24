@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/games_api.dart';
 
 class TicTacToeScreen extends StatefulWidget {
   const TicTacToeScreen({super.key});
@@ -18,9 +19,9 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
   bool _isDraw = false;
   bool _gameStarted = false; // Instructions
 
-  final Color _primaryColor = const Color(0xFF00E5FF); // Cyber Cyan (X)
-  final Color _secondaryColor = const Color(0xFFFF2975); // Cyber Pink (O)
-  final Color _bgColor = const Color(0xFF0B0E14); // Deep Dark Blue
+  final Color _primaryColor = const Color(0xFF06B6D4); // Cyan 500
+  final Color _secondaryColor = const Color(0xFFE11D48); // Rose 600
+  final Color _bgColor = const Color(0xFFF8FAFC); // Light Slate 50
 
   void _startGame() {
     setState(() {
@@ -165,6 +166,11 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
       if (a != "" && a == b && a == c) {
         _winner = a;
         _winningLine = line;
+        if (a == 'X') {
+          GamesApi.submitScore('tic_tac_toe', 100);
+        } else {
+          GamesApi.submitScore('tic_tac_toe', 0);
+        }
         _showResultDialog(); // Show dialog on win
         return;
       }
@@ -172,6 +178,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
 
     if (!_board.contains("") && _winner == null) {
       _isDraw = true;
+      GamesApi.submitScore('tic_tac_toe', 50);
       _showResultDialog(); // Show dialog on draw
     }
   }
@@ -184,7 +191,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           ? "IT'S A DRAW!"
           : (_winner == 'X' ? "YOU WON!" : "AI WINS!");
       Color color = _isDraw
-          ? Colors.white
+          ? const Color(0xFF64748B)
           : (_winner == 'X' ? _primaryColor : _secondaryColor);
 
       showDialog(
@@ -195,11 +202,11 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF131823),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
               boxShadow: [
-                BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 30),
+                BoxShadow(color: color.withValues(alpha: 0.05), blurRadius: 30),
               ],
             ),
             child: Column(
@@ -258,7 +265,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: color,
-                          foregroundColor: Colors.black,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: Text(
@@ -342,7 +349,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             children: [
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, color: const Color(0xFF94A3B8)),
+                icon: const Icon(Icons.close, color: Color(0xFF94A3B8)),
               ),
               Text(
                 "HARD MODE",
@@ -356,7 +363,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                 onPressed: _resetGame,
                 icon: const Icon(
                   Icons.refresh_rounded,
-                  color: const Color(0xFF1E293B),
+                  color: Color(0xFF1E293B),
                 ),
               ),
             ],
@@ -371,7 +378,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white10),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           child: Text(
             _winner != null
@@ -382,7 +389,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             style: GoogleFonts.outfit(
               color: _winner != null
                   ? (_winner == 'X' ? _primaryColor : _secondaryColor)
-                  : Colors.white,
+                  : const Color(0xFF1E293B),
               fontWeight: FontWeight.w900,
               fontSize: 20,
               letterSpacing: 1,
@@ -397,11 +404,11 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           child: Container(
             margin: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF131823),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.5),
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.1),
                   blurRadius: 30,
                   offset: const Offset(0, 10),
                 ),
@@ -431,14 +438,14 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                             ? (cellValue == "X"
                                   ? _primaryColor.withValues(alpha: 0.2)
                                   : _secondaryColor.withValues(alpha: 0.2))
-                            : Colors.black26,
+                            : const Color(0xFFF8FAFC),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isWinningCell
                               ? (cellValue == "X"
                                     ? _primaryColor
                                     : _secondaryColor)
-                              : Colors.white.withValues(alpha: 0.05),
+                              : const Color(0xFFE2E8F0),
                           width: isWinningCell ? 2 : 1,
                         ),
                       ),
@@ -482,8 +489,8 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF131823),
-                border: Border.all(color: Colors.white10),
+                color: Colors.white,
+                border: Border.all(color: const Color(0xFFE2E8F0)),
                 boxShadow: [
                   BoxShadow(
                     color: _primaryColor.withValues(alpha: 0.2),
@@ -512,7 +519,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             Text(
               "vs Minimax AI",
               style: GoogleFonts.spaceMono(
-                color: const Color(0xFFCBD5E1),
+                color: const Color(0xFF64748B),
                 fontSize: 14,
               ),
             ),
@@ -532,8 +539,8 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                 child: ElevatedButton(
                   onPressed: _startGame,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
+                    backgroundColor: _primaryColor,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -557,7 +564,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               child: Text(
                 "EXIT",
                 style: GoogleFonts.spaceMono(
-                  color: const Color(0xFFCBD5E1),
+                  color: const Color(0xFF64748B),
                   fontWeight: FontWeight.bold,
                 ),
               ),

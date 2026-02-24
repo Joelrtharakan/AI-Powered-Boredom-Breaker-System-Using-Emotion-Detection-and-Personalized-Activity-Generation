@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../services/games_api.dart';
 
 class MemoryFlipScreen extends StatefulWidget {
   const MemoryFlipScreen({super.key});
@@ -156,6 +157,9 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
         ? Icons.emoji_events_rounded
         : Icons.check_circle_outline_rounded;
 
+    int currentScore = (_level * 1000) - (_moves * 10);
+    GamesApi.submitScore('memory_flip', currentScore);
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -164,12 +168,12 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E1E1E),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(32),
             border: Border.all(color: glowColor.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
-                color: glowColor.withValues(alpha: 0.2),
+                color: glowColor.withValues(alpha: 0.1),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -262,7 +266,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                       child: Text(
                         isLastLevel ? "REPLAY" : "NEXT LEVEL",
                         style: GoogleFonts.outfit(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -291,9 +295,9 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF0F0F13),
-                    Color(0xFF000000),
-                    Color(0xFF1A1025),
+                    Color(0xFFF8FAFC),
+                    Color(0xFFF1F5F9),
+                    Color(0xFFE2E8F0),
                   ],
                 ),
               ),
@@ -311,7 +315,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            Colors.pinkAccent.withValues(alpha: 0.15),
+                            Colors.pinkAccent.withValues(alpha: 0.05),
                             Colors.transparent,
                           ],
                         ),
@@ -377,7 +381,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                                 Text(
                                   "Tap pairs to match",
                                   style: GoogleFonts.inter(
-                                    color: const Color(0xFFCBD5E1),
+                                    color: const Color(0xFF64748B),
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -442,12 +446,12 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                           onPressed: () => _startLevel(_level),
                           icon: const Icon(
                             Icons.refresh_rounded,
-                            color: const Color(0xFFCBD5E1),
+                            color: const Color(0xFF94A3B8),
                           ),
                           label: Text(
                             "RESTART LEVEL",
                             style: GoogleFonts.outfit(
-                              color: const Color(0xFFCBD5E1),
+                              color: const Color(0xFF94A3B8),
                               letterSpacing: 1.5,
                             ),
                           ),
@@ -524,7 +528,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                 child: Text(
                   "START GAME",
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF1E293B),
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     letterSpacing: 1,
@@ -609,14 +613,12 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
   Widget _buildCardBack() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A20),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: const Color(0xFF1E293B).withValues(alpha: 0.08),
-        ),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -625,7 +627,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
       child: Center(
         child: Icon(
           Icons.question_mark_rounded,
-          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+          color: const Color(0xFFCBD5E1),
           size: 24,
         ),
       ),
@@ -635,19 +637,19 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
   Widget _buildCardFront(String emoji, bool isSolved) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF252530),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSolved
               ? Colors.greenAccent
-              : Colors.pinkAccent.withValues(alpha: 0.6),
+              : Colors.pinkAccent.withValues(alpha: 0.4),
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
             color: isSolved
-                ? Colors.greenAccent.withValues(alpha: 0.3)
-                : Colors.pinkAccent.withValues(alpha: 0.2),
+                ? Colors.greenAccent.withValues(alpha: 0.1)
+                : Colors.pinkAccent.withValues(alpha: 0.1),
             blurRadius: 10,
           ),
         ],

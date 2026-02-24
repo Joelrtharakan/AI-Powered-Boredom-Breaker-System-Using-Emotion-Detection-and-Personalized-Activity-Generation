@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/games_api.dart';
 
 class SnakeGameScreen extends StatefulWidget {
   const SnakeGameScreen({super.key});
@@ -143,6 +144,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
 
   void _handleGameOver() {
     _gameLoop?.cancel();
+    GamesApi.submitScore('snake', _score);
     setState(() {
       _isPlaying = false;
       _isGameOver = true;
@@ -161,7 +163,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color(0xFFF8FAFC),
       body: Stack(
         children: [
           // Cyberpunk Grid Background
@@ -170,7 +172,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
               painter: GridPainter(
                 rows: rows,
                 columns: columns,
-                color: Colors.greenAccent.withValues(alpha: 0.05),
+                color: const Color(0xFFE2E8F0),
               ),
             ),
           ),
@@ -189,13 +191,21 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
+                          color: Colors.white,
                           shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFF1E293B,
+                              ).withValues(alpha: 0.05),
+                              blurRadius: 10,
+                            ),
+                          ],
                         ),
                         child: IconButton(
                           icon: const Icon(
                             Icons.arrow_back_ios_new_rounded,
-                            color: const Color(0xFF1E293B),
+                            color: Color(0xFF1E293B),
                           ),
                           onPressed: () => Navigator.pop(context),
                         ),
@@ -206,14 +216,14 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black54,
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.greenAccent.withValues(alpha: 0.3),
-                          ),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.greenAccent.withValues(alpha: 0.1),
+                              color: const Color(
+                                0xFF1E293B,
+                              ).withValues(alpha: 0.05),
                               blurRadius: 10,
                             ),
                           ],
@@ -250,16 +260,17 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                         aspectRatio: columns / rows,
                         child: Container(
                           decoration: BoxDecoration(
+                            color: Colors.white,
                             border: Border.all(
-                              color: Colors.greenAccent.withValues(alpha: 0.2),
+                              color: const Color(0xFFE2E8F0),
                               width: 2,
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.greenAccent.withValues(
-                                  alpha: 0.1,
-                                ),
+                                color: const Color(
+                                  0xFF1E293B,
+                                ).withValues(alpha: 0.05),
                                 blurRadius: 20,
                               ),
                             ],
@@ -311,7 +322,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                   child: Text(
                     "SWIPE TO CONTROL",
                     style: GoogleFonts.outfit(
-                      color: Colors.white24,
+                      color: const Color(0xFF94A3B8),
                       letterSpacing: 4,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -326,7 +337,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
           if (!_isPlaying)
             Positioned.fill(
               child: Container(
-                color: Colors.black.withValues(alpha: 0.7),
+                color: Colors.white.withValues(alpha: 0.8),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Center(
@@ -366,7 +377,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                             children: [
                               Icon(
                                     Icons.gesture_rounded,
-                                    color: Colors.greenAccent,
+                                    color: const Color(0xFF10B981),
                                     size: 64,
                                   )
                                   .animate(
@@ -394,8 +405,8 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                               ? null
                               : (_isGameOver ? _resetGame : _startGame),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.greenAccent,
-                            foregroundColor: Colors.black,
+                            backgroundColor: const Color(0xFF10B981),
+                            foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 48,
                               vertical: 20,
@@ -404,9 +415,9 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                               borderRadius: BorderRadius.circular(24),
                             ),
                             elevation: 10,
-                            shadowColor: Colors.greenAccent.withValues(
-                              alpha: 0.5,
-                            ),
+                            shadowColor: const Color(
+                              0xFF10B981,
+                            ).withValues(alpha: 0.3),
                           ),
                           child: Text(
                             _isGameOver ? "TRY AGAIN" : "START GAME",
@@ -465,11 +476,11 @@ class SnakePainter extends CustomPainter {
     final double cellHeight = size.height / rows;
 
     final Paint snakePaint = Paint()
-      ..color = Colors.greenAccent
+      ..color = const Color(0xFF10B981)
       ..style = PaintingStyle.fill;
 
     final Paint glowPaint = Paint()
-      ..color = Colors.greenAccent.withValues(alpha: 0.4)
+      ..color = const Color(0xFF10B981).withValues(alpha: 0.2)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
 
     // Draw Snake

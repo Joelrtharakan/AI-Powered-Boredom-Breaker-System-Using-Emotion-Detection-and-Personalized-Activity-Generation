@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
+import '../../services/games_api.dart';
 
 class NumberGuessGame extends StatefulWidget {
   const NumberGuessGame({super.key});
@@ -78,6 +79,9 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
       if (guess == _targetNumber) {
         _message = "🎉 Correct! You won!";
         _status = 'win';
+        int score = 1000 - (_attempts * 50);
+        if (score < 10) score = 10;
+        GamesApi.submitScore('number_guess', score);
       } else if (guess < _targetNumber) {
         _message = "Too Low 📉 try higher";
         _status = 'low';
@@ -98,14 +102,14 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
       case 'high':
         return _accentHigh;
       default:
-        return Colors.white;
+        return const Color(0xFF1E293B);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F13), // Darker background
+      backgroundColor: const Color(0xFFF8FAFC), // Light background
       body: Stack(
         children: [
           // Background Gradient Mesh
@@ -119,7 +123,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _primaryColor.withValues(alpha: 0.3),
+                    color: _primaryColor.withValues(alpha: 0.1),
                     blurRadius: 100,
                     spreadRadius: 20,
                   ),
@@ -137,7 +141,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: _secondaryColor.withValues(alpha: 0.3),
+                    color: _secondaryColor.withValues(alpha: 0.1),
                     blurRadius: 100,
                     spreadRadius: 20,
                   ),
@@ -225,14 +229,14 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                     borderRadius: BorderRadius.circular(32),
                     border: Border.all(
                       color: _status == 'neutral'
-                          ? Colors.white10
+                          ? const Color(0xFFE2E8F0)
                           : _getStatusColor().withValues(alpha: 0.5),
                       width: 2,
                     ),
                     boxShadow: [
                       if (_status != 'neutral')
                         BoxShadow(
-                          color: _getStatusColor().withValues(alpha: 0.2),
+                          color: _getStatusColor().withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 4),
                         ),
@@ -246,7 +250,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: _status == 'neutral'
-                                  ? Colors.white
+                                  ? const Color(0xFF1E293B)
                                   : _getStatusColor(),
                               height: 1.2,
                             ),
@@ -288,9 +292,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText: "?",
-                        hintStyle: TextStyle(
-                          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
-                        ),
+                        hintStyle: TextStyle(color: const Color(0xFF94A3B8)),
                         counterText: "",
                       ),
                       maxLength: 3,
@@ -319,7 +321,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                         style: GoogleFonts.outfit(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1E293B),
+                          color: Colors.white,
                           letterSpacing: 1,
                         ),
                       ),
@@ -343,14 +345,14 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                           },
                           icon: const Icon(
                             Icons.refresh_rounded,
-                            color: Colors.black,
+                            color: Colors.white,
                           ),
                           label: Text(
                             "PLAY AGAIN",
                             style: GoogleFonts.outfit(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
@@ -371,20 +373,20 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                 if (_history.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Expanded(child: Divider(color: Colors.white12)),
+                      const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           "HISTORY",
                           style: GoogleFonts.inter(
-                            color: const Color(0xFFCBD5E1),
+                            color: const Color(0xFF94A3B8),
                             fontSize: 12,
                             letterSpacing: 2,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      const Expanded(child: Divider(color: Colors.white12)),
+                      const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -540,7 +542,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                   child: Text(
                     "START GUESSING",
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF1E293B),
+                      color: Colors.white,
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                       letterSpacing: 1.5,
@@ -556,7 +558,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
               child: Text(
                 "BACK TO ARCADE",
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFFCBD5E1),
+                  color: const Color(0xFF94A3B8),
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                 ),

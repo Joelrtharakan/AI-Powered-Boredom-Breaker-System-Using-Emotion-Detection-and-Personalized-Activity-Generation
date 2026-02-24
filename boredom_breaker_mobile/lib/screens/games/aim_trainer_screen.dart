@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/games_api.dart';
 
 class AimTrainerScreen extends StatefulWidget {
   const AimTrainerScreen({super.key});
@@ -25,7 +26,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
   int _hits = 0;
 
   // Design Config
-  final Color _crosshairColor = const Color(0xFF00FF9D); // Cyber Green
+  final Color _crosshairColor = const Color(0xFF10B981); // Emerald Green
   final Color _targetColor = const Color(0xFFFF0055); // Cyber Red
 
   @override
@@ -61,6 +62,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
   void _endGame() {
     _isPlaying = false;
     _timer?.cancel();
+    GamesApi.submitScore('aim_trainer', _score);
     _showResultDialog();
   }
 
@@ -102,7 +104,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF0A0F0D),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: _crosshairColor.withValues(alpha: 0.5),
@@ -110,7 +112,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
             ),
             boxShadow: [
               BoxShadow(
-                color: _crosshairColor.withValues(alpha: 0.2),
+                color: _crosshairColor.withValues(alpha: 0.05),
                 blurRadius: 30,
                 spreadRadius: 2,
               ),
@@ -134,9 +136,13 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
               _buildResultRow(
                 "ACCURACY",
                 "${_accuracy.toStringAsFixed(1)}%",
-                Colors.white,
+                const Color(0xFF1E293B),
               ),
-              _buildResultRow("HITS", "$_hits / $_totalClicks", Colors.white54),
+              _buildResultRow(
+                "HITS",
+                "$_hits / $_totalClicks",
+                const Color(0xFF64748B),
+              ),
 
               const SizedBox(height: 32),
 
@@ -171,7 +177,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _crosshairColor,
-                        foregroundColor: Colors.black,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
@@ -227,7 +233,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
             child: Container(
               decoration: const BoxDecoration(
                 gradient: RadialGradient(
-                  colors: [Color(0xFF001A0F), Colors.black],
+                  colors: [Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
                   radius: 1.5,
                 ),
               ),
@@ -394,9 +400,9 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                 // Exit Button
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.black54,
+                    color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white24),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
                   child: IconButton(
                     icon: const Icon(
@@ -417,7 +423,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                     _buildHUDStat(
                       "TIME",
                       "00:${_timeLeft.toString().padLeft(2, '0')}",
-                      Colors.white,
+                      const Color(0xFF1E293B),
                     ),
                     const SizedBox(width: 8),
                     _buildHUDStat("SCORE", "$_score", _crosshairColor),
@@ -435,7 +441,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.black87,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
@@ -517,7 +523,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
             _buildInstructionRow(
               Icons.timer,
               "30 Seconds on the clock.",
-              Colors.white,
+              const Color(0xFF1E293B),
             ),
             _buildInstructionRow(
               Icons.not_interested,
@@ -545,7 +551,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                   child: Text(
                     "INITIATE SEQUENCE",
                     style: GoogleFonts.outfit(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                       letterSpacing: 2,
@@ -562,7 +568,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
               child: Text(
                 "ABORT MISSION",
                 style: GoogleFonts.spaceMono(
-                  color: const Color(0xFFCBD5E1),
+                  color: const Color(0xFF64748B),
                   fontWeight: FontWeight.bold,
                 ),
               ),

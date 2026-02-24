@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/games_api.dart';
 
 class RockPaperScissorsScreen extends StatefulWidget {
   const RockPaperScissorsScreen({super.key});
@@ -16,9 +17,9 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
   bool _gameStarted = false; // Instructions overlay
 
   // Colors
-  final Color _paperColor = const Color(0xFF4D96FF); // Blue
-  final Color _scissorsColor = const Color(0xFFFF4D4D); // Red
-  final Color _bgColor = const Color(0xFF0F172A); // Slate 900
+  final Color _paperColor = const Color(0xFF3B82F6); // Blue
+  final Color _scissorsColor = const Color(0xFFEF4444); // Red
+  final Color _bgColor = const Color(0xFFF8FAFC); // Slate 50
 
   String? _userChoice;
   String? _aiChoice;
@@ -98,6 +99,10 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
     });
 
     if (_playerScore >= 5 || _aiScore >= 5) {
+      GamesApi.submitScore(
+        'rock_paper_scissors',
+        _playerScore > _aiScore ? 100 : 0,
+      );
       Future.delayed(const Duration(milliseconds: 1000), _showGameOverDialog);
     }
   }
@@ -113,7 +118,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: playerWon ? Colors.blueAccent : Colors.redAccent,
@@ -122,7 +127,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
             boxShadow: [
               BoxShadow(
                 color: (playerWon ? Colors.blueAccent : Colors.redAccent)
-                    .withValues(alpha: 0.3),
+                    .withValues(alpha: 0.05),
                 blurRadius: 40,
               ),
             ],
@@ -244,7 +249,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                 color: _paperColor.withValues(alpha: 0.05),
                 boxShadow: [
                   BoxShadow(
-                    color: _paperColor.withValues(alpha: 0.1),
+                    color: _paperColor.withValues(alpha: 0.05),
                     blurRadius: 80,
                   ),
                 ],
@@ -262,7 +267,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                 color: _scissorsColor.withValues(alpha: 0.05),
                 boxShadow: [
                   BoxShadow(
-                    color: _scissorsColor.withValues(alpha: 0.1),
+                    color: _scissorsColor.withValues(alpha: 0.05),
                     blurRadius: 80,
                   ),
                 ],
@@ -303,7 +308,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, color: const Color(0xFF94A3B8)),
+                icon: const Icon(Icons.close, color: Color(0xFF94A3B8)),
               ),
               _buildScoreBadge(
                 "AI",
@@ -347,7 +352,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                                 letterSpacing: 2,
                                 shadows: [
                                   BoxShadow(
-                                    color: Colors.black54,
+                                    color: const Color(0xFFE2E8F0),
                                     blurRadius: 20,
                                   ),
                                 ],
@@ -360,7 +365,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                             ElevatedButton(
                               onPressed: _resetRound,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white24,
+                                backgroundColor: const Color(0xFFE2E8F0),
                                 shape: const StadiumBorder(),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
@@ -383,14 +388,14 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                                 style: GoogleFonts.outfit(
                                   fontSize: 40,
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.white10,
+                                  color: const Color(0xFFE2E8F0),
                                 ),
                               )
                             : SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white24,
+                                  color: const Color(0xFF94A3B8),
                                   strokeWidth: 2,
                                 ),
                               )),
@@ -429,9 +434,9 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white10,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
       child: Row(
         children: [
@@ -460,11 +465,15 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         width: size * 0.7,
         height: size,
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B).withValues(alpha: 0.02),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white10),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
         ),
-        child: Icon(Icons.help_outline, color: Colors.white10, size: 30),
+        child: Icon(
+          Icons.help_outline,
+          color: const Color(0xFFE2E8F0),
+          size: 30,
+        ),
       );
     }
 
@@ -472,7 +481,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isAi
@@ -483,7 +492,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         boxShadow: [
           BoxShadow(
             color: (isAi ? Colors.redAccent : Colors.blueAccent).withValues(
-              alpha: 0.2,
+              alpha: 0.05,
             ),
             blurRadius: 40,
           ),
@@ -521,9 +530,9 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
             width: 64, // Slightly smaller buttons
             height: 64,
             decoration: BoxDecoration(
-              color: Colors.white10,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white24),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
             child: Icon(
               _getIcon(choice),
@@ -557,11 +566,11 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF131823),
-                border: Border.all(color: Colors.white10),
+                color: Colors.white,
+                border: Border.all(color: const Color(0xFFE2E8F0)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.purpleAccent.withValues(alpha: 0.2),
+                    color: Colors.purpleAccent.withValues(alpha: 0.05),
                     blurRadius: 40,
                   ),
                 ],
@@ -587,7 +596,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
             Text(
               "Rock \u2022 Paper \u2022 Scissors",
               style: GoogleFonts.spaceMono(
-                color: const Color(0xFFCBD5E1),
+                color: const Color(0xFF64748B),
                 fontSize: 14,
               ),
             ),
@@ -611,8 +620,8 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               child: ElevatedButton(
                 onPressed: _startGame,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.purpleAccent,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -633,7 +642,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               child: Text(
                 "RETREAT",
                 style: GoogleFonts.spaceMono(
-                  color: const Color(0xFFCBD5E1),
+                  color: const Color(0xFF64748B),
                   fontWeight: FontWeight.bold,
                 ),
               ),
