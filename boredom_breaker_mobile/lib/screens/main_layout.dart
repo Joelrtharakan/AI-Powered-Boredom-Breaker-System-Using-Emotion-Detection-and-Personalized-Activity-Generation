@@ -294,15 +294,15 @@ class _MainLayoutState extends State<MainLayout> {
                     end: Alignment.bottomRight,
                   )
                 : null,
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.4),
-                      blurRadius: 15,
-                      offset: const Offset(0, 6),
-                    ),
-                  ]
-                : null,
+            boxShadow: [
+              BoxShadow(
+                color: isSelected
+                    ? AppColors.primary.withValues(alpha: 0.4)
+                    : Colors.transparent,
+                blurRadius: isSelected ? 15 : 0,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
