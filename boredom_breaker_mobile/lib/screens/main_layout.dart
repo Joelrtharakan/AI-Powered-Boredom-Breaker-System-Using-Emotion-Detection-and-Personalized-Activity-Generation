@@ -282,8 +282,8 @@ class _MainLayoutState extends State<MainLayout> {
         height: 74,
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOutBack,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
           padding: EdgeInsets.symmetric(horizontal: isSelected ? 20 : 16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
@@ -308,27 +308,29 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ],
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: isSelected ? 22 : 28,
-                color: isSelected ? Colors.white : AppColors.textMuted,
-              ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-                alignment: Alignment.centerLeft,
-                child: isSelected
-                    ? SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const NeverScrollableScrollPhysics(),
-                        child: Padding(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const NeverScrollableScrollPhysics(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: isSelected ? 22 : 28,
+                  color: isSelected ? Colors.white : AppColors.textMuted,
+                ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                  alignment: Alignment.centerLeft,
+                  child: isSelected
+                      ? Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
                             label,
+                            maxLines: 1,
+                            softWrap: false,
                             style: GoogleFonts.outfit(
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
@@ -336,11 +338,11 @@ class _MainLayoutState extends State<MainLayout> {
                               letterSpacing: 0.5,
                             ),
                           ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ],
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
           ),
         ),
       ),
