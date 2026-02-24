@@ -9,6 +9,7 @@ import '../../providers/mood_provider.dart';
 import '../../providers/history_provider.dart';
 import '../../services/session_manager.dart';
 import '../../services/api_client.dart'; // Added ApiClient
+import '../../theme/app_theme.dart';
 import '../zen_screen.dart';
 import '../music/music_screen.dart';
 import '../games/games_screen.dart';
@@ -464,14 +465,14 @@ class _MoodInputSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF121212),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(
           color: const Color(0xFF1E293B).withValues(alpha: 0.08),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -509,7 +510,7 @@ class _MoodInputSection extends StatelessWidget {
           const SizedBox(height: 20),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1E22), // Slightly lighter black
+              color: const Color(0xFFF8FAFC), // Very light slate
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: Colors.transparent),
             ),
@@ -521,7 +522,7 @@ class _MoodInputSection extends StatelessWidget {
               ),
               decoration: InputDecoration(
                 hintText: "I'm feeling a bit anxious and bored...",
-                hintStyle: GoogleFonts.inter(color: Colors.white24),
+                hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.all(20),
               ),
@@ -536,10 +537,10 @@ class _MoodInputSection extends StatelessWidget {
             child: ElevatedButton(
               onPressed: moodState.isLoading ? null : onSubmit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
                 elevation: 10,
-                shadowColor: Colors.white.withValues(alpha: 0.2),
+                shadowColor: AppColors.primary.withValues(alpha: 0.2),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -549,7 +550,7 @@ class _MoodInputSection extends StatelessWidget {
                       width: 24,
                       height: 24,
                       child: CircularProgressIndicator(
-                        color: Colors.black,
+                        color: Colors.white,
                         strokeWidth: 2,
                       ),
                     )
@@ -591,14 +592,14 @@ class _GeneratedPlanCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 32),
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: const Color(0xFF141414), // Dark Grey for contrast
+        color: Colors.white, // Light theme card
         borderRadius: BorderRadius.circular(32),
         border: Border.all(
           color: const Color(0xFF1E293B).withValues(alpha: 0.05),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6D4EFF).withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 40,
             spreadRadius: -10,
           ),
@@ -639,14 +640,14 @@ class _GeneratedPlanCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2A2A2E), // Subtle badge bg
+                      color: const Color(0xFFF1F5F9), // Subtle badge bg
                       borderRadius: BorderRadius.circular(100),
-                      border: Border.all(color: Colors.white10),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
                     child: Text(
                       mood.toString().toUpperCase(),
                       style: GoogleFonts.outfit(
-                        color: const Color(0xFFB0B0B0),
+                        color: const Color(0xFF64748B),
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.2,
@@ -680,7 +681,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                     plan[0]['description'] ?? "No emotion detected",
                     textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
-                      color: const Color(0xFFB0B0B0),
+                      color: const Color(0xFF64748B),
                       fontSize: 15,
                       height: 1.6,
                       fontWeight: FontWeight.w500,
@@ -716,7 +717,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                           Text(
                             item['description'],
                             style: GoogleFonts.inter(
-                              color: const Color(0xFFE0E0E0),
+                              color: const Color(0xFF1E293B),
                               fontSize: 15,
                               height: 1.5,
                               fontWeight: FontWeight.w500,
@@ -920,14 +921,18 @@ class _StepNumber extends StatelessWidget {
         shape: BoxShape.circle,
         color: Colors.transparent,
         border: Border.all(
-          color: number == 1 ? const Color(0xFF4EEBFF) : Colors.white24,
+          color: number == 1
+              ? const Color(0xFF4EEBFF)
+              : const Color(0xFFE2E8F0),
           width: 2,
         ),
       ),
       child: Text(
         "$number",
         style: GoogleFonts.outfit(
-          color: number == 1 ? const Color(0xFF4EEBFF) : Colors.white70,
+          color: number == 1
+              ? const Color(0xFF4EEBFF)
+              : const Color(0xFF64748B),
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),
@@ -959,10 +964,17 @@ class _DopamineCard extends StatelessWidget {
         // width: 140, // Removed fixed width so it expands
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(28),
-          color: const Color(0xFF161618),
+          color: Colors.white,
           border: Border.all(
             color: const Color(0xFF1E293B).withValues(alpha: 0.05),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
         child: Stack(
           children: [
@@ -1033,11 +1045,18 @@ class _ExploreCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF161618),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
             color: const Color(0xFF1E293B).withValues(alpha: 0.05),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1066,7 +1085,7 @@ class _ExploreCard extends StatelessWidget {
                 ),
                 Icon(
                   Icons.arrow_outward_rounded,
-                  color: Colors.white24,
+                  color: const Color(0xFF94A3B8),
                   size: 18,
                 ),
               ],
