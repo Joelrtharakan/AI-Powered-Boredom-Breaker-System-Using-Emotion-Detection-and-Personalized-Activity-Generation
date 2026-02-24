@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
-import '../theme/app_theme.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -55,7 +54,7 @@ class LandingScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Spacer(),
+                          SizedBox(height: size.height * 0.12),
 
                           // Floating App Logo
                           Center(
@@ -111,7 +110,7 @@ class LandingScreen extends StatelessWidget {
                               .fadeIn(duration: 800.ms)
                               .scale(begin: const Offset(0.8, 0.8)),
 
-                          const Spacer(),
+                          SizedBox(height: size.height * 0.12),
 
                           // High-Impact Typography
                           Text(
