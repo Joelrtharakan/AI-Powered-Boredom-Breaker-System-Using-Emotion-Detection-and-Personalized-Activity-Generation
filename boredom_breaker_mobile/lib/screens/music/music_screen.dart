@@ -167,115 +167,64 @@ class _MusicScreenState extends State<MusicScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // Crisp Solid Background
-          Positioned.fill(child: Container(color: const Color(0xFFF8FAFC))),
-          // Subtle Glow Orbs
-          Positioned(
-            top: -100,
-            right: -100,
-            child:
-                Container(
-                      width: 400,
-                      height: 400,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFF4A00E0).withValues(alpha: 0.1),
-                      ),
-                    )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .scale(
-                      begin: const Offset(1, 1),
-                      end: const Offset(1.2, 1.2),
-                      duration: 8.seconds,
-                    ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: -150,
-            child:
-                Container(
-                      width: 300,
-                      height: 300,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFF00C6FF).withValues(alpha: 0.1),
-                      ),
-                    )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .scale(
-                      begin: const Offset(1, 1),
-                      end: const Offset(1.3, 1.3),
-                      duration: 10.seconds,
-                    ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-
-          // 2. Main Content
-          CustomScrollView(
-            controller: widget.scrollController,
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              _buildSliverAppBar(),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 16),
-                      _buildMasterHeader(),
-                      const SizedBox(height: 48),
-                      _buildSpotifyBridge(),
-                      const SizedBox(height: 64),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "CURATED",
-                                style: GoogleFonts.outfit(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w900,
-                                  color: const Color(
-                                    0xFF0F172A,
-                                  ).withValues(alpha: 0.4),
-                                  letterSpacing: 4,
-                                ),
+      body: SafeArea(
+        child: CustomScrollView(
+          controller: widget.scrollController,
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            _buildSliverAppBar(),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    _buildMasterHeader(),
+                    const SizedBox(height: 48),
+                    _buildSpotifyBridge(),
+                    const SizedBox(height: 64),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "CURATED",
+                              style: GoogleFonts.outfit(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
+                                color: const Color(
+                                  0xFF0F172A,
+                                ).withValues(alpha: 0.4),
+                                letterSpacing: 4,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "Atmospheres",
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF0F172A),
-                                  fontStyle: FontStyle.italic,
-                                ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Atmospheres",
+                              style: GoogleFonts.playfairDisplay(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF0F172A),
+                                fontStyle: FontStyle.italic,
                               ),
-                            ],
-                          ),
-                          _buildFrequencyIndicator(),
-                        ],
-                      ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
-                      const SizedBox(height: 32),
-                    ],
-                  ),
+                            ),
+                          ],
+                        ),
+                        _buildFrequencyIndicator(),
+                      ],
+                    ).animate().fadeIn(delay: 400.ms).slideX(begin: -0.1),
+                    const SizedBox(height: 32),
+                  ],
                 ),
               ),
-              _buildMoodGrid(),
-              const SliverToBoxAdapter(child: SizedBox(height: 140)),
-            ],
-          ),
-        ],
+            ),
+            _buildMoodGrid(),
+            const SliverToBoxAdapter(child: SizedBox(height: 140)),
+          ],
+        ),
       ),
     );
   }
@@ -506,18 +455,16 @@ class _MusicScreenState extends State<MusicScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A),
-        borderRadius: BorderRadius.circular(40),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(
+          color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+        ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1DB954).withValues(alpha: 0.2),
-            blurRadius: 30,
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
             offset: const Offset(0, 10),
-          ),
-          BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.15),
-            blurRadius: 40,
-            offset: const Offset(0, 20),
           ),
         ],
       ),
@@ -552,7 +499,7 @@ class _MusicScreenState extends State<MusicScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white, // Changed to white
+                    color: const Color(0xFF1E293B),
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -562,7 +509,7 @@ class _MusicScreenState extends State<MusicScreen> {
                       : "Unlock the full high-fidelity library",
                   style: GoogleFonts.inter(
                     fontSize: 13,
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: const Color(0xFF64748B),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -597,8 +544,8 @@ class _MusicScreenState extends State<MusicScreen> {
                   "LINK SPOTIFY",
                   style: GoogleFonts.outfit(
                     color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
                     letterSpacing: 1,
                   ),
                 ),
@@ -624,188 +571,107 @@ class _MusicScreenState extends State<MusicScreen> {
     );
   }
 
-  List<Color> _getGradientColors(String title, Color accentColor) {
-    switch (title) {
-      case 'Chill':
-        return [accentColor, accentColor.withOpacity(0.7)];
-      case 'Focus':
-        return [accentColor, accentColor.withOpacity(0.7)];
-      case 'Energize':
-        return [accentColor, accentColor.withOpacity(0.7)];
-      case 'Sad':
-        return [accentColor, accentColor.withOpacity(0.7)];
-      case 'Happy':
-        return [accentColor, accentColor.withOpacity(0.7)];
-      case 'Christian':
-        return [accentColor, accentColor.withOpacity(0.7)];
-      case 'Top Hits':
-        return [accentColor, accentColor.withOpacity(0.7)];
-      default:
-        return [accentColor, accentColor.withOpacity(0.7)];
-    }
-  }
-
   Widget _buildMoodCard(Map<String, dynamic> mood, int index) {
     final bool isMaterial = mood.containsKey('materialIcon');
     final Color accentColor = mood['color'] as Color;
     final String title = mood['title'];
 
-    // We will use vibrant solid gradients for all cards for maximum contrast and visibility
-    final List<Color> gradientColors = _getGradientColors(title, accentColor);
-
-    BoxDecoration cardDecoration;
-
-    cardDecoration = BoxDecoration(
-      borderRadius: BorderRadius.circular(32),
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: gradientColors,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: gradientColors[0].withValues(alpha: 0.3),
-          blurRadius: 24,
-          offset: const Offset(0, 12),
-        ),
-      ],
-    );
-
-    return InkWell(
+    return GestureDetector(
           onTap: () => _openInAppPlayer(mood['title'], mood['url']),
-          borderRadius: BorderRadius.circular(32),
           child: Container(
-            height: 200,
-            clipBehavior: Clip.antiAlias,
-            decoration: cardDecoration,
-            child: Stack(
-              children: [
-                // Shared Ambient Glow (Top Right)
-                Positioned(
-                  top: -30,
-                  right: -30,
-                  child: Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: accentColor.withValues(alpha: 0.08),
-                    ),
-                  ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
-
-                // Content
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 20,
+              ],
+            ),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Hero(
+                      tag: 'icon_$title',
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: isMaterial
+                            ? Icon(
+                                mood['materialIcon'],
+                                color: accentColor,
+                                size: 32,
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Image.network(
+                                  mood['icon'],
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: GoogleFonts.outfit(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1E293B),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            mood['desc'],
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: const Color(0xFF64748B),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: accentColor.withValues(alpha: 0.1),
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Icon Section
-                      Hero(
-                        tag: 'icon_$title',
-                        child: Container(
-                          height: 90,
-                          width: 90,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: const Color(0xFFE2E8F0)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: accentColor.withValues(alpha: 0.2),
-                                blurRadius: 32,
-                                spreadRadius: -10,
-                              ),
-                            ],
-                          ),
-                          alignment: Alignment.center,
-                          child: isMaterial
-                              ? Icon(
-                                  mood['materialIcon'],
-                                  color: accentColor,
-                                  size: 44,
-                                )
-                              : Padding(
-                                  padding: const EdgeInsets.all(18),
-                                  child: Image.network(
-                                    mood['icon'],
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                        ),
-                      ),
-                      const SizedBox(width: 24),
-                      // Text Section
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: accentColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                title.toUpperCase(),
-                                style: GoogleFonts.outfit(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w900,
-                                  color: accentColor,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                title,
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: 42,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  fontStyle: FontStyle.italic,
-                                  height: 1,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              mood['desc'],
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: Colors.white.withValues(alpha: 0.8),
-                                fontWeight: FontWeight.w500,
-                                height: 1.4,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Play Indicator
-                      Container(
-                        height: 56,
-                        width: 56,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.2),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.4),
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                          size: 24,
+                      Icon(Icons.play_arrow_rounded, color: accentColor),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Play Now",
+                        style: GoogleFonts.outfit(
+                          color: accentColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1,
                         ),
                       ),
                     ],
