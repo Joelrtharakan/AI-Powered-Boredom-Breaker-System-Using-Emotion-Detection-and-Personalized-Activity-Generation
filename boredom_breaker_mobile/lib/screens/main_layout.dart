@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home/dashboard_screen.dart';
 import 'games/games_screen.dart';
@@ -185,10 +186,38 @@ class _MainLayoutState extends State<MainLayout> {
             right: 16,
             child: Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                ),
+                if (_currentIndex != 2)
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                    onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                  ),
+                if (_currentIndex == 2)
+                  InkWell(
+                    onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      height: 48,
+                      width: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(
+                              0xFF0F172A,
+                            ).withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.menu_rounded,
+                        color: Color(0xFF1E293B),
+                        size: 20,
+                      ),
+                    ),
+                  ),
                 if (_currentIndex == 0) ...[
                   const SizedBox(width: 12),
                   Expanded(
@@ -275,6 +304,65 @@ class _MainLayoutState extends State<MainLayout> {
                       color: Colors.white,
                       fontSize: 18,
                     ),
+                  ),
+                ],
+                if (_currentIndex == 2) ...[
+                  const Spacer(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 4,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Image.network(
+                        "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
+                        height: 32,
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  FutureBuilder<SharedPreferences>(
+                    future: SharedPreferences.getInstance(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SizedBox(width: 48, height: 48);
+                      }
+                      final isConnected =
+                          snapshot.data!.getBool('isSpotifyConnected') ?? false;
+                      if (!isConnected) {
+                        return const SizedBox(width: 48, height: 48);
+                      }
+                      return IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Icons.power_settings_new_rounded,
+                            color: Colors.redAccent,
+                            size: 20,
+                          ),
+                        ),
+                        onPressed: () async {
+                          await snapshot.data!.setBool(
+                            'isSpotifyConnected',
+                            false,
+                          );
+                          // Force a rebuild to reflect the new state
+                          setState(() {});
+                        },
+                      );
+                    },
                   ),
                 ],
               ],
