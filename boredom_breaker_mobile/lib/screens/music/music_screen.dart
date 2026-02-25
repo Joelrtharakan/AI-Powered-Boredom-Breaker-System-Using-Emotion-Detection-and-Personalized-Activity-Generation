@@ -245,7 +245,7 @@ class _MusicScreenState extends State<MusicScreen> {
       ),
       child: const Icon(
         Icons.waves_rounded,
-        color: const Color(0xFF0F172A),
+        color: Color(0xFF0F172A),
         size: 20,
       ),
     );
@@ -485,7 +485,7 @@ class _MusicScreenState extends State<MusicScreen> {
             ),
             child: const Icon(
               Icons.bolt_rounded,
-              color: const Color(0xFF0F172A),
+              color: Color(0xFF0F172A),
               size: 28,
             ),
           ),
@@ -558,14 +558,17 @@ class _MusicScreenState extends State<MusicScreen> {
 
   Widget _buildMoodGrid() {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      sliver: SliverList(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 1.1,
+        ),
         delegate: SliverChildBuilderDelegate((context, index) {
           final mood = _moods[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 24),
-            child: _buildMoodCard(mood, index),
-          );
+          return _buildMoodCard(mood, index);
         }, childCount: _moods.length),
       ),
     );
@@ -580,99 +583,104 @@ class _MusicScreenState extends State<MusicScreen> {
           onTap: () => _openInAppPlayer(mood['title'], mood['url']),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(28),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  accentColor,
+                  HSLColor.fromColor(accentColor).withLightness(0.4).toColor(),
+                ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+                  color: accentColor.withValues(alpha: 0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                Row(
-                  children: [
-                    Hero(
-                      tag: 'icon_$title',
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
+                Positioned(
+                  right: -15,
+                  bottom: -15,
+                  child: isMaterial
+                      ? Icon(
+                          mood['materialIcon'],
+                          size: 80,
+                          color: Colors.white.withValues(alpha: 0.15),
+                        )
+                      : Image.network(
+                          mood['icon'],
+                          width: 80,
+                          height: 80,
+                          color: Colors.transparent,
+                          colorBlendMode: BlendMode.srcIn,
                         ),
-                        child: isMaterial
-                            ? Icon(
-                                mood['materialIcon'],
-                                color: accentColor,
-                                size: 32,
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.network(
-                                  mood['icon'],
-                                  width: 32,
-                                  height: 32,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: isMaterial
+                                ? Icon(
+                                    mood['materialIcon'],
+                                    color: Colors.white,
+                                    size: 24,
+                                  )
+                                : Image.network(
+                                    mood['icon'],
+                                    width: 24,
+                                    height: 24,
+                                    color: Colors.white,
+                                  ),
+                          ),
+                          const Icon(
+                            Icons.play_circle_fill_rounded,
+                            color: Colors.white54,
+                            size: 24,
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             title,
                             style: GoogleFonts.outfit(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1E293B),
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              height: 1.1,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             mood['desc'],
                             style: GoogleFonts.inter(
-                              fontSize: 14,
-                              color: const Color(0xFF64748B),
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.2,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: accentColor.withValues(alpha: 0.1),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.play_arrow_rounded, color: accentColor),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Play Now",
-                        style: GoogleFonts.outfit(
-                          color: accentColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1,
-                        ),
                       ),
                     ],
                   ),
@@ -682,7 +690,7 @@ class _MusicScreenState extends State<MusicScreen> {
           ),
         )
         .animate()
-        .fadeIn(delay: (index * 100).ms, duration: 800.ms)
-        .slideX(begin: 0.1);
+        .fadeIn(delay: (index * 50).ms, duration: 600.ms)
+        .slideY(begin: 0.1);
   }
 }
