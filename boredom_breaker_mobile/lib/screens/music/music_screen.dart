@@ -169,55 +169,50 @@ class _MusicScreenState extends State<MusicScreen> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // 1. Dynamic Ambient Background
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFF8FAFC), // Slate 50
-                    Color(0xFFF1F5F9), // Slate 100
-                    Colors.white,
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Gentle Light Ethereal Orbs
+          // Crisp Solid Background
+          Positioned.fill(child: Container(color: const Color(0xFFF8FAFC))),
+          // Subtle Glow Orbs
           Positioned(
-            top: -200,
-            left: -100,
-            child: _buildGlowOrb(
-              const Color(0xFF4A00E0).withValues(alpha: 0.8),
-              600,
-              20.seconds,
-            ), // Deep Purple, lighter opacity
+            top: -100,
+            right: -100,
+            child:
+                Container(
+                      width: 400,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF4A00E0).withValues(alpha: 0.1),
+                      ),
+                    )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scale(
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.2, 1.2),
+                      duration: 8.seconds,
+                    ),
           ),
           Positioned(
-            bottom: 100,
-            right: -150,
-            child: _buildGlowOrb(
-              const Color(0xFF00C6FF).withValues(alpha: 0.6),
-              500,
-              25.seconds,
-            ), // Neon Blue
+            bottom: 0,
+            left: -150,
+            child:
+                Container(
+                      width: 300,
+                      height: 300,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF00C6FF).withValues(alpha: 0.1),
+                      ),
+                    )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .scale(
+                      begin: const Offset(1, 1),
+                      end: const Offset(1.3, 1.3),
+                      duration: 10.seconds,
+                    ),
           ),
-          Positioned(
-            top: 400,
-            left: -100,
-            child: _buildGlowOrb(
-              const Color(0xFFFF3B97).withValues(alpha: 0.5),
-              450,
-              22.seconds,
-            ),
-          ),
-
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
               child: Container(color: Colors.transparent),
             ),
           ),
@@ -251,8 +246,8 @@ class _MusicScreenState extends State<MusicScreen> {
                                   fontSize: 12,
                                   fontWeight: FontWeight.w900,
                                   color: const Color(
-                                    0xFF1E293B,
-                                  ).withValues(alpha: 0.3),
+                                    0xFF0F172A,
+                                  ).withValues(alpha: 0.4),
                                   letterSpacing: 4,
                                 ),
                               ),
@@ -262,7 +257,7 @@ class _MusicScreenState extends State<MusicScreen> {
                                 style: GoogleFonts.playfairDisplay(
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF1E293B),
+                                  color: const Color(0xFF0F172A),
                                   fontStyle: FontStyle.italic,
                                 ),
                               ),
@@ -289,49 +284,25 @@ class _MusicScreenState extends State<MusicScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B).withValues(alpha: 0.03),
+        color: Colors.white,
         shape: BoxShape.circle,
-        border: Border.all(
-          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: const Icon(
         Icons.waves_rounded,
-        color: Color(0xFF1E293B),
+        color: const Color(0xFF0F172A),
         size: 20,
       ),
     );
   }
 
-  Widget _buildGlowOrb(Color color, double size, Duration duration) {
-    return Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                color.withValues(alpha: 0.15),
-                color.withValues(alpha: 0.05),
-                Colors.transparent,
-              ],
-            ),
-          ),
-        )
-        .animate(onPlay: (c) => c.repeat(reverse: true))
-        .move(
-          duration: duration,
-          begin: const Offset(0, 0),
-          end: const Offset(100, 120),
-          curve: Curves.easeInOutSine,
-        )
-        .scale(
-          duration: duration,
-          begin: const Offset(1, 1),
-          end: const Offset(1.4, 1.4),
-          curve: Curves.easeInOutSine,
-        );
-  }
+  // Removed _buildGlowOrb as it's replaced by inline Positioned containers
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
@@ -364,7 +335,13 @@ class _MusicScreenState extends State<MusicScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Icon(
                 Navigator.canPop(context)
@@ -445,8 +422,8 @@ class _MusicScreenState extends State<MusicScreen> {
                 style: GoogleFonts.outfit(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
-                  letterSpacing: 2,
+                  color: const Color(0xFF0F172A),
+                  letterSpacing: 2.5,
                 ),
               ),
             ],
@@ -470,7 +447,7 @@ class _MusicScreenState extends State<MusicScreen> {
                 fontSize: 56,
                 fontWeight: FontWeight.w200,
                 height: 0.9,
-                color: const Color(0xFF1E293B).withValues(alpha: 0.2),
+                color: const Color(0xFF0F172A).withValues(alpha: 0.15),
                 letterSpacing: 6,
               ),
             ),
@@ -481,14 +458,20 @@ class _MusicScreenState extends State<MusicScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Text(
               "LOSSLESS AUDIO ENGINE • 44.1KHZ",
               style: GoogleFonts.inter(
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF64748B),
+                color: const Color(0xFF475569),
                 letterSpacing: 1,
               ),
             ),
@@ -523,16 +506,18 @@ class _MusicScreenState extends State<MusicScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF0F172A),
         borderRadius: BorderRadius.circular(40),
-        border: Border.all(
-          color: const Color(0xFF1DB954).withValues(alpha: 0.3),
-        ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1DB954).withValues(alpha: 0.1),
+            color: const Color(0xFF1DB954).withValues(alpha: 0.2),
             blurRadius: 30,
             offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.15),
+            blurRadius: 40,
+            offset: const Offset(0, 20),
           ),
         ],
       ),
@@ -553,7 +538,7 @@ class _MusicScreenState extends State<MusicScreen> {
             ),
             child: const Icon(
               Icons.bolt_rounded,
-              color: Colors.white,
+              color: const Color(0xFF0F172A),
               size: 28,
             ),
           ),
@@ -567,7 +552,7 @@ class _MusicScreenState extends State<MusicScreen> {
                   style: GoogleFonts.outfit(
                     fontSize: 20,
                     fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1E293B),
+                    color: Colors.white, // Changed to white
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -577,7 +562,7 @@ class _MusicScreenState extends State<MusicScreen> {
                       : "Unlock the full high-fidelity library",
                   style: GoogleFonts.inter(
                     fontSize: 13,
-                    color: const Color(0xFF1E293B).withValues(alpha: 0.4),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -609,11 +594,11 @@ class _MusicScreenState extends State<MusicScreen> {
                   ],
                 ),
                 child: Text(
-                  "LINK",
+                  "LINK SPOTIFY",
                   style: GoogleFonts.outfit(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
-                    fontSize: 14,
+                    fontSize: 12,
                     letterSpacing: 1,
                   ),
                 ),
@@ -639,221 +624,52 @@ class _MusicScreenState extends State<MusicScreen> {
     );
   }
 
+  List<Color> _getGradientColors(String title, Color accentColor) {
+    switch (title) {
+      case 'Chill':
+        return [accentColor, accentColor.withOpacity(0.7)];
+      case 'Focus':
+        return [accentColor, accentColor.withOpacity(0.7)];
+      case 'Energize':
+        return [accentColor, accentColor.withOpacity(0.7)];
+      case 'Sad':
+        return [accentColor, accentColor.withOpacity(0.7)];
+      case 'Happy':
+        return [accentColor, accentColor.withOpacity(0.7)];
+      case 'Christian':
+        return [accentColor, accentColor.withOpacity(0.7)];
+      case 'Top Hits':
+        return [accentColor, accentColor.withOpacity(0.7)];
+      default:
+        return [accentColor, accentColor.withOpacity(0.7)];
+    }
+  }
+
   Widget _buildMoodCard(Map<String, dynamic> mood, int index) {
     final bool isMaterial = mood.containsKey('materialIcon');
     final Color accentColor = mood['color'] as Color;
     final String title = mood['title'];
 
-    // Define unique styles for different playlists
-    BoxDecoration cardDecoration;
-    Widget? backgroundEffect;
+    // We will use vibrant solid gradients for all cards for maximum contrast and visibility
+    final List<Color> gradientColors = _getGradientColors(title, accentColor);
 
-    switch (title) {
-      case 'Chill':
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              accentColor.withValues(alpha: 0.1),
-              Colors.white.withValues(alpha: 0.02),
-            ],
-          ),
-        );
-        backgroundEffect = Positioned.fill(
-          child: CustomPaint(
-            painter: _WavePainter(accentColor.withValues(alpha: 0.05)),
-          ),
-        );
-        break;
-      case 'Energize':
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.1),
-              blurRadius: 40,
-              spreadRadius: -10,
-            ),
-          ],
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [accentColor.withValues(alpha: 0.15), Colors.white],
-          ),
-        );
-        backgroundEffect = Positioned.fill(
-          child:
-              Container(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: Alignment.bottomRight,
-                        radius: 1.5,
-                        colors: [
-                          accentColor.withValues(alpha: 0.2),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  )
-                  .animate(onPlay: (c) => c.repeat())
-                  .shimmer(
-                    duration: 3.seconds,
-                    color: accentColor.withValues(alpha: 0.1),
-                  ),
-        );
-        break;
-      case 'Focus':
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          color: Colors.white,
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        );
-        backgroundEffect = Positioned.fill(
-          child: Opacity(
-            opacity: 0.05,
-            child: GridPaper(
-              color: accentColor,
-              divisions: 1,
-              subdivisions: 1,
-              interval: 40,
-            ),
-          ),
-        );
-        break;
-      case 'Happy':
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              accentColor.withValues(alpha: 0.3),
-              const Color(0xFFFFE082).withValues(alpha: 0.15),
-              Colors.white,
-            ],
-          ),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        );
-        backgroundEffect = Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                colors: [
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.transparent,
-                ],
-                radius: 0.8,
-              ),
-            ),
-          ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 2.seconds),
-        );
-        break;
-      case 'Christian':
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            colors: [accentColor.withValues(alpha: 0.15), Colors.white],
-          ),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        );
-        backgroundEffect = Positioned.fill(
-          child: Opacity(
-            opacity: 0.1,
-            child: Icon(
-              Icons.auto_awesome_rounded,
-              color: accentColor,
-              size: 200,
-            ),
-          ),
-        );
-        break;
-      case 'Top Hits':
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [accentColor.withValues(alpha: 0.2), Colors.white],
-          ),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        );
-        backgroundEffect = Positioned.fill(
-          child: Opacity(
-            opacity: 0.2,
-            child: Icon(Icons.language_rounded, color: accentColor, size: 220),
-          ),
-        );
-        break;
-      case 'Sad':
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [accentColor.withValues(alpha: 0.1), Colors.white],
-          ),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        );
-        backgroundEffect = Positioned.fill(
-          child: _buildGlowOrb(
-            accentColor.withValues(alpha: 0.1),
-            300,
-            10.seconds,
-          ),
-        );
-        break;
-      default:
-        cardDecoration = BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          color: Colors.white,
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        );
-    }
+    BoxDecoration cardDecoration;
+
+    cardDecoration = BoxDecoration(
+      borderRadius: BorderRadius.circular(32),
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: gradientColors,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: gradientColors[0].withValues(alpha: 0.3),
+          blurRadius: 24,
+          offset: const Offset(0, 12),
+        ),
+      ],
+    );
 
     return InkWell(
           onTap: () => _openInAppPlayer(mood['title'], mood['url']),
@@ -864,8 +680,6 @@ class _MusicScreenState extends State<MusicScreen> {
             decoration: cardDecoration,
             child: Stack(
               children: [
-                backgroundEffect ?? const SizedBox(),
-
                 // Shared Ambient Glow (Top Right)
                 Positioned(
                   top: -30,
@@ -956,7 +770,7 @@ class _MusicScreenState extends State<MusicScreen> {
                                 style: GoogleFonts.playfairDisplay(
                                   fontSize: 42,
                                   fontWeight: FontWeight.w900,
-                                  color: const Color(0xFF1E293B),
+                                  color: Colors.white,
                                   fontStyle: FontStyle.italic,
                                   height: 1,
                                 ),
@@ -967,9 +781,7 @@ class _MusicScreenState extends State<MusicScreen> {
                               mood['desc'],
                               style: GoogleFonts.inter(
                                 fontSize: 13,
-                                color: const Color(
-                                  0xFF1E293B,
-                                ).withValues(alpha: 0.3),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500,
                                 height: 1.4,
                               ),
@@ -985,16 +797,14 @@ class _MusicScreenState extends State<MusicScreen> {
                         width: 56,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(
-                            0xFF1E293B,
-                          ).withValues(alpha: 0.05),
+                          color: Colors.white.withValues(alpha: 0.2),
                           border: Border.all(
-                            color: accentColor.withValues(alpha: 0.2),
+                            color: Colors.white.withValues(alpha: 0.4),
                           ),
                         ),
                         child: Icon(
                           Icons.arrow_forward_rounded,
-                          color: accentColor,
+                          color: Colors.white,
                           size: 24,
                         ),
                       ),
@@ -1009,27 +819,4 @@ class _MusicScreenState extends State<MusicScreen> {
         .fadeIn(delay: (index * 100).ms, duration: 800.ms)
         .slideX(begin: 0.1);
   }
-}
-
-class _WavePainter extends CustomPainter {
-  final Color color;
-  _WavePainter(this.color);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    final path = Path();
-    for (double i = 0; i < size.width; i += 20) {
-      path.moveTo(i, 0);
-      path.quadraticBezierTo(i + 10, size.height / 2, i + 20, 0);
-    }
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(_WavePainter oldDelegate) => false;
 }
