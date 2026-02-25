@@ -581,17 +581,20 @@ class _MusicScreenState extends State<MusicScreen> {
           child: Container(
             height: 108,
             decoration: BoxDecoration(
-              color: Colors.white,
               borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: const Color(0xFFE2E8F0).withValues(alpha: 0.6),
-                width: 1,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  accentColor,
+                  HSLColor.fromColor(accentColor).withLightness(0.4).toColor(),
+                ],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0F172A).withValues(alpha: 0.04),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
+                  color: accentColor.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -604,13 +607,13 @@ class _MusicScreenState extends State<MusicScreen> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.12),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: isMaterial
                         ? Icon(
                             mood['materialIcon'],
-                            color: accentColor,
+                            color: Colors.white,
                             size: 36,
                           )
                         : Center(
@@ -618,6 +621,7 @@ class _MusicScreenState extends State<MusicScreen> {
                               mood['icon'],
                               width: 38,
                               height: 38,
+                              color: Colors.white,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -634,7 +638,7 @@ class _MusicScreenState extends State<MusicScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0F172A),
+                          color: Colors.white,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -644,7 +648,7 @@ class _MusicScreenState extends State<MusicScreen> {
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFF64748B),
+                          color: Colors.white.withValues(alpha: 0.85),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -657,20 +661,15 @@ class _MusicScreenState extends State<MusicScreen> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF0F172A).withValues(alpha: 0.04),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.4),
+                    ),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.play_arrow_rounded,
-                    color: accentColor,
+                    color: Colors.white,
                     size: 26,
                   ),
                 ),
