@@ -158,7 +158,7 @@ class _MusicScreenState extends State<MusicScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        backgroundColor: Color(0xFF030303),
+        backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
@@ -169,7 +169,7 @@ class _MusicScreenState extends State<MusicScreen> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // 1. Masterpiece Ambient Background
+          // 1. Dynamic Ambient Background
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -177,30 +177,49 @@ class _MusicScreenState extends State<MusicScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF050505),
-                    Color(0xFF0C0C0E),
-                    Color(0xFF030303),
+                    Color(0xFFF8FAFC), // Slate 50
+                    Color(0xFFF1F5F9), // Slate 100
+                    Colors.white,
                   ],
                 ),
               ),
             ),
           ),
 
-          // Deep Ethereal Orbs
+          // Gentle Light Ethereal Orbs
           Positioned(
             top: -200,
             left: -100,
-            child: _buildGlowOrb(const Color(0xFF5A3BFF), 600, 20.seconds),
+            child: _buildGlowOrb(
+              const Color(0xFF4A00E0).withValues(alpha: 0.8),
+              600,
+              20.seconds,
+            ), // Deep Purple, lighter opacity
           ),
           Positioned(
             bottom: 100,
             right: -150,
-            child: _buildGlowOrb(const Color(0xFF3BAFFF), 500, 25.seconds),
+            child: _buildGlowOrb(
+              const Color(0xFF00C6FF).withValues(alpha: 0.6),
+              500,
+              25.seconds,
+            ), // Neon Blue
           ),
           Positioned(
             top: 400,
             left: -100,
-            child: _buildGlowOrb(const Color(0xFFFF3B97), 450, 22.seconds),
+            child: _buildGlowOrb(
+              const Color(0xFFFF3B97).withValues(alpha: 0.5),
+              450,
+              22.seconds,
+            ),
+          ),
+
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(color: Colors.transparent),
+            ),
           ),
 
           // 2. Main Content
@@ -278,7 +297,7 @@ class _MusicScreenState extends State<MusicScreen> {
       ),
       child: const Icon(
         Icons.waves_rounded,
-        color: const Color(0xFFCBD5E1),
+        color: Color(0xFF1E293B),
         size: 20,
       ),
     );
@@ -343,11 +362,9 @@ class _MusicScreenState extends State<MusicScreen> {
               height: 48,
               width: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: const Color(0xFF1E293B).withValues(alpha: 0.1),
-                ),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Icon(
                 Navigator.canPop(context)
@@ -426,7 +443,7 @@ class _MusicScreenState extends State<MusicScreen> {
               Text(
                 "STUDIO MODE ACTIVE",
                 style: GoogleFonts.outfit(
-                  fontSize: 10,
+                  fontSize: 12,
                   fontWeight: FontWeight.w900,
                   color: AppColors.primary,
                   letterSpacing: 2,
@@ -462,18 +479,16 @@ class _MusicScreenState extends State<MusicScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B).withValues(alpha: 0.03),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-              ),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
             child: Text(
               "LOSSLESS AUDIO ENGINE • 44.1KHZ",
               style: GoogleFonts.inter(
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFFCBD5E1),
+                color: const Color(0xFF64748B),
                 letterSpacing: 1,
               ),
             ),
@@ -508,22 +523,15 @@ class _MusicScreenState extends State<MusicScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF1DB954).withValues(alpha: 0.15),
-            Colors.white.withValues(alpha: 0.02),
-          ],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(40),
         border: Border.all(
-          color: const Color(0xFF1E293B).withValues(alpha: 0.1),
+          color: const Color(0xFF1DB954).withValues(alpha: 0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1DB954).withValues(alpha: 0.05),
-            blurRadius: 40,
+            color: const Color(0xFF1DB954).withValues(alpha: 0.1),
+            blurRadius: 30,
             offset: const Offset(0, 10),
           ),
         ],
@@ -545,7 +553,7 @@ class _MusicScreenState extends State<MusicScreen> {
             ),
             child: const Icon(
               Icons.bolt_rounded,
-              color: const Color(0xFF1E293B),
+              color: Colors.white,
               size: 28,
             ),
           ),
@@ -585,13 +593,25 @@ class _MusicScreenState extends State<MusicScreen> {
                   vertical: 14,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFF1DB954).withAlpha(200),
+                      const Color(0xFF1DB954),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF1DB954).withValues(alpha: 0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Text(
                   "LINK",
                   style: GoogleFonts.outfit(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontWeight: FontWeight.w900,
                     fontSize: 14,
                     letterSpacing: 1,
@@ -660,10 +680,7 @@ class _MusicScreenState extends State<MusicScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              accentColor.withValues(alpha: 0.2),
-              Colors.black.withValues(alpha: 0.8),
-            ],
+            colors: [accentColor.withValues(alpha: 0.15), Colors.white],
           ),
         );
         backgroundEffect = Positioned.fill(
@@ -690,8 +707,15 @@ class _MusicScreenState extends State<MusicScreen> {
       case 'Focus':
         cardDecoration = BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          color: const Color(0xFF0F0F12),
-          border: Border.all(color: accentColor.withValues(alpha: 0.2)),
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         );
         backgroundEffect = Positioned.fill(
           child: Opacity(
@@ -713,9 +737,18 @@ class _MusicScreenState extends State<MusicScreen> {
             end: Alignment.bottomRight,
             colors: [
               accentColor.withValues(alpha: 0.3),
-              const Color(0xFFFFE082).withValues(alpha: 0.1),
+              const Color(0xFFFFE082).withValues(alpha: 0.15),
+              Colors.white,
             ],
           ),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         );
         backgroundEffect = Positioned.fill(
           child: Container(
@@ -734,15 +767,18 @@ class _MusicScreenState extends State<MusicScreen> {
       case 'Christian':
         cardDecoration = BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF2C003E), Color(0xFF12001B)],
+            colors: [accentColor.withValues(alpha: 0.15), Colors.white],
           ),
-          border: Border.all(
-            color: accentColor.withValues(alpha: 0.3),
-            width: 2,
-          ),
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         );
         backgroundEffect = Positioned.fill(
           child: Opacity(
@@ -761,12 +797,16 @@ class _MusicScreenState extends State<MusicScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              accentColor.withValues(alpha: 0.1),
-              const Color(0xFF003311),
-            ],
+            colors: [accentColor.withValues(alpha: 0.2), Colors.white],
           ),
-          border: Border.all(color: accentColor.withValues(alpha: 0.2)),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         );
         backgroundEffect = Positioned.fill(
           child: Opacity(
@@ -781,11 +821,16 @@ class _MusicScreenState extends State<MusicScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              accentColor.withValues(alpha: 0.15),
-              const Color(0xFF050510),
-            ],
+            colors: [accentColor.withValues(alpha: 0.1), Colors.white],
           ),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         );
         backgroundEffect = Positioned.fill(
           child: _buildGlowOrb(
@@ -798,10 +843,15 @@ class _MusicScreenState extends State<MusicScreen> {
       default:
         cardDecoration = BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          color: const Color(0xFF1E293B).withValues(alpha: 0.03),
-          border: Border.all(
-            color: const Color(0xFF1E293B).withValues(alpha: 0.08),
-          ),
+          color: Colors.white,
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         );
     }
 
@@ -845,13 +895,9 @@ class _MusicScreenState extends State<MusicScreen> {
                           height: 90,
                           width: 90,
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.3),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: const Color(
-                                0xFF1E293B,
-                              ).withValues(alpha: 0.1),
-                            ),
+                            border: Border.all(color: const Color(0xFFE2E8F0)),
                             boxShadow: [
                               BoxShadow(
                                 color: accentColor.withValues(alpha: 0.2),
