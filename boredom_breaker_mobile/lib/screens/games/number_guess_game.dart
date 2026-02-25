@@ -229,7 +229,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                     borderRadius: BorderRadius.circular(32),
                     border: Border.all(
                       color: _status == 'neutral'
-                          ? const Color(0xFFE2E8F0)
+                          ? const Color(0xFFCBD5E1)
                           : _getStatusColor().withValues(alpha: 0.5),
                       width: 2,
                     ),
@@ -373,7 +373,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                 if (_history.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+                      const Expanded(child: Divider(color: Color(0xFFCBD5E1))),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
@@ -386,7 +386,7 @@ class _NumberGuessGameState extends State<NumberGuessGame> {
                           ),
                         ),
                       ),
-                      const Expanded(child: Divider(color: Color(0xFFE2E8F0))),
+                      const Expanded(child: Divider(color: Color(0xFFCBD5E1))),
                     ],
                   ),
                   const SizedBox(height: 24),

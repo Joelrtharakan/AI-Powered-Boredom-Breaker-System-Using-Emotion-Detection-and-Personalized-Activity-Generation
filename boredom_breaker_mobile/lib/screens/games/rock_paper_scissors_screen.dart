@@ -352,7 +352,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                                 letterSpacing: 2,
                                 shadows: [
                                   BoxShadow(
-                                    color: const Color(0xFFE2E8F0),
+                                    color: const Color(0xFFCBD5E1),
                                     blurRadius: 20,
                                   ),
                                 ],
@@ -365,7 +365,8 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                             ElevatedButton(
                               onPressed: _resetRound,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFE2E8F0),
+                                backgroundColor: const Color(0xFFCBD5E1),
+                                foregroundColor: const Color(0xFF1E293B),
                                 shape: const StadiumBorder(),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
@@ -388,7 +389,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                                 style: GoogleFonts.outfit(
                                   fontSize: 40,
                                   fontWeight: FontWeight.w900,
-                                  color: const Color(0xFFE2E8F0),
+                                  color: const Color(0xFF94A3B8),
                                 ),
                               )
                             : SizedBox(
@@ -436,7 +437,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: const Color(0xFFCBD5E1)),
       ),
       child: Row(
         children: [
@@ -467,11 +468,11 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: const Color(0xFFCBD5E1)),
         ),
         child: Icon(
           Icons.help_outline,
-          color: const Color(0xFFE2E8F0),
+          color: const Color(0xFF94A3B8),
           size: 30,
         ),
       );
@@ -567,7 +568,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: const Color(0xFFCBD5E1)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.purpleAccent.withValues(alpha: 0.05),

@@ -172,7 +172,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
               painter: GridPainter(
                 rows: rows,
                 columns: columns,
-                color: const Color(0xFFE2E8F0),
+                color: const Color(0xFFCBD5E1),
               ),
             ),
           ),
@@ -218,7 +218,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          border: Border.all(color: const Color(0xFFCBD5E1)),
                           boxShadow: [
                             BoxShadow(
                               color: const Color(
@@ -262,7 +262,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
-                              color: const Color(0xFFE2E8F0),
+                              color: const Color(0xFFCBD5E1),
                               width: 2,
                             ),
                             borderRadius: BorderRadius.circular(12),

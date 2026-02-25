@@ -238,7 +238,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+                  border: Border.all(color: const Color(0xFFCBD5E1), width: 1),
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios_new_rounded,

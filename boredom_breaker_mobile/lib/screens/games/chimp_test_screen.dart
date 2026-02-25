@@ -376,12 +376,12 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           color: _hideNumbers
-              ? const Color(0xFFE2E8F0) // The "Cover" color
+              ? const Color(0xFFCBD5E1) // The "Cover" color
               : Colors.white, // The "Card" color
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _hideNumbers
-                ? const Color(0xFFE2E8F0)
+                ? const Color(0xFFCBD5E1)
                 : const Color(0xFF06B6D4).withValues(alpha: 0.3),
             width: 1.5,
           ),

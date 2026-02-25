@@ -402,7 +402,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(color: const Color(0xFFCBD5E1)),
                   ),
                   child: IconButton(
                     icon: const Icon(

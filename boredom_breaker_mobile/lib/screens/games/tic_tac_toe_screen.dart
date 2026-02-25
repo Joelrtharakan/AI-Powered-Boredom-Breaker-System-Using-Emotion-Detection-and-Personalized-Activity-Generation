@@ -378,7 +378,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: const Color(0xFFCBD5E1)),
           ),
           child: Text(
             _winner != null
@@ -445,7 +445,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                               ? (cellValue == "X"
                                     ? _primaryColor
                                     : _secondaryColor)
-                              : const Color(0xFFE2E8F0),
+                              : const Color(0xFFCBD5E1),
                           width: isWinningCell ? 2 : 1,
                         ),
                       ),
@@ -490,7 +490,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white,
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: const Color(0xFFCBD5E1)),
                 boxShadow: [
                   BoxShadow(
                     color: _primaryColor.withValues(alpha: 0.2),

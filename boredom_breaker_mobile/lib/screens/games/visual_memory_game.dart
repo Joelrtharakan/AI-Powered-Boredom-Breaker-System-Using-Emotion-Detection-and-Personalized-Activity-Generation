@@ -400,7 +400,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                       border: Border.all(
                                         color: (_showingPattern && isTarget)
                                             ? const Color(0xFF1E293B)
-                                            : const Color(0xFFE2E8F0),
+                                            : const Color(0xFFCBD5E1),
                                         width: 1,
                                       ),
                                       boxShadow: [

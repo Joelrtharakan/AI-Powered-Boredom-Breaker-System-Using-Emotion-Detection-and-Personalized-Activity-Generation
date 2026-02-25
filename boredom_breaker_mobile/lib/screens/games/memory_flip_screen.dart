@@ -297,7 +297,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                   colors: [
                     Color(0xFFF8FAFC),
                     Color(0xFFF1F5F9),
-                    Color(0xFFE2E8F0),
+                    Color(0xFFCBD5E1),
                   ],
                 ),
               ),
@@ -615,7 +615,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: const Color(0xFFCBD5E1)),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF1E293B).withValues(alpha: 0.05),
