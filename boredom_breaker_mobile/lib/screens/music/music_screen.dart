@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:ui';
 import '../../theme/app_theme.dart';
 import 'spotify_player_screen.dart';
 
@@ -172,7 +171,6 @@ class _MusicScreenState extends State<MusicScreen> {
           controller: widget.scrollController,
           physics: const BouncingScrollPhysics(),
           slivers: [
-            _buildSliverAppBar(),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -253,101 +251,6 @@ class _MusicScreenState extends State<MusicScreen> {
 
   // Removed _buildGlowOrb as it's replaced by inline Positioned containers
 
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      pinned: true,
-      toolbarHeight: 100,
-      centerTitle: true,
-      flexibleSpace: ClipRRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(color: Colors.transparent),
-        ),
-      ),
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 20),
-        child: Center(
-          child: InkWell(
-            onTap: () {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              } else {
-                Scaffold.of(context).openDrawer();
-              }
-            },
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              height: 48,
-              width: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF0F172A).withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Icon(
-                Navigator.canPop(context)
-                    ? Icons.arrow_back_ios_new_rounded
-                    : Icons.menu_rounded,
-                color: const Color(0xFF1E293B),
-                size: 20,
-              ),
-            ),
-          ),
-        ),
-      ),
-      title: Column(
-        children: [
-          Container(
-            height: 4,
-            width: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Image.network(
-            "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
-            height: 32,
-          ),
-        ],
-      ),
-      actions: [
-        if (_isConnected)
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: IconButton(
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.redAccent.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.power_settings_new_rounded,
-                  color: Colors.redAccent,
-                  size: 20,
-                ),
-              ),
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setBool('isSpotifyConnected', false);
-                setState(() => _isConnected = false);
-              },
-            ),
-          ),
-      ],
-    );
-  }
-
   Widget _buildMasterHeader() {
     return Container(
       width: double.infinity,
@@ -362,6 +265,53 @@ class _MusicScreenState extends State<MusicScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 4,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Image.network(
+                    "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
+                    height: 32,
+                  ),
+                ],
+              ),
+              if (_isConnected)
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.power_settings_new_rounded,
+                      color: Colors.redAccent,
+                      size: 20,
+                    ),
+                  ),
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('isSpotifyConnected', false);
+                    setState(() => _isConnected = false);
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: 40),
           Row(
             children: [
               _buildLiveBars(),
