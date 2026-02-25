@@ -267,10 +267,45 @@ class _MusicScreenState extends State<MusicScreen> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // 1. Hamburger Menu (Left)
+              InkWell(
+                onTap: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  } else {
+                    Scaffold.of(context).openDrawer();
+                  }
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  height: 48,
+                  width: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Navigator.canPop(context)
+                        ? Icons.arrow_back_ios_new_rounded
+                        : Icons.menu_rounded,
+                    color: const Color(0xFF1E293B),
+                    size: 20,
+                  ),
+                ),
+              ),
+
+              // 2. Music Icon with line (Center)
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     height: 4,
@@ -287,6 +322,8 @@ class _MusicScreenState extends State<MusicScreen> {
                   ),
                 ],
               ),
+
+              // 3. Power Button or Placeholder (Right)
               if (_isConnected)
                 IconButton(
                   padding: EdgeInsets.zero,
@@ -295,7 +332,7 @@ class _MusicScreenState extends State<MusicScreen> {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Colors.redAccent.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: const Icon(
                       Icons.power_settings_new_rounded,
@@ -308,7 +345,12 @@ class _MusicScreenState extends State<MusicScreen> {
                     await prefs.setBool('isSpotifyConnected', false);
                     setState(() => _isConnected = false);
                   },
-                ),
+                )
+              else
+                const SizedBox(
+                  width: 48,
+                  height: 48,
+                ), // Empty space to balance the Row
             ],
           ),
           const SizedBox(height: 40),
