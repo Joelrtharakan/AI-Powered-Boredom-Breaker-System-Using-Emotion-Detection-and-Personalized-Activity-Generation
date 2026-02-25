@@ -559,16 +559,13 @@ class _MusicScreenState extends State<MusicScreen> {
   Widget _buildMoodGrid() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 1.1,
-        ),
+      sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
           final mood = _moods[index];
-          return _buildMoodCard(mood, index);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _buildMoodCard(mood, index),
+          );
         }, childCount: _moods.length),
       ),
     );
@@ -582,115 +579,108 @@ class _MusicScreenState extends State<MusicScreen> {
     return GestureDetector(
           onTap: () => _openInAppPlayer(mood['title'], mood['url']),
           child: Container(
+            height: 108,
             decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(28),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  accentColor,
-                  HSLColor.fromColor(accentColor).withLightness(0.4).toColor(),
-                ],
+              border: Border.all(
+                color: const Color(0xFFE2E8F0).withValues(alpha: 0.6),
+                width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: accentColor.withValues(alpha: 0.3),
-                  blurRadius: 15,
+                  color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                  blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
               ],
             ),
-            child: Stack(
+            padding: const EdgeInsets.all(12),
+            child: Row(
               children: [
-                Positioned(
-                  right: -15,
-                  bottom: -15,
-                  child: isMaterial
-                      ? Icon(
-                          mood['materialIcon'],
-                          size: 80,
-                          color: Colors.white.withValues(alpha: 0.15),
-                        )
-                      : Image.network(
-                          mood['icon'],
-                          width: 80,
-                          height: 80,
-                          color: Colors.transparent,
-                          colorBlendMode: BlendMode.srcIn,
-                        ),
+                Hero(
+                  tag: 'icon_$title',
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: isMaterial
+                        ? Icon(
+                            mood['materialIcon'],
+                            color: accentColor,
+                            size: 36,
+                          )
+                        : Center(
+                            child: Image.network(
+                              mood['icon'],
+                              width: 38,
+                              height: 38,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+                const SizedBox(width: 18),
+                Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: isMaterial
-                                ? Icon(
-                                    mood['materialIcon'],
-                                    color: Colors.white,
-                                    size: 24,
-                                  )
-                                : Image.network(
-                                    mood['icon'],
-                                    width: 24,
-                                    height: 24,
-                                    color: Colors.white,
-                                  ),
-                          ),
-                          const Icon(
-                            Icons.play_circle_fill_rounded,
-                            color: Colors.white54,
-                            size: 24,
-                          ),
-                        ],
+                      Text(
+                        title,
+                        style: GoogleFonts.outfit(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF0F172A),
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              height: 1.1,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            mood['desc'],
-                            style: GoogleFonts.inter(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.2,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                      const SizedBox(height: 4),
+                      Text(
+                        mood['desc'],
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF64748B),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(width: 12),
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Icon(
+                    Icons.play_arrow_rounded,
+                    color: accentColor,
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(width: 8),
               ],
             ),
           ),
         )
         .animate()
-        .fadeIn(delay: (index * 50).ms, duration: 600.ms)
-        .slideY(begin: 0.1);
+        .fadeIn(delay: (index * 80).ms, duration: 600.ms)
+        .slideX(begin: 0.05, curve: Curves.easeOutQuart);
   }
 }
