@@ -64,7 +64,7 @@ class _JournalScreenState extends State<JournalScreen> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -72,10 +72,7 @@ class _JournalScreenState extends State<JournalScreen> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.refresh_rounded,
-              color: const Color(0xFF64748B),
-            ),
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
             onPressed: _fetchEntries,
           ),
         ],
@@ -111,7 +108,7 @@ class _JournalScreenState extends State<JournalScreen> {
           gradient: const LinearGradient(colors: AppColors.primaryGradient),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -194,9 +191,11 @@ class _JournalScreenState extends State<JournalScreen> {
         margin: const EdgeInsets.only(bottom: 20),
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: AppColors.surface.withOpacity(0.5),
+          color: AppColors.surface.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: const Color(0xFF1E293B).withOpacity(0.05)),
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +233,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                   child: Container(
                     padding: const EdgeInsets.all(8),
-                    color: const Color(0xFF1E293B).withOpacity(0.05),
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                     child: Text(
                       "This entry is locked. Tap to view the contents of $title...",
                       style: GoogleFonts.inter(
@@ -276,9 +275,9 @@ class _JournalScreenState extends State<JournalScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: emotionColor.withOpacity(0.1),
+                color: emotionColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: emotionColor.withOpacity(0.3)),
+                border: Border.all(color: emotionColor.withValues(alpha: 0.3)),
               ),
               child: Text(
                 emotionStr,

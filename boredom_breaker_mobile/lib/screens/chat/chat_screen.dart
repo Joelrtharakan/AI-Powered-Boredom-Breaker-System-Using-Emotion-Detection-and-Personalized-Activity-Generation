@@ -130,7 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
             const SnackBar(
               content: Text(
                 "Chat history cleared. Start a new chat!",
-                style: TextStyle(color: const Color(0xFF1E293B)),
+                style: TextStyle(color: Color(0xFF1E293B)),
               ),
               backgroundColor: Colors.teal,
             ),
@@ -202,7 +202,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           IconButton(
                             icon: const Icon(
                               Icons.close,
-                              color: const Color(0xFF94A3B8),
+                              color: Color(0xFF94A3B8),
                             ),
                             onPressed: () => Navigator.pop(context),
                           ),
@@ -305,7 +305,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ListTile(
                 leading: const Icon(
                   Icons.add_circle_outline,
-                  color: const Color(0xFF1E293B),
+                  color: Color(0xFF1E293B),
                 ),
                 title: Text(
                   "Start New Chat",
@@ -317,10 +317,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(
-                  Icons.history,
-                  color: const Color(0xFF1E293B),
-                ),
+                leading: const Icon(Icons.history, color: Color(0xFF1E293B)),
                 title: Text(
                   "View Previous Chats",
                   style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
@@ -495,13 +492,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: const Color(0xFF1E293B).withOpacity(0.03),
+                      color: const Color(0xFF1E293B).withValues(alpha: 0.03),
                       border: Border.all(
-                        color: const Color(0xFF1E293B).withOpacity(0.08),
+                        color: const Color(0xFF1E293B).withValues(alpha: 0.08),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6D4EFF).withOpacity(0.15),
+                          color: const Color(
+                            0xFF6D4EFF,
+                          ).withValues(alpha: 0.15),
                           blurRadius: 30,
                           spreadRadius: 10,
                         ),
@@ -559,7 +558,7 @@ class _ChatScreenState extends State<ChatScreen> {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: const Color(0xFF1E293B),
+                  color: Color(0xFF1E293B),
                   size: 20,
                 ),
                 onPressed: () => Navigator.pop(context),
@@ -570,9 +569,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF1E293B).withOpacity(0.05),
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                   border: Border.all(
-                    color: const Color(0xFF1E293B).withOpacity(0.1),
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.1),
                   ),
                 ),
                 child: Center(
@@ -610,7 +609,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   BoxShadow(
                                     color: const Color(
                                       0xFF6D4EFF,
-                                    ).withOpacity(0.6),
+                                    ).withValues(alpha: 0.6),
                                     blurRadius: 6,
                                   ),
                                 ],
@@ -635,7 +634,7 @@ class _ChatScreenState extends State<ChatScreen> {
               IconButton(
                 icon: const Icon(
                   Icons.more_vert_rounded,
-                  color: const Color(0xFF1E293B),
+                  color: Color(0xFF1E293B),
                 ),
                 onPressed: _showMenu,
               ),
@@ -686,7 +685,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   boxShadow: [
                     if (isUser)
                       BoxShadow(
-                        color: const Color(0xFF8E2DE2).withOpacity(0.25),
+                        color: const Color(0xFF8E2DE2).withValues(alpha: 0.25),
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),

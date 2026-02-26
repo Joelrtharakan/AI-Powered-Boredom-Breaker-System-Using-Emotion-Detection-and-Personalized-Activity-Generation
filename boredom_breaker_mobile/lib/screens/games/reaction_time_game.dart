@@ -242,7 +242,7 @@ class _ReactionTimeGameState extends State<ReactionTimeGame> {
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: const Color(0xFF1E293B),
+                  color: Color(0xFF1E293B),
                   size: 20,
                 ),
               ),

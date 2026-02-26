@@ -407,7 +407,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                   child: IconButton(
                     icon: const Icon(
                       Icons.close_rounded,
-                      color: const Color(0xFF1E293B),
+                      color: Color(0xFF1E293B),
                       size: 20,
                     ),
                     onPressed: () {

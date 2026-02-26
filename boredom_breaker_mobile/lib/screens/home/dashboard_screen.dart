@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:ui';
 
 import '../../providers/mood_provider.dart';
 import '../../providers/history_provider.dart';
@@ -76,7 +75,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 .read(moodProvider.notifier)
                                 .analyzeMood(_controller.text, _userId);
                             ref.read(historyProvider.notifier).fetchHistory();
-                            FocusScope.of(context).unfocus();
+                            if (context.mounted) {
+                              FocusScope.of(context).unfocus();
+                            }
                           }
                         },
                       )
@@ -495,7 +496,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                     onPressed: onReset,
                     icon: const Icon(
                       Icons.refresh_rounded,
-                      color: const Color(0xFF94A3B8),
+                      color: Color(0xFF94A3B8),
                       size: 20,
                     ),
                     tooltip: "New Plan",
@@ -986,76 +987,6 @@ class _SectionTitle extends StatelessWidget {
           letterSpacing: 2.5,
         ),
       ),
-    );
-  }
-}
-
-class _AmbientBackground extends StatelessWidget {
-  const _AmbientBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-          top: -150,
-          right: -100,
-          child:
-              Container(
-                    width: 500,
-                    height: 500,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          const Color(
-                            0xFF4A00E0,
-                          ).withValues(alpha: 0.15), // Deep Purple
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  )
-                  .animate(onPlay: (c) => c.repeat(reverse: true))
-                  .scale(
-                    begin: const Offset(1, 1),
-                    end: const Offset(1.2, 1.2),
-                    duration: 6.seconds,
-                  ),
-        ),
-        Positioned(
-          bottom: 100,
-          left: -150,
-          child:
-              Container(
-                    width: 400,
-                    height: 400,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          const Color(
-                            0xFF00C6FF,
-                          ).withValues(alpha: 0.1), // Neon Blue
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  )
-                  .animate(onPlay: (c) => c.repeat(reverse: true))
-                  .scale(
-                    begin: const Offset(1, 1),
-                    end: const Offset(1.4, 1.4),
-                    duration: 7.seconds,
-                  ),
-        ),
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
-            child: Container(color: Colors.transparent),
-          ),
-        ),
-      ],
     );
   }
 }

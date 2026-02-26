@@ -353,7 +353,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                               child: IconButton(
                                 icon: const Icon(
                                   Icons.arrow_back_ios_new_rounded,
-                                  color: const Color(0xFF1E293B),
+                                  color: Color(0xFF1E293B),
                                 ),
                                 onPressed: () => Navigator.pop(context),
                               ),
@@ -446,7 +446,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                           onPressed: () => _startLevel(_level),
                           icon: const Icon(
                             Icons.refresh_rounded,
-                            color: const Color(0xFF94A3B8),
+                            color: Color(0xFF94A3B8),
                           ),
                           label: Text(
                             "RESTART LEVEL",

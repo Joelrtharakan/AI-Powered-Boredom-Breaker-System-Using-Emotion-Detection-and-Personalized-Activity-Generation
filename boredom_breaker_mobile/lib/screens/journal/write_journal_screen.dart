@@ -93,7 +93,7 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.close_rounded, color: const Color(0xFF1E293B)),
+          icon: const Icon(Icons.close_rounded, color: Color(0xFF1E293B)),
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Colors.transparent,
@@ -130,10 +130,10 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.surface.withOpacity(0.5),
+                color: AppColors.surface.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: const Color(0xFF1E293B).withOpacity(0.05),
+                  color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                 ),
               ),
               child: Row(
@@ -168,10 +168,10 @@ class _WriteJournalScreenState extends State<WriteJournalScreen> {
                         _isEncrypted = val;
                       });
                     },
-                    activeColor: AppColors.primary,
-                    activeTrackColor: AppColors.primary.withOpacity(0.3),
+                    activeThumbColor: AppColors.primary,
+                    activeTrackColor: AppColors.primary.withValues(alpha: 0.3),
                     inactiveThumbColor: Colors.grey,
-                    inactiveTrackColor: Colors.grey.withOpacity(0.3),
+                    inactiveTrackColor: Colors.grey.withValues(alpha: 0.3),
                   ),
                 ],
               ),

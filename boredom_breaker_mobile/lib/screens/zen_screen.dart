@@ -97,7 +97,7 @@ class _ZenScreenState extends State<ZenScreen> with TickerProviderStateMixin {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),

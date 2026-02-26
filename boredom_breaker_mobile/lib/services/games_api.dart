@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'api_client.dart';
 import 'session_manager.dart';
 
@@ -56,7 +57,7 @@ class GamesApi {
         },
       );
     } catch (e) {
-      print('Error submitting score for $gameName: $e');
+      debugPrint('Error submitting score for $gameName: $e');
     }
   }
 }

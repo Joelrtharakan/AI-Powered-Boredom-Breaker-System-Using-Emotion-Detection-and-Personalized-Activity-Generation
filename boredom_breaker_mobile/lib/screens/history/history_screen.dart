@@ -28,7 +28,7 @@ class HistoryScreen extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -36,10 +36,7 @@ class HistoryScreen extends ConsumerWidget {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(
-              Icons.refresh_rounded,
-              color: const Color(0xFF94A3B8),
-            ),
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF94A3B8)),
             onPressed: () => ref.read(historyProvider.notifier).fetchHistory(),
           ),
         ],
@@ -458,7 +455,7 @@ class _IntensityChart extends StatelessWidget {
         child: const Center(
           child: Text(
             "Check in more times to see your trend",
-            style: TextStyle(color: const Color(0xFFCBD5E1)),
+            style: TextStyle(color: Color(0xFFCBD5E1)),
           ),
         ),
       );

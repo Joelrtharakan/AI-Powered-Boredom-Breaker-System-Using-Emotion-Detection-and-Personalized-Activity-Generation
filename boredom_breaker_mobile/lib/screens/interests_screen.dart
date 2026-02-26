@@ -197,7 +197,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
-                  color: const Color(0xFF1E293B),
+                  color: Color(0xFF1E293B),
                   strokeWidth: 2,
                 ),
               )

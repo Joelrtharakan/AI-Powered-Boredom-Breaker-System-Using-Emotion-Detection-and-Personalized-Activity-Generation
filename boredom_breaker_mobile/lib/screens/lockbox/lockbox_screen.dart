@@ -308,7 +308,9 @@ class _LockboxScreenState extends State<LockboxScreen> {
         data: {'id': id},
       );
 
-      Navigator.pop(context); // Close loading dialog
+      if (mounted) {
+        Navigator.pop(context); // Close loading dialog
+      }
 
       if (response.statusCode == 200) {
         final base64String = response.data['encrypted_data_base64'];
@@ -350,50 +352,54 @@ class _LockboxScreenState extends State<LockboxScreen> {
           "Corrupted or unreadable lockbox data",
         );
 
-        showDialog(
-          context: context,
-          builder: (c) => AlertDialog(
-            backgroundColor: AppColors.surface,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Text(
-              label,
-              style: GoogleFonts.outfit(color: const Color(0xFF1E293B)),
-            ),
-            content: SingleChildScrollView(
-              child: Text(
-                secretText,
-                style: GoogleFonts.inter(
-                  color: isCorrupt ? Colors.redAccent : Colors.white70,
-                  height: 1.6,
-                ),
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (c) => AlertDialog(
+              backgroundColor: AppColors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  Navigator.pop(c);
-                  await _deleteSecret(id);
-                },
+              title: Text(
+                label,
+                style: GoogleFonts.outfit(color: const Color(0xFF1E293B)),
+              ),
+              content: SingleChildScrollView(
                 child: Text(
-                  "Delete",
-                  style: GoogleFonts.inter(color: Colors.red),
+                  secretText,
+                  style: GoogleFonts.inter(
+                    color: isCorrupt ? Colors.redAccent : Colors.white70,
+                    height: 1.6,
+                  ),
                 ),
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(c),
-                child: Text(
-                  "Close",
-                  style: GoogleFonts.inter(color: AppColors.primary),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(c);
+                    await _deleteSecret(id);
+                  },
+                  child: Text(
+                    "Delete",
+                    style: GoogleFonts.inter(color: Colors.red),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
+                TextButton(
+                  onPressed: () => Navigator.pop(c),
+                  child: Text(
+                    "Close",
+                    style: GoogleFonts.inter(color: AppColors.primary),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
       }
     } catch (e) {
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
       debugPrint("Read secret error: $e");
     }
   }
@@ -426,7 +432,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -473,7 +479,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.secondary.withOpacity(0.1),
+                  color: AppColors.secondary.withValues(alpha: 0.1),
                   blurRadius: 150,
                   spreadRadius: 50,
                 ),
@@ -488,10 +494,10 @@ class _LockboxScreenState extends State<LockboxScreen> {
               Container(
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: AppColors.surface.withOpacity(0.5),
+                  color: AppColors.surface.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF1E293B).withOpacity(0.05),
+                    color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                   ),
                 ),
                 child: const Icon(
@@ -613,7 +619,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
                 ),
                 const Icon(
                   Icons.remove_red_eye_rounded,
-                  color: const Color(0xFFCBD5E1),
+                  color: Color(0xFFCBD5E1),
                 ),
               ],
             ),
@@ -632,7 +638,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
         gradient: const LinearGradient(colors: AppColors.primaryGradient),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

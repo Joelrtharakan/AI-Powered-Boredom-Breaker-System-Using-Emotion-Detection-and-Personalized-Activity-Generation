@@ -200,7 +200,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -374,7 +374,7 @@ class _VoiceModeScreenState extends State<VoiceModeScreen>
         elevation: 0,
         child: const Icon(
           Icons.close_rounded,
-          color: const Color(0xFF1E293B),
+          color: Color(0xFF1E293B),
           size: 36,
         ),
       ).animate().scale(delay: 1.seconds),

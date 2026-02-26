@@ -116,7 +116,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
         if (didPop) {
           try {
             _controller.loadRequest(Uri.parse('about:blank'));
-          } catch (e) {}
+          } catch (e) {
+            // Ignore if controller is already disposed
+          }
         }
       },
       child: Scaffold(
