@@ -736,6 +736,8 @@ class _GeneratedPlanCard extends StatelessWidget {
         onTap: () {
           if (screen is HistoryScreen) {
             Navigator.push(context, HistoryScreen.route());
+          } else if (screen is JournalScreen) {
+            Navigator.push(context, JournalPageRoute());
           } else {
             Navigator.push(context, MaterialPageRoute(builder: (_) => screen!));
           }
@@ -919,6 +921,8 @@ class _ExploreCard extends StatelessWidget {
         final screen = item['screen'] as Widget;
         if (screen is HistoryScreen) {
           Navigator.push(context, HistoryScreen.route());
+        } else if (screen is JournalScreen) {
+          Navigator.push(context, JournalPageRoute());
         } else {
           Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
         }

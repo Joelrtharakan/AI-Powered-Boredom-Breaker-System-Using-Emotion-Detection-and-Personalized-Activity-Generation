@@ -38,7 +38,6 @@ class _LockboxScreenState extends State<LockboxScreen> {
     final correctPasscode = await SessionManager.getLockboxPasscode();
 
     if (!_hasPasscode) {
-      // Create passcode
       final newPasscode = await _showPasscodeDialog("Create Passcode");
       if (newPasscode != null && newPasscode.isNotEmpty) {
         await SessionManager.saveLockboxPasscode(newPasscode);
@@ -46,7 +45,6 @@ class _LockboxScreenState extends State<LockboxScreen> {
         _proceedToUnlock();
       }
     } else {
-      // Enter passcode
       final enteredPasscode = await _showPasscodeDialog("Enter Passcode");
       if (enteredPasscode == correctPasscode) {
         _proceedToUnlock();
@@ -78,37 +76,55 @@ class _LockboxScreenState extends State<LockboxScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: AppColors.surface,
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
           ),
           title: Text(
             title,
-            style: GoogleFonts.outfit(color: const Color(0xFF1E293B)),
-          ),
-          content: TextField(
-            controller: passcodeController,
-            obscureText: true,
-            maxLength: 6,
-            keyboardType: TextInputType.number,
-            style: GoogleFonts.inter(
+            style: GoogleFonts.outfit(
               color: const Color(0xFF1E293B),
-              letterSpacing: 8,
-              fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              hintText: "••••••",
-              hintStyle: GoogleFonts.inter(color: const Color(0xFFCBD5E1)),
-              counterText: "",
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white24),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: TextField(
+                  controller: passcodeController,
+                  obscureText: true,
+                  maxLength: 6,
+                  keyboardType: TextInputType.number,
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFF1E293B),
+                    letterSpacing: 8,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintText: "••••••",
+                    hintStyle: GoogleFonts.inter(
+                      color: const Color(0xFFCBD5E1),
+                    ),
+                    counterText: "",
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                  ),
+                ),
               ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: AppColors.primary),
-              ),
-            ),
+            ],
           ),
           actions: [
             TextButton(
@@ -118,20 +134,33 @@ class _LockboxScreenState extends State<LockboxScreen> {
                 style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
               ),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
                 ),
               ),
-              onPressed: () =>
-                  Navigator.pop(context, passcodeController.text.trim()),
-              child: Text(
-                "Submit",
-                style: GoogleFonts.inter(
-                  color: const Color(0xFF1E293B),
-                  fontWeight: FontWeight.bold,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 10,
+                  ),
+                ),
+                onPressed: () =>
+                    Navigator.pop(context, passcodeController.text.trim()),
+                child: Text(
+                  "Submit",
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -170,21 +199,33 @@ class _LockboxScreenState extends State<LockboxScreen> {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       builder: (context) => Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 24,
-          right: 24,
-          top: 24,
+          left: 28,
+          right: 28,
+          top: 28,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Drag indicator
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(
               "Add to Vault",
               style: GoogleFonts.outfit(
@@ -193,48 +234,87 @@ class _LockboxScreenState extends State<LockboxScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: titleController,
-              style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
-              decoration: InputDecoration(
-                hintText: "Label (e.g. Diary, Passwords)",
-                hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: secretController,
-              style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
-              maxLines: 4,
-              decoration: InputDecoration(
-                hintText: "Your deepest secret...",
-                hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white24),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: AppColors.primary),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+            const SizedBox(height: 6),
+            Text(
+              "Your secret will be encrypted and stored securely.",
+              style: GoogleFonts.inter(
+                color: const Color(0xFF94A3B8),
+                fontSize: 14,
               ),
             ),
             const SizedBox(height: 24),
-            SizedBox(
+            // Label field
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: TextField(
+                controller: titleController,
+                style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
+                decoration: InputDecoration(
+                  hintText: "Label (e.g. Diary, Passwords)",
+                  hintStyle: GoogleFonts.inter(color: const Color(0xFFCBD5E1)),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Secret field
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: TextField(
+                controller: secretController,
+                style: GoogleFonts.inter(color: const Color(0xFF1E293B)),
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: "Your deepest secret...",
+                  hintStyle: GoogleFonts.inter(color: const Color(0xFFCBD5E1)),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 28),
+            // Submit button with gradient
+            Container(
               width: double.infinity,
-              height: 50,
+              height: 54,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF4EA8DE).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(18),
                   ),
                 ),
                 onPressed: () {
@@ -242,14 +322,15 @@ class _LockboxScreenState extends State<LockboxScreen> {
                 },
                 child: Text(
                   "Encrypt & Save",
-                  style: GoogleFonts.inter(
-                    color: const Color(0xFF1E293B),
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 17,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
           ],
         ),
       ),
@@ -264,7 +345,6 @@ class _LockboxScreenState extends State<LockboxScreen> {
         setState(() => _isLoading = true);
         final userId = await SessionManager.getUserId();
 
-        // AES Encrypt using passcode
         final passcode = await SessionManager.getLockboxPasscode() ?? "000000";
         final keyString = passcode.padRight(32, '0');
         final key = enc.Key.fromUtf8(keyString);
@@ -309,7 +389,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
       );
 
       if (mounted) {
-        Navigator.pop(context); // Close loading dialog
+        Navigator.pop(context);
       }
 
       if (response.statusCode == 200) {
@@ -319,7 +399,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
         final keyString = passcode.padRight(32, '0');
         final key = enc.Key.fromUtf8(keyString);
         final iv = enc.IV.fromUtf8(keyString.substring(0, 16));
-        final zeroIv = enc.IV.fromLength(16); // The old IV previously used
+        final zeroIv = enc.IV.fromLength(16);
 
         final encrypterCBC = enc.Encrypter(
           enc.AES(key, mode: enc.AESMode.cbc, padding: 'PKCS7'),
@@ -328,14 +408,11 @@ class _LockboxScreenState extends State<LockboxScreen> {
 
         String secretText = "Error decrypting...";
         try {
-          // Attempt 1: The new CBC method
           secretText = encrypterCBC.decrypt64(base64String, iv: iv);
         } catch (e1) {
           try {
-            // Attempt 2: The old CTR/SIC method (without padding, zero IV)
             secretText = encrypterSIC.decrypt64(base64String, iv: zeroIv);
           } catch (e2) {
-            // Attempt 3: Prior simply base64 encoded string data
             try {
               final bytes = base64.decode(base64String);
               secretText = utf8.decode(bytes);
@@ -356,20 +433,34 @@ class _LockboxScreenState extends State<LockboxScreen> {
           showDialog(
             context: context,
             builder: (c) => AlertDialog(
-              backgroundColor: AppColors.surface,
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(24),
               ),
               title: Text(
                 label,
-                style: GoogleFonts.outfit(color: const Color(0xFF1E293B)),
+                style: GoogleFonts.outfit(
+                  color: const Color(0xFF1E293B),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               content: SingleChildScrollView(
-                child: Text(
-                  secretText,
-                  style: GoogleFonts.inter(
-                    color: isCorrupt ? Colors.redAccent : Colors.white70,
-                    height: 1.6,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Text(
+                    secretText,
+                    style: GoogleFonts.inter(
+                      color: isCorrupt
+                          ? Colors.redAccent
+                          : const Color(0xFF334155),
+                      height: 1.6,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
@@ -384,11 +475,33 @@ class _LockboxScreenState extends State<LockboxScreen> {
                     style: GoogleFonts.inter(color: Colors.red),
                   ),
                 ),
-                TextButton(
-                  onPressed: () => Navigator.pop(c),
-                  child: Text(
-                    "Close",
-                    style: GoogleFonts.inter(color: AppColors.primary),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                    ),
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
+                      ),
+                    ),
+                    onPressed: () => Navigator.pop(c),
+                    child: Text(
+                      "Close",
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -418,133 +531,350 @@ class _LockboxScreenState extends State<LockboxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: Text(
-          _isLocked ? "Private Lockbox" : "Unlocked Vault",
-          style: GoogleFonts.outfit(
-            color: const Color(0xFF1E293B),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          // 1. Vibrant Gradient Header
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: _isLocked ? size.height * 0.55 : size.height * 0.28,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOutQuart,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF5E60CE),
+                    Color(0xFF4EA8DE),
+                    Color(0xFF56CFE1),
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  // Decorative circles
+                  Positioned(
+                    top: 50,
+                    right: -50,
+                    child:
+                        Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.1),
+                          ),
+                        ).animate().scale(
+                          duration: 1.seconds,
+                          curve: Curves.easeOutBack,
+                        ),
+                  ),
+                  Positioned(
+                    top: 140,
+                    left: -40,
+                    child:
+                        Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withValues(alpha: 0.12),
+                              ),
+                            )
+                            .animate(delay: 200.ms)
+                            .scale(
+                              duration: 1.seconds,
+                              curve: Curves.easeOutBack,
+                            ),
+                  ),
+                  if (_isLocked)
+                    Positioned(
+                      bottom: 80,
+                      right: 30,
+                      child:
+                          Container(
+                                width: 70,
+                                height: 70,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white.withValues(alpha: 0.08),
+                                ),
+                              )
+                              .animate(delay: 400.ms)
+                              .scale(
+                                duration: 1.seconds,
+                                curve: Curves.easeOutBack,
+                              ),
+                    ),
+
+                  // Header content
+                  SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Top bar
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              if (!_isLocked)
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.lock_rounded,
+                                    color: Colors.white70,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _isLocked = true;
+                                      _secrets = [];
+                                    });
+                                  },
+                                ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                      _isLocked
+                                          ? "Private Lockbox"
+                                          : "Unlocked Vault",
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    )
+                                    .animate()
+                                    .fadeIn(delay: 200.ms)
+                                    .slideX(begin: -0.1),
+                                const SizedBox(height: 4),
+                                Text(
+                                      _isLocked
+                                          ? "Encrypted & protected"
+                                          : "Your secrets are revealed",
+                                      style: GoogleFonts.inter(
+                                        fontSize: 15,
+                                        color: Colors.white70,
+                                      ),
+                                    )
+                                    .animate()
+                                    .fadeIn(delay: 300.ms)
+                                    .slideX(begin: -0.1),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF1E293B),
+
+          // 2. White content area
+          Positioned(
+            top: _isLocked ? size.height * 0.50 : size.height * 0.24,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeOutQuart,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
+                child: _isLocked
+                    ? _buildLockedContent()
+                    : _buildUnlockedContent(),
+              ),
+            ),
           ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          if (!_isLocked)
-            IconButton(
-              icon: const Icon(Icons.lock_rounded, color: AppColors.primary),
-              onPressed: () {
-                setState(() {
-                  _isLocked = true;
-                  _secrets = [];
-                });
-              },
+
+          // Lock icon floating between gradient and white (only when locked)
+          if (_isLocked)
+            Positioned(
+              top: size.height * 0.44,
+              left: 0,
+              right: 0,
+              child: Center(
+                child:
+                    Container(
+                          width: 90,
+                          height: 90,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFF5E60CE,
+                                ).withValues(alpha: 0.25),
+                                blurRadius: 30,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.lock_person_rounded,
+                            size: 44,
+                            color: Color(0xFF5E60CE),
+                          ),
+                        )
+                        .animate(onPlay: (c) => c.repeat(reverse: true))
+                        .slideY(
+                          begin: -0.05,
+                          end: 0.05,
+                          duration: 2.seconds,
+                          curve: Curves.easeInOutSine,
+                        ),
+              ),
             ),
         ],
-        backgroundColor: Colors.transparent,
-        elevation: 0,
       ),
-      body: _isLocked ? _buildLockedState() : _buildUnlockedState(),
+
+      // FAB
       floatingActionButton: !_isLocked && !_isLoading
-          ? FloatingActionButton.extended(
-              onPressed: _addSecret,
-              backgroundColor: AppColors.primary,
-              icon: const Icon(Icons.add_rounded),
-              label: Text(
-                "Add Secret",
-                style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          ? Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF4EA8DE).withValues(alpha: 0.35),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: FloatingActionButton.extended(
+                onPressed: _addSecret,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                icon: const Icon(Icons.add_rounded, color: Colors.white),
+                label: Text(
+                  "Add Secret",
+                  style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ).animate().slideY(begin: 1.0)
           : null,
     );
   }
 
-  Widget _buildLockedState() {
-    return Stack(
-      children: [
-        Positioned(
-          bottom: -50,
-          left: -50,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.secondary.withValues(alpha: 0.1),
-                  blurRadius: 150,
-                  spreadRadius: 50,
-                ),
-              ],
-            ),
-          ),
-        ),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: AppColors.surface.withValues(alpha: 0.5),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+  Widget _buildLockedContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(32, 60, 32, 32),
+      child: Column(
+        children: [
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.only(top: 40),
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
+          else ...[
+            Text(
+              "Deep Security",
+              style: GoogleFonts.outfit(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF1E293B),
+              ),
+            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
+            const SizedBox(height: 12),
+            Text(
+              "Your personal space, encrypted and protected.\nHigh-end privacy for your thoughts.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                color: const Color(0xFF64748B),
+                fontSize: 15,
+                height: 1.6,
+              ),
+            ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1),
+            const SizedBox(height: 44),
+            // Unlock button with gradient
+            Container(
+                  width: 240,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF4EA8DE).withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                ),
-                child: const Icon(
-                  Icons.lock_person_rounded,
-                  size: 80,
-                  color: AppColors.primary,
-                ),
-              ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 3.seconds),
-              const SizedBox(height: 48),
-              if (_isLoading)
-                const CircularProgressIndicator(color: AppColors.primary)
-              else ...[
-                Text(
-                  "Deep Security",
-                  style: GoogleFonts.outfit(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1E293B),
-                  ),
-                ).animate().fadeIn().slideY(begin: 0.1),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: Text(
-                    "Your personal space, encrypted and protected. High-end privacy for your thoughts.",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      color: AppColors.textSecondary,
-                      fontSize: 16,
-                      height: 1.6,
+                  child: ElevatedButton(
+                    onPressed: _unlockVault,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      _hasPasscode ? "Enter Passcode" : "Create Passcode",
+                      style: GoogleFonts.outfit(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
-                const SizedBox(height: 56),
-                _buildModernButton(
-                  _hasPasscode ? "Enter Passcode" : "Create Passcode",
-                  _unlockVault,
-                ),
-              ],
-            ],
-          ),
-        ),
-      ],
+                )
+                .animate()
+                .fadeIn(delay: 400.ms)
+                .scale(begin: const Offset(0.9, 0.9)),
+          ],
+        ],
+      ),
     );
   }
 
-  Widget _buildUnlockedState() {
+  Widget _buildUnlockedContent() {
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: AppColors.primary),
@@ -553,19 +883,31 @@ class _LockboxScreenState extends State<LockboxScreen> {
 
     if (_secrets.isEmpty) {
       return Center(
-        child: Text(
-          "Your vault is empty.\nStore your innermost secrets here.",
-          textAlign: TextAlign.center,
-          style: GoogleFonts.inter(
-            color: const Color(0xFF94A3B8),
-            fontSize: 16,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.shield_rounded,
+              size: 64,
+              color: const Color(0xFF94A3B8).withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Your vault is empty.\nStore your innermost secrets here.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                color: const Color(0xFF94A3B8),
+                fontSize: 16,
+                height: 1.5,
+              ),
+            ),
+          ],
         ),
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 100),
       itemCount: _secrets.length,
       itemBuilder: (context, index) {
         final item = _secrets[index];
@@ -582,16 +924,35 @@ class _LockboxScreenState extends State<LockboxScreen> {
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white12),
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF5E60CE).withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.shield_rounded,
-                  color: AppColors.primary,
-                  size: 28,
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF5E60CE).withValues(alpha: 0.12),
+                        const Color(0xFF4EA8DE).withValues(alpha: 0.08),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.shield_rounded,
+                    color: Color(0xFF5E60CE),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -602,7 +963,7 @@ class _LockboxScreenState extends State<LockboxScreen> {
                         item['label'],
                         style: GoogleFonts.outfit(
                           color: const Color(0xFF1E293B),
-                          fontSize: 18,
+                          fontSize: 17,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -617,51 +978,23 @@ class _LockboxScreenState extends State<LockboxScreen> {
                     ],
                   ),
                 ),
-                const Icon(
-                  Icons.remove_red_eye_rounded,
-                  color: Color(0xFFCBD5E1),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF5E60CE).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.remove_red_eye_rounded,
+                    color: Color(0xFF5E60CE),
+                    size: 18,
+                  ),
                 ),
               ],
             ),
-          ).animate().fadeIn(delay: (index * 100).ms).slideX(begin: 0.1),
+          ).animate().fadeIn(delay: (index * 100).ms).slideY(begin: 0.08),
         );
       },
     );
-  }
-
-  Widget _buildModernButton(String label, VoidCallback onPressed) {
-    return Container(
-      width: 240,
-      height: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(colors: AppColors.primaryGradient),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.outfit(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF1E293B),
-          ),
-        ),
-      ),
-    ).animate().fadeIn(delay: 400.ms).scale(begin: const Offset(0.9, 0.9));
   }
 }

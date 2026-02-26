@@ -451,11 +451,10 @@ class _MainLayoutState extends State<MainLayout> {
               ],
             ),
           ),
-          _buildDrawerItem(
-            Icons.book_outlined,
-            "Journal",
-            () => _navigateTo(const JournalScreen()),
-          ),
+          _buildDrawerItem(Icons.book_outlined, "Journal", () {
+            Navigator.pop(context); // close drawer
+            Navigator.push(context, JournalPageRoute());
+          }),
           _buildDrawerItem(
             Icons.mic_none_outlined,
             "Voice Mode",
