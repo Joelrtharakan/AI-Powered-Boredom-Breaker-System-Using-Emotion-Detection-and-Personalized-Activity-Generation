@@ -160,20 +160,17 @@ class _ChatScreenState extends State<ChatScreen> {
               return Container(
                 height: MediaQuery.of(context).size.height * 0.7,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F172A),
+                  color: Colors.white,
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(24),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 20,
                       offset: const Offset(0, -5),
                     ),
                   ],
-                  border: Border.all(
-                    color: const Color(0xFF1E293B).withOpacity(0.1),
-                  ),
                 ),
                 child: Column(
                   children: [
@@ -182,7 +179,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       width: 40,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B).withOpacity(0.3),
+                        color: const Color(0xFFE2E8F0),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -237,8 +234,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     s['preview'] ?? 'Chat',
                                     style: GoogleFonts.inter(
                                       color: isCurrent
-                                          ? Colors.tealAccent
-                                          : Colors.white,
+                                          ? const Color(0xFF6D4EFF)
+                                          : const Color(0xFF1E293B),
                                       fontWeight: isCurrent
                                           ? FontWeight.bold
                                           : FontWeight.normal,
@@ -249,7 +246,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   subtitle: Text(
                                     s['created_at'].toString().split('T')[0],
                                     style: GoogleFonts.inter(
-                                      color: const Color(0xFFCBD5E1),
+                                      color: const Color(0xFF64748B),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -284,9 +281,14 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (context) {
         return Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF0F172A),
+            color: Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            border: Border.all(color: const Color(0xFF1E293B).withOpacity(0.1)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 20,
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -296,7 +298,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 width: 40,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B).withOpacity(0.3),
+                  color: const Color(0xFFE2E8F0),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -328,7 +330,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   _showHistoryModal();
                 },
               ),
-              const Divider(color: Colors.white12),
+              Divider(color: const Color(0xFF1E293B).withValues(alpha: 0.1)),
               ListTile(
                 leading: const Icon(
                   Icons.delete_outline,
@@ -359,7 +361,7 @@ class _ChatScreenState extends State<ChatScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF0F172A),
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -407,16 +409,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // Very dark slate
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Pure Black Background matching Dashboard
-          Positioned.fill(
-            child: Container(
-              color: const Color(0xFF000000), // OLED Black
-            ),
-          ),
-          // Floating glow accents (Purple & Blue)
+          // Floating glow accents
           Positioned(
             top: -150,
             left: -100,
@@ -427,9 +423,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(
-                      0xFF8E2DE2,
-                    ).withOpacity(0.15), // Deep Purple
+                    color: const Color(0xFF6D4EFF).withValues(alpha: 0.1),
                     blurRadius: 200,
                   ),
                 ],
@@ -446,9 +440,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(
-                      0xFF6D4EFF,
-                    ).withOpacity(0.15), // Primary Purple
+                    color: const Color(0xFF00C6FF).withValues(alpha: 0.1),
                     blurRadius: 200,
                   ),
                 ],
@@ -535,7 +527,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   Text(
                     "Talk to Luno about how you're feeling.",
                     style: GoogleFonts.inter(
-                      color: Colors.white60,
+                      color: const Color(0xFF64748B),
                       fontSize: 15,
                     ),
                   ),
@@ -554,10 +546,10 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.white.withValues(alpha: 0.8),
             border: Border(
               bottom: BorderSide(
-                color: const Color(0xFF1E293B).withOpacity(0.05),
+                color: const Color(0xFF1E293B).withValues(alpha: 0.05),
                 width: 1,
               ),
             ),
@@ -578,9 +570,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF1E293B).withOpacity(0.1),
+                  color: const Color(0xFF1E293B).withOpacity(0.05),
                   border: Border.all(
-                    color: const Color(0xFF1E293B).withOpacity(0.15),
+                    color: const Color(0xFF1E293B).withOpacity(0.1),
                   ),
                 ),
                 child: Center(
@@ -630,7 +622,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         Text(
                           "Active • Safe Space",
                           style: GoogleFonts.inter(
-                            color: Colors.white60,
+                            color: const Color(0xFF64748B),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -677,7 +669,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           end: Alignment.bottomRight,
                         )
                       : null,
-                  color: isUser ? null : Colors.white.withOpacity(0.08),
+                  color: isUser ? null : Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(20),
                     topRight: const Radius.circular(20),
@@ -687,7 +679,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   border: isUser
                       ? null
                       : Border.all(
-                          color: const Color(0xFF1E293B).withOpacity(0.1),
+                          color: const Color(
+                            0xFF1E293B,
+                          ).withValues(alpha: 0.05),
                         ),
                   boxShadow: [
                     if (isUser)
@@ -696,6 +690,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
+                    if (!isUser) ...[
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ],
                 ),
                 child: Column(
@@ -704,7 +705,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Text(
                       text,
                       style: GoogleFonts.inter(
-                        color: const Color(0xFF1E293B),
+                        color: isUser ? Colors.white : const Color(0xFF1E293B),
                         fontSize: 15,
                         height: 1.5,
                         fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
@@ -860,8 +861,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildActionChip(IconData icon, String label, Widget screen) {
     return ActionChip(
-      backgroundColor: Colors.white.withOpacity(0.08),
-      side: BorderSide(color: const Color(0xFF6D4EFF).withOpacity(0.5)),
+      backgroundColor: Colors.white,
+      side: BorderSide(color: const Color(0xFF6D4EFF).withValues(alpha: 0.15)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       avatar: Icon(icon, color: const Color(0xFF6D4EFF), size: 16),
       label: Text(
@@ -876,6 +877,8 @@ class _ChatScreenState extends State<ChatScreen> {
         Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
       },
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      elevation: 0,
+      pressElevation: 0,
     );
   }
 
@@ -886,14 +889,23 @@ class _ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.only(bottom: 16, right: 60),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B).withOpacity(0.08),
+          color: Colors.white,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
             bottomLeft: Radius.circular(6),
             bottomRight: Radius.circular(20),
           ),
-          border: Border.all(color: const Color(0xFF1E293B).withOpacity(0.1)),
+          border: Border.all(
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -909,7 +921,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Text(
               "Luno is typing softly...",
               style: GoogleFonts.inter(
-                color: Colors.white60,
+                color: const Color(0xFF64748B),
                 fontSize: 14,
                 fontStyle: FontStyle.italic,
               ),
@@ -924,53 +936,59 @@ class _ChatScreenState extends State<ChatScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.white.withValues(alpha: 0.9),
         border: Border(
           top: BorderSide(
-            color: const Color(0xFF1E293B).withOpacity(0.05),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
             width: 1,
           ),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B).withOpacity(0.06),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: const Color(0xFF1E293B).withOpacity(0.1),
-                    ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(
+                  28,
+                ), // Slightly larger for smoother look
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
                   ),
-                  child: TextField(
-                    controller: _controller,
-                    style: GoogleFonts.inter(
-                      color: const Color(0xFF1E293B),
-                      fontSize: 16,
-                    ),
-                    maxLines: 4,
-                    minLines: 1,
-                    textInputAction: TextInputAction.send,
-                    decoration: InputDecoration(
-                      hintText: "Share your thoughts...",
-                      hintStyle: GoogleFonts.inter(
-                        color: const Color(0xFFCBD5E1),
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
-                      ),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
+                ],
+              ),
+              child: TextField(
+                controller: _controller,
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF1E293B),
+                  fontSize: 16,
+                ),
+                maxLines: 4,
+                minLines: 1,
+                textInputAction: TextInputAction.send,
+                decoration: InputDecoration(
+                  hintText: "Share your thoughts...",
+                  hintStyle: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 14,
                   ),
                 ),
+                onSubmitted: (_) => _sendMessage(),
               ),
             ),
           ),
@@ -982,15 +1000,15 @@ class _ChatScreenState extends State<ChatScreen> {
               shape: BoxShape.circle,
               gradient: const LinearGradient(
                 colors: [
-                  Color(0xFF0ea5e9),
-                  Color(0xFF10b981),
-                ], // Teal to Emerald
+                  Color(0xFF8E2DE2),
+                  Color(0xFF4A00E0),
+                ], // Purple matching dashboard primary
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF10b981).withOpacity(0.3),
+                  color: const Color(0xFF6D4EFF).withValues(alpha: 0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -999,7 +1017,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: IconButton(
               icon: const Icon(
                 Icons.arrow_upward_rounded,
-                color: const Color(0xFF1E293B),
+                color: Colors.white,
                 size: 22,
               ),
               onPressed: _sendMessage,

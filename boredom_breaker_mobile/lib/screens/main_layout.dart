@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -90,7 +91,91 @@ class _MainLayoutState extends State<MainLayout> {
     Navigator.pop(context);
 
     // Navigate to the new screen
-    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => screen,
+        transitionDuration: const Duration(milliseconds: 600),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(
+              position:
+                  Tween<Offset>(
+                    begin: const Offset(0.1, 0.0), // Subtle horizontal slide
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutQuart,
+                    ),
+                  ),
+              child: child,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProfileAvatar() {
+    return GestureDetector(
+      onTap: () async {
+        // Navigate to profile and refresh when back
+        await Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const ProfileScreen(),
+            transitionDuration: const Duration(milliseconds: 600),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position:
+                          Tween<Offset>(
+                            begin: const Offset(
+                              1.0,
+                              0.0,
+                            ), // Standard horizontal slide
+                            end: Offset.zero,
+                          ).animate(
+                            CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.easeOutQuart,
+                            ),
+                          ),
+                      child: child,
+                    ),
+                  );
+                },
+          ),
+        );
+        _loadUserData(); // Refresh changes
+      },
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        child: CircleAvatar(
+          radius: 18,
+          backgroundColor: const Color(0xFF1A1A1D),
+          backgroundImage: _profilePicture != null
+              ? MemoryImage(base64Decode(_profilePicture!))
+              : null,
+          child: _profilePicture == null
+              ? const Icon(
+                  Icons.person_outline_rounded,
+                  color: Colors.white,
+                  size: 20,
+                )
+              : null,
+        ),
+      ),
+    );
   }
 
   @override
@@ -184,159 +269,138 @@ class _MainLayoutState extends State<MainLayout> {
             top: MediaQuery.of(context).padding.top + 10,
             left: 16,
             right: 16,
-            child: Row(
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                ),
-                if (_currentIndex == 0) ...[
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Hello, $_userName",
-                          style: GoogleFonts.outfit(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                            height: 1.1,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                    ),
+                    if (_currentIndex == 0) ...[
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Hello, $_userName",
+                              style: GoogleFonts.outfit(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                height: 1.1,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              "Let's break the cycle.",
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: Colors.white.withValues(alpha: 0.7),
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        Text(
-                          "Let's break the cycle.",
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontWeight: FontWeight.w500,
+                      ),
+                      _buildProfileAvatar(),
+                    ],
+                    if (_currentIndex == 1) ...[
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Image.network(
+                          "https://img.icons8.com/bubbles/100/apple-arcade.png",
+                          width: 28,
+                          height: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "ARCADE",
+                        style: GoogleFonts.outfit(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 2.0,
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const Spacer(),
+                      _buildProfileAvatar(),
+                    ],
+                    if (_currentIndex == 2) ...[
+                      const Spacer(),
+                      FutureBuilder<SharedPreferences>(
+                        future: SharedPreferences.getInstance(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const SizedBox.shrink();
+                          }
+                          final isConnected =
+                              snapshot.data!.getBool('isSpotifyConnected') ??
+                              false;
+                          if (!isConnected) {
+                            return const SizedBox.shrink();
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: GestureDetector(
+                              onTap: () async {
+                                await snapshot.data!.setBool(
+                                  'isSpotifyConnected',
+                                  false,
+                                );
+                                // Force a rebuild to reflect the new state
+                                setState(() {});
+                              },
+                              child: const Icon(
+                                Icons.link_off_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildProfileAvatar(),
+                    ],
+                  ],
+                ),
+                if (_currentIndex == 2)
+                  IgnorePointer(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 4,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(2),
                           ),
-                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        Image.network(
+                          "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
+                          height: 38,
                         ),
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      // Navigate to profile and refresh when back
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfileScreen(),
-                        ),
-                      );
-                      _loadUserData(); // Refresh changes
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                      ),
-                      child: CircleAvatar(
-                        radius: 18,
-                        backgroundColor: const Color(0xFF1A1A1D),
-                        backgroundImage: _profilePicture != null
-                            ? MemoryImage(base64Decode(_profilePicture!))
-                            : null,
-                        child: _profilePicture == null
-                            ? const Icon(
-                                Icons.person_outline_rounded,
-                                color: Colors.white,
-                                size: 20,
-                              )
-                            : null,
-                      ),
-                    ),
-                  ),
-                ],
-                if (_currentIndex == 1) ...[
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.network(
-                      "https://img.icons8.com/bubbles/100/apple-arcade.png",
-                      width: 28,
-                      height: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    "ARCADE",
-                    style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
-                  ),
-                ],
-                if (_currentIndex == 2) ...[
-                  const Spacer(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 4,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Image.network(
-                        "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
-                        height: 32,
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  FutureBuilder<SharedPreferences>(
-                    future: SharedPreferences.getInstance(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return const SizedBox(width: 48, height: 48);
-                      }
-                      final isConnected =
-                          snapshot.data!.getBool('isSpotifyConnected') ?? false;
-                      if (!isConnected) {
-                        return const SizedBox(width: 48, height: 48);
-                      }
-                      return IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.redAccent.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(
-                            Icons.power_settings_new_rounded,
-                            color: Colors.redAccent,
-                            size: 20,
-                          ),
-                        ),
-                        onPressed: () async {
-                          await snapshot.data!.setBool(
-                            'isSpotifyConnected',
-                            false,
-                          );
-                          // Force a rebuild to reflect the new state
-                          setState(() {});
-                        },
-                      );
-                    },
-                  ),
-                ],
               ],
             ),
           ),
@@ -475,7 +539,7 @@ class _MainLayoutState extends State<MainLayout> {
         if (index == 3) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const ChatScreen()),
+            CupertinoPageRoute(builder: (_) => const ChatScreen()),
           );
         } else {
           setState(() => _currentIndex = index);
