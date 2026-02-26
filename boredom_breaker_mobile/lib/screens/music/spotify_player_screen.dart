@@ -74,13 +74,13 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
 
       if (type != null && id != null && id.isNotEmpty) {
         finalUrl =
-            "https://open.spotify.com/embed/$type/$id?utm_source=generator&theme=0";
+            "https://open.spotify.com/embed/$type/$id?utm_source=generator";
       }
     }
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0xFF0F0F12))
+      ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -124,10 +124,12 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: const Color(0xFF0F0F12),
+        backgroundColor: const Color(
+          0xFFF8FAFC,
+        ), // Beautiful soft light gray page
         body: Stack(
           children: [
-            // Background Glow for immersive feel
+            // Background Glow (match the Music page)
             Positioned(
               top: -50,
               left: -50,
@@ -136,7 +138,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF6D4EFF).withValues(alpha: 0.12),
+                  color: const Color(
+                    0xFF6366F1,
+                  ).withValues(alpha: 0.08), // Soft primary glow
                 ),
               ),
             ),
@@ -147,28 +151,35 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                   _buildHeader(context),
                   Expanded(
                     child: Container(
-                      margin: EdgeInsets.all(widget.isLoginOnly ? 0 : 20),
+                      margin: EdgeInsets.zero,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          widget.isLoginOnly ? 0 : 32,
+                        color: Colors.white,
+                        border: Border(
+                          top: BorderSide(
+                            color: const Color(
+                              0xFF0F172A,
+                            ).withValues(alpha: 0.05),
+                          ),
+                          bottom: BorderSide(
+                            color: const Color(
+                              0xFF0F172A,
+                            ).withValues(alpha: 0.05),
+                          ),
                         ),
                         boxShadow: [
                           if (!widget.isLoginOnly)
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.5),
-                              blurRadius: 40,
-                              spreadRadius: -10,
+                              color: const Color(
+                                0xFF0F172A,
+                              ).withValues(alpha: 0.08),
+                              blurRadius: 32,
+                              offset: const Offset(0, 16),
                             ),
                         ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          widget.isLoginOnly ? 0 : 32,
-                        ),
-                        child: _isClosing
-                            ? Container(color: const Color(0xFF0F0F12))
-                            : WebViewWidget(controller: _controller),
-                      ),
+                      child: _isClosing
+                          ? Container(color: Colors.white)
+                          : WebViewWidget(controller: _controller),
                     ),
                   ),
                   if (!widget.isLoginOnly) ...[
@@ -181,19 +192,17 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1DB954).withValues(alpha: 0.12),
+                        color: const Color(0xFF1DB954).withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: const Color(
-                            0xFF1DB954,
-                          ).withValues(alpha: 0.25),
+                          color: const Color(0xFF1DB954).withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(
                         children: [
                           const Icon(
                             Icons.info_outline_rounded,
-                            color: Color(0xFF1DB954),
+                            color: Color(0xFF16A34A),
                             size: 18,
                           ),
                           const SizedBox(width: 10),
@@ -201,9 +210,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                             child: Text(
                               "Preview only · Open in Spotify for full playback",
                               style: GoogleFonts.inter(
-                                color: const Color(0xFF64748B),
+                                color: const Color(0xFF475569),
                                 fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -218,11 +227,20 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                               decoration: BoxDecoration(
                                 color: const Color(0xFF1DB954),
                                 borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF1DB954,
+                                    ).withValues(alpha: 0.25),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                               child: Text(
                                 "Open",
                                 style: GoogleFonts.outfit(
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -240,7 +258,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
 
             if (_isLoading)
               const Center(
-                child: CircularProgressIndicator(color: Color(0xFF4EEBFF)),
+                child: CircularProgressIndicator(
+                  color: Color(0xFF6366F1),
+                ), // Primary
               ),
           ],
         ),
@@ -258,8 +278,8 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
               widget.isLoginOnly
                   ? Icons.arrow_back_ios_new_rounded
                   : Icons.close_rounded,
-              color: const Color(0xFF64748B),
-              size: 22,
+              color: const Color(0xFF475569),
+              size: 24,
             ),
             onPressed: () => _handlePop(false),
           ),
@@ -272,10 +292,10 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                 Text(
                   widget.title.toUpperCase(),
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF1E293B),
-                    fontSize: 14,
+                    color: const Color(0xFF0F172A),
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
+                    letterSpacing: 1.5,
                   ),
                 ),
                 if (_error.isNotEmpty)
@@ -293,16 +313,16 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
           IconButton(
             icon: const Icon(
               Icons.refresh_rounded,
-              color: const Color(0xFFCBD5E1),
-              size: 22,
+              color: Color(0xFF94A3B8),
+              size: 24,
             ),
             onPressed: () => _controller.reload(),
           ),
           IconButton(
             icon: const Icon(
               Icons.open_in_new_rounded,
-              color: const Color(0xFFCBD5E1),
-              size: 22,
+              color: Color(0xFF94A3B8),
+              size: 24,
             ),
             onPressed: () => _launchInFullApp(),
             tooltip: "Open in App",
