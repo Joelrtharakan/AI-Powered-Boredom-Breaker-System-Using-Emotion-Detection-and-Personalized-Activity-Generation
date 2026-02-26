@@ -466,11 +466,18 @@ class _MainLayoutState extends State<MainLayout> {
             "Lockbox",
             () => _navigateTo(const LockboxScreen()),
           ),
-          _buildDrawerItem(
-            Icons.history,
-            "History",
-            () => _navigateTo(const HistoryScreen()),
-          ),
+          _buildDrawerItem(Icons.history, "History", () async {
+            Navigator.pop(context); // close drawer
+            await Navigator.push(context, HistoryScreen.route());
+            // Scroll dashboard back to top when returning
+            if (_scrollControllers[0].hasClients) {
+              _scrollControllers[0].animateTo(
+                0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+              );
+            }
+          }),
           const Divider(color: Colors.black12, height: 40),
           _buildDrawerItem(Icons.logout_rounded, "Logout", () async {
             // Close drawer

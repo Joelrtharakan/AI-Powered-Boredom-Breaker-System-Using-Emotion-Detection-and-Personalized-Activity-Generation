@@ -733,8 +733,13 @@ class _GeneratedPlanCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: InkWell(
-        onTap: () =>
-            Navigator.push(context, MaterialPageRoute(builder: (_) => screen!)),
+        onTap: () {
+          if (screen is HistoryScreen) {
+            Navigator.push(context, HistoryScreen.route());
+          } else {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => screen!));
+          }
+        },
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -910,10 +915,14 @@ class _ExploreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => item['screen'] as Widget),
-      ),
+      onTap: () {
+        final screen = item['screen'] as Widget;
+        if (screen is HistoryScreen) {
+          Navigator.push(context, HistoryScreen.route());
+        } else {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+        }
+      },
       borderRadius: BorderRadius.circular(28),
       child: Container(
         padding: const EdgeInsets.all(16),

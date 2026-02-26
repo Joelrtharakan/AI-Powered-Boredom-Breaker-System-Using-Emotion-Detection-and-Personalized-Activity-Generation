@@ -10,6 +10,61 @@ import '../../providers/history_provider.dart';
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
 
+  /// Smooth page route with premium slide + fade transition
+  static Route<dynamic> route() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          const HistoryScreen(),
+      transitionDuration: const Duration(milliseconds: 450),
+      reverseTransitionDuration: const Duration(milliseconds: 350),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        // Entry: slide up + fade in
+        final enterSlide =
+            Tween<Offset>(
+              begin: const Offset(0.0, 0.04),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+            );
+        final enterFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+          ),
+        );
+
+        // Exit: slide right + fade out
+        final exitSlide =
+            Tween<Offset>(
+              begin: Offset.zero,
+              end: const Offset(0.3, 0.0),
+            ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeInCubic),
+            );
+        final exitFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: const Interval(0.0, 0.8, curve: Curves.easeIn),
+          ),
+        );
+
+        // Use the forward animation for both entry and exit
+        // (animation goes 0→1 on push, 1→0 on pop)
+        return FadeTransition(
+          opacity: animation.status == AnimationStatus.reverse
+              ? exitFade
+              : enterFade,
+          child: SlideTransition(
+            position: animation.status == AnimationStatus.reverse
+                ? exitSlide
+                : enterSlide,
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyState = ref.watch(historyProvider);
@@ -626,8 +681,9 @@ class _IntensityChart extends StatelessWidget {
                             interval: 0.5,
                             reservedSize: 32,
                             getTitlesWidget: (value, meta) {
-                              if (value == 0 || value > 1.0)
+                              if (value == 0 || value > 1.0) {
                                 return const SizedBox();
+                              }
                               if (value == 0.5) {
                                 return Text(
                                   "5",
