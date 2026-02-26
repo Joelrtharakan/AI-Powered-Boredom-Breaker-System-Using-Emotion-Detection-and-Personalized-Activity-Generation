@@ -186,38 +186,10 @@ class _MainLayoutState extends State<MainLayout> {
             right: 16,
             child: Row(
               children: [
-                if (_currentIndex != 2)
-                  IconButton(
-                    icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-                    onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                  ),
-                if (_currentIndex == 2)
-                  InkWell(
-                    onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      height: 48,
-                      width: 48,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFF0F172A,
-                            ).withValues(alpha: 0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.menu_rounded,
-                        color: Color(0xFF1E293B),
-                        size: 20,
-                      ),
-                    ),
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                ),
                 if (_currentIndex == 0) ...[
                   const SizedBox(width: 12),
                   Expanded(

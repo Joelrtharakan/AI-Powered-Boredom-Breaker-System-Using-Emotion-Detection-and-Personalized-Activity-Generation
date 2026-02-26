@@ -1,8 +1,0 @@
-DEBUG: Spotify Client Initialized Successfully
-INPUT SENTENCE                                          | MOOD       | EMOTION    | PLAN
-------------------------------------------------------------------------------------------------------------------------
-Today has been a good day                               | ERROR: name 'is_fatigued' is not defined
-I am feeling very very sleepy and i cant do anything    | ERROR: name 'is_fatigued' is not defined
-I'm bored as hell                                       | ERROR: name 'is_fatigued' is not defined
-I feel like trash                                       | ERROR: name 'is_fatigued' is not defined
-Wsg gang                                                | neutral    | neutral    | [SURPRISE] Do 10 rapid jumping jacks.
