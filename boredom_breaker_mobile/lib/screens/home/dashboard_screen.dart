@@ -17,7 +17,8 @@ import '../voice/voice_mode_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   final ScrollController? scrollController;
-  const DashboardScreen({super.key, this.scrollController});
+  final void Function(int tabIndex)? onTabSwitch;
+  const DashboardScreen({super.key, this.scrollController, this.onTabSwitch});
 
   @override
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
@@ -160,10 +161,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               iconUrl: "https://img.icons8.com/3d-fluency/94/controller.png",
               gradientStart: const Color(0xFFF2994A),
               gradientEnd: const Color(0xFFF2C94C),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const GamesScreen()),
-              ),
+              onTap: () {
+                if (widget.onTabSwitch != null) {
+                  widget.onTabSwitch!(1); // Switch to Games tab
+                }
+              },
             ),
           ),
           const SizedBox(width: 12),
@@ -174,10 +176,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   "https://img.icons8.com/liquid-glass-color/96/musical-notes.png",
               gradientStart: const Color(0xFF833AB4),
               gradientEnd: const Color(0xFFFD1D1D),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const MusicScreen()),
-              ),
+              onTap: () {
+                if (widget.onTabSwitch != null) {
+                  widget.onTabSwitch!(2); // Switch to Music tab
+                }
+              },
             ),
           ),
         ],

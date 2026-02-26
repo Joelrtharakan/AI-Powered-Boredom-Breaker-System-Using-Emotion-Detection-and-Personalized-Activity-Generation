@@ -3,54 +3,43 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'dart:ui';
-import 'dart:math' as math;
 import '../../theme/app_theme.dart';
 import '../../services/api_client.dart';
 import '../../services/session_manager.dart';
 import 'write_journal_screen.dart';
 
-/// Custom page route for the Journal screen with a smooth
-/// slide-up + fade + scale transition on enter, and slide-down on exit.
+/// Premium page route — handles ALL slide in/out animation.
+/// Single source of truth for the transition, no conflicts.
 class JournalPageRoute extends PageRouteBuilder {
   JournalPageRoute()
     : super(
         pageBuilder: (context, animation, secondaryAnimation) =>
             const JournalScreen(),
-        transitionDuration: const Duration(milliseconds: 650),
-        reverseTransitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 500),
+        reverseTransitionDuration: const Duration(milliseconds: 550),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // Curved animations for buttery feel
-          final curvedAnimation = CurvedAnimation(
+          final curved = CurvedAnimation(
             parent: animation,
-            curve: Curves.easeOutCubic,
-            reverseCurve: Curves.easeInCubic,
+            curve: Curves.easeOutQuart, // Smooth deceleration on enter
+            reverseCurve: Curves
+                .easeInOutCubic, // Gentle acceleration+deceleration on exit
           );
 
-          // Slide from bottom
-          final slideAnimation = Tween<Offset>(
-            begin: const Offset(0, 0.08),
-            end: Offset.zero,
-          ).animate(curvedAnimation);
-
-          // Fade
-          final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-              parent: animation,
-              curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-            ),
+          // Fade: quick fade-in on enter, gentle fade-out on exit
+          final fade = CurvedAnimation(
+            parent: animation,
+            curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+            reverseCurve: const Interval(0.0, 0.8, curve: Curves.easeInOut),
           );
-
-          // Subtle scale
-          final scaleAnimation = Tween<double>(
-            begin: 0.96,
-            end: 1.0,
-          ).animate(curvedAnimation);
 
           return FadeTransition(
-            opacity: fadeAnimation,
+            opacity: fade,
             child: SlideTransition(
-              position: slideAnimation,
-              child: ScaleTransition(scale: scaleAnimation, child: child),
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.85),
+                end: Offset.zero,
+              ).animate(curved),
+              child: child,
             ),
           );
         },
@@ -64,68 +53,15 @@ class JournalScreen extends StatefulWidget {
   State<JournalScreen> createState() => _JournalScreenState();
 }
 
-class _JournalScreenState extends State<JournalScreen>
-    with SingleTickerProviderStateMixin {
+class _JournalScreenState extends State<JournalScreen> {
   bool _isLoading = true;
   List<dynamic> _entries = [];
   final Set<int> _unlockedEntries = {};
 
-  late AnimationController _entranceController;
-  late Animation<double> _gradientSlide;
-  late Animation<double> _sheetSlide;
-  late Animation<double> _headerFade;
-  late Animation<double> _contentFade;
-
   @override
   void initState() {
     super.initState();
-
-    // Master entrance animation controller
-    _entranceController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    );
-
-    // Gradient header slides down from top
-    _gradientSlide = Tween<double>(begin: -1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.0, 0.55, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    // White sheet slides up from bottom
-    _sheetSlide = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.15, 0.7, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    // Header text fades in
-    _headerFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.3, 0.7, curve: Curves.easeOut),
-      ),
-    );
-
-    // Content fades in after sheet arrives
-    _contentFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _entranceController,
-        curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
-      ),
-    );
-
-    _entranceController.forward();
     _fetchEntries();
-  }
-
-  @override
-  void dispose() {
-    _entranceController.dispose();
-    super.dispose();
   }
 
   Future<void> _fetchEntries() async {
@@ -174,275 +110,201 @@ class _JournalScreenState extends State<JournalScreen>
     return AppColors.primary;
   }
 
-  /// Animate out then pop
-  Future<void> _animateOut() async {
-    await _entranceController.reverse();
-    if (mounted) Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (!didPop) {
-          _animateOut();
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: AnimatedBuilder(
-          animation: _entranceController,
-          builder: (context, child) {
-            return Stack(
-              children: [
-                // 1. Vibrant Gradient Background — slides down from top
-                Positioned(
-                  top: _gradientSlide.value * size.height * 0.28,
-                  left: 0,
-                  right: 0,
-                  height: size.height * 0.28,
-                  child: Opacity(
-                    opacity: _headerFade.value.clamp(0.0, 1.0),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF5E60CE),
-                            Color(0xFF4EA8DE),
-                            Color(0xFF56CFE1),
-                          ],
-                        ),
-                      ),
-                      child: Stack(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          // 1. Gradient header
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: size.height * 0.28,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF5E60CE),
+                    Color(0xFF4EA8DE),
+                    Color(0xFF56CFE1),
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(top: 40, right: -40, child: _circle(120, 0.1)),
+                  Positioned(top: 100, left: -30, child: _circle(80, 0.15)),
+                  Positioned(bottom: 20, right: 60, child: _circle(50, 0.08)),
+                  // Header content
+                  SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Decorative circles
-                          Positioned(
-                            top: 40,
-                            right: -40,
-                            child: _buildCircle(120, 0.1),
-                          ),
-                          Positioned(
-                            top: 100,
-                            left: -30,
-                            child: _buildCircle(80, 0.15),
-                          ),
-                          Positioned(
-                            bottom: 20,
-                            right: 60,
-                            child: _buildCircle(50, 0.08),
-                          ),
-
-                          // Header content
-                          SafeArea(
-                            bottom: false,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: FadeTransition(
-                                opacity: _headerFade,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.arrow_back_ios_new_rounded,
-                                            color: Colors.white,
-                                          ),
-                                          onPressed: _animateOut,
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.refresh_rounded,
-                                            color: Colors.white70,
-                                          ),
-                                          onPressed: _fetchEntries,
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SlideTransition(
-                                            position: Tween<Offset>(
-                                              begin: const Offset(-0.15, 0),
-                                              end: Offset.zero,
-                                            ).animate(_headerFade),
-                                            child: Text(
-                                              "Mindful Journal",
-                                              style: GoogleFonts.outfit(
-                                                fontSize: 30,
-                                                fontWeight: FontWeight.w800,
-                                                color: Colors.white,
-                                                letterSpacing: -0.5,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          SlideTransition(
-                                            position: Tween<Offset>(
-                                              begin: const Offset(-0.2, 0),
-                                              end: Offset.zero,
-                                            ).animate(_headerFade),
-                                            child: Text(
-                                              "Capture your thoughts & emotions",
-                                              style: GoogleFonts.inter(
-                                                fontSize: 15,
-                                                color: Colors.white70,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  color: Colors.white,
                                 ),
+                                onPressed: () => Navigator.pop(context),
                               ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.refresh_rounded,
+                                  color: Colors.white70,
+                                ),
+                                onPressed: _fetchEntries,
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                      "Mindful Journal",
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    )
+                                    .animate()
+                                    .fadeIn(duration: 400.ms, delay: 200.ms)
+                                    .slideX(begin: -0.05),
+                                const SizedBox(height: 4),
+                                Text(
+                                      "Capture your thoughts & emotions",
+                                      style: GoogleFonts.inter(
+                                        fontSize: 15,
+                                        color: Colors.white70,
+                                      ),
+                                    )
+                                    .animate()
+                                    .fadeIn(duration: 400.ms, delay: 300.ms)
+                                    .slideX(begin: -0.05),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-
-                // 2. White content sheet — slides up from bottom
-                Positioned(
-                  top:
-                      size.height * 0.24 +
-                      (_sheetSlide.value * size.height * 0.76),
-                  left: 0,
-                  right: 0,
-                  bottom: math.min(0, -_sheetSlide.value * size.height * 0.76),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(32),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(
-                            alpha: 0.08 * _contentFade.value,
-                          ),
-                          blurRadius: 20,
-                          offset: const Offset(0, -5),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(32),
-                      ),
-                      child: FadeTransition(
-                        opacity: _contentFade,
-                        child: _buildContent(),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-
-        // FAB with gradient
-        floatingActionButton: AnimatedBuilder(
-          animation: _contentFade,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(0, 60 * (1 - _contentFade.value)),
-              child: Opacity(
-                opacity: _contentFade.value.clamp(0.0, 1.0),
-                child: child,
+                ],
               ),
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
-                colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF4EA8DE).withValues(alpha: 0.35),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: FloatingActionButton.extended(
-              heroTag: 'journal_fab',
-              onPressed: () async {
-                final value = await Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const WriteJournalScreen(),
-                    transitionDuration: const Duration(milliseconds: 500),
-                    reverseTransitionDuration: const Duration(
-                      milliseconds: 400,
-                    ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                          final curved = CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.easeOutCubic,
-                            reverseCurve: Curves.easeInCubic,
-                          );
-                          return SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0, 0.3),
-                              end: Offset.zero,
-                            ).animate(curved),
-                            child: FadeTransition(
-                              opacity: curved,
-                              child: child,
-                            ),
-                          );
-                        },
-                  ),
-                );
-                if (value == true) {
-                  _fetchEntries();
-                }
-              },
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              label: Text(
-                "Write Entry",
-                style: GoogleFonts.outfit(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              icon: const Icon(Icons.edit_note_rounded, color: Colors.white),
             ),
           ),
-        ),
+
+          // 2. White content area
+          Positioned(
+            top: size.height * 0.24,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(32),
+                ),
+                child: _buildContent(),
+              ),
+            ),
+          ),
+        ],
       ),
+
+      // FAB
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF4EA8DE).withValues(alpha: 0.35),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          heroTag: 'journal_fab',
+          onPressed: () async {
+            final value = await Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const WriteJournalScreen(),
+                transitionDuration: const Duration(milliseconds: 450),
+                reverseTransitionDuration: const Duration(milliseconds: 350),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                      final curved = CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOutCubic,
+                        reverseCurve: Curves.easeInCubic,
+                      );
+                      return FadeTransition(
+                        opacity: curved,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.15),
+                            end: Offset.zero,
+                          ).animate(curved),
+                          child: child,
+                        ),
+                      );
+                    },
+              ),
+            );
+            if (value == true) {
+              _fetchEntries();
+            }
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          label: Text(
+            "Write Entry",
+            style: GoogleFonts.outfit(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          icon: const Icon(Icons.edit_note_rounded, color: Colors.white),
+        ),
+      ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.3, duration: 400.ms),
     );
   }
 
-  Widget _buildCircle(double size, double alpha) {
+  Widget _circle(double s, double alpha) {
     return Container(
-      width: size,
-      height: size,
+      width: s,
+      height: s,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.white.withValues(alpha: alpha),
@@ -486,18 +348,17 @@ class _JournalScreenState extends State<JournalScreen>
       padding: const EdgeInsets.fromLTRB(24, 28, 24, 100),
       itemCount: _entries.length,
       itemBuilder: (context, index) {
-        // Staggered item entrance — each card slides up with a delay
         return _buildJournalEntry(_entries[index], index)
             .animate()
             .fadeIn(
-              delay: (150 + index * 80).ms,
-              duration: 400.ms,
+              delay: (index * 60).ms,
+              duration: 350.ms,
               curve: Curves.easeOut,
             )
             .slideY(
-              begin: 0.12,
-              delay: (150 + index * 80).ms,
-              duration: 500.ms,
+              begin: 0.05,
+              delay: (index * 60).ms,
+              duration: 400.ms,
               curve: Curves.easeOutCubic,
             );
       },

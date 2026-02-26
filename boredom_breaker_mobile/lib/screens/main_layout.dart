@@ -40,8 +40,13 @@ class _MainLayoutState extends State<MainLayout> {
     ScrollController(),
   ];
 
-  late final List<Widget> _screens = [
-    DashboardScreen(scrollController: _scrollControllers[0]),
+  List<Widget> get _screens => [
+    DashboardScreen(
+      scrollController: _scrollControllers[0],
+      onTabSwitch: (index) {
+        setState(() => _currentIndex = index);
+      },
+    ),
     GamesScreen(scrollController: _scrollControllers[1]),
     MusicScreen(scrollController: _scrollControllers[2]),
     const SizedBox.shrink(), // Chat is pushed
@@ -153,6 +158,14 @@ class _MainLayoutState extends State<MainLayout> {
           ),
         );
         _loadUserData(); // Refresh changes
+        // Scroll dashboard back to top when returning
+        if (_scrollControllers[0].hasClients) {
+          _scrollControllers[0].animateTo(
+            0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+          );
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(2),
