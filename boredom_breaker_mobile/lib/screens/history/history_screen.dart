@@ -13,52 +13,131 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyState = ref.watch(historyProvider);
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.transparent, // OLED Black
-      appBar: AppBar(
-        title: Text(
-          "Mental Insights",
-          style: GoogleFonts.outfit(
-            color: const Color(0xFF1E293B),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      backgroundColor: Colors.white, // Match Dashboard Background
+      body: Stack(
+        children: [
+          // 1. Vibrant Top Gradient Header (Dashboard Theme)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: size.height * 0.30,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF5E60CE), // Indigo
+                    Color(0xFF4EA8DE), // Blue
+                    Color(0xFF56CFE1), // Cyan
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: -50,
+                    right: -50,
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
+                  ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Insights",
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.refresh_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                            onPressed: () => ref
+                                .read(historyProvider.notifier)
+                                .fetchHistory(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Color(0xFF1E293B),
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF94A3B8)),
-            onPressed: () => ref.read(historyProvider.notifier).fetchHistory(),
+
+          // 2. White Content Container (The "Dashboard Slide Up" look)
+          Positioned(
+            top: size.height * 0.13,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 30,
+                    offset: Offset(0, -10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(40),
+                ),
+                child: historyState.when(
+                  data: (history) {
+                    if (history.isEmpty) {
+                      return _buildEmptyState();
+                    }
+                    final stats = _calculateStats(history);
+                    return _buildContent(context, history, stats);
+                  },
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  ),
+                  error: (err, stack) => Center(
+                    child: Text(
+                      "Error loading insights",
+                      style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
-      ),
-      body: historyState.when(
-        data: (history) {
-          if (history.isEmpty) {
-            return _buildEmptyState();
-          }
-          // Calculate stats
-          final stats = _calculateStats(history);
-          return _buildContent(context, history, stats);
-        },
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-        error: (err, stack) => Center(
-          child: Text(
-            "Error loading insights",
-            style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
-          ),
-        ),
       ),
     );
   }
@@ -74,13 +153,9 @@ class HistoryScreen extends ConsumerWidget {
     int maxCount = 0;
 
     for (var item in history) {
-      // Intensity
       totalIntensity += (item['intensity'] as num?)?.toDouble() ?? 0.0;
-
-      // Mood Count
       final mood = (item['mood'] as String? ?? 'unknown').toLowerCase();
       moodCounts[mood] = (moodCounts[mood] ?? 0) + 1;
-
       if (moodCounts[mood]! > maxCount) {
         maxCount = moodCounts[mood]!;
         dominantMood = mood;
@@ -100,25 +175,30 @@ class HistoryScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.analytics_outlined, size: 64, color: Colors.white24),
+          Icon(
+            Icons.analytics_outlined,
+            size: 64,
+            color: const Color(0xFFE2E8F0),
+          ),
           const SizedBox(height: 16),
           Text(
             "No data to analyze yet",
             style: GoogleFonts.outfit(
-              color: const Color(0xFF94A3B8),
-              fontSize: 18,
+              color: const Color(0xFF1E293B),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             "Check in with your mood to see insights",
             style: GoogleFonts.inter(
-              color: const Color(0xFFCBD5E1),
+              color: const Color(0xFF64748B),
               fontSize: 14,
             ),
           ),
         ],
-      ),
+      ).animate().fadeIn().scale(),
     );
   }
 
@@ -127,35 +207,35 @@ class HistoryScreen extends ConsumerWidget {
     List<dynamic> history,
     Map<String, dynamic> stats,
   ) {
-    // Reverse for lists (newest first), but chart usually needs chronological
     final chronologicalHistory = List.from(history.reversed);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
       physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Key Metrics Row
+          // 1. Key Metrics (Premium Cards)
+          const _SectionTitle(title: "QUICK STATS"),
+          const SizedBox(height: 16),
           IntrinsicHeight(
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
                   child: _MetricCard(
-                    label: "Avg Intensity",
+                    label: "Avg Flow",
                     value:
-                        "${(stats['avg_intensity'] * 100).toStringAsFixed(0)}%",
-                    icon: Icons.ssid_chart_rounded,
+                        "${(stats['avg_intensity'] * 10).toStringAsFixed(1)}",
+                    icon: Icons.water_drop_rounded,
                     color: const Color(0xFF6D4EFF),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _MetricCard(
-                    label: "Check-ins",
+                    label: "Total logs",
                     value: "${stats['total_logs']}",
-                    icon: Icons.check_circle_outline_rounded,
+                    icon: Icons.bolt_rounded,
                     color: const Color(0xFF00C6FF),
                   ),
                 ),
@@ -171,61 +251,34 @@ class HistoryScreen extends ConsumerWidget {
                 ),
               ],
             ),
-          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.1),
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 40),
 
-          // 2. Mood Distribution (Pie Chart)
-          Text(
-            "Emotional Spectrum",
-            style: GoogleFonts.outfit(
-              color: const Color(0xFF1E293B),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          // 2. Mood Distribution
+          const _SectionTitle(title: "EMOTIONAL SPECTRUM"),
           const SizedBox(height: 16),
-          _MoodDistributionChart(
-            stats: stats,
-          ).animate().fadeIn(delay: 200.ms).scale(),
+          _MoodDistributionChart(stats: stats)
+              .animate()
+              .fadeIn(delay: 200.ms)
+              .scale(begin: const Offset(0.95, 0.95)),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 40),
 
-          // 3. Intensity Trend (Line Chart)
-          Text(
-            "Intensity Trend",
-            style: GoogleFonts.outfit(
-              color: const Color(0xFF1E293B),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            "Your emotional intensity over the last 20 sessions",
-            style: GoogleFonts.inter(
-              color: const Color(0xFFCBD5E1),
-              fontSize: 12,
-            ),
-          ),
+          // 3. Intensity Trend
+          const _SectionTitle(title: "INTENSITY TREND"),
           const SizedBox(height: 16),
           _IntensityChart(
             history: chronologicalHistory,
-          ).animate().fadeIn(delay: 400.ms),
+          ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 40),
 
           // 4. Recent History List
-          Text(
-            "Recent Logs",
-            style: GoogleFonts.outfit(
-              color: const Color(0xFF1E293B),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          const _SectionTitle(title: "RECENT LOGS"),
           const SizedBox(height: 16),
           ListView.separated(
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: history.length,
@@ -235,17 +288,34 @@ class HistoryScreen extends ConsumerWidget {
               return _HistoryItemCard(item: item, index: index)
                   .animate()
                   .fadeIn(delay: (index * 50 + 500).ms)
-                  .slideX(begin: 0.1);
+                  .slideX(begin: 0.05);
             },
           ),
-          const SizedBox(height: 32),
         ],
       ),
     );
   }
 }
 
-// --- Componets ---
+// --- Components ---
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: GoogleFonts.outfit(
+        fontSize: 13,
+        fontWeight: FontWeight.w900,
+        color: const Color(0xFF5E60CE).withValues(alpha: 0.7),
+        letterSpacing: 2.5,
+      ),
+    );
+  }
+}
 
 class _MetricCard extends StatelessWidget {
   final String label;
@@ -265,43 +335,52 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF141414),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: const Color(0xFF1E293B).withValues(alpha: 0.08),
+          color: const Color(0xFF1E293B).withValues(alpha: 0.05),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
             value,
             style: GoogleFonts.outfit(
               color: const Color(0xFF1E293B),
-              fontSize: isTextSmall ? 14 : 20,
-              fontWeight: FontWeight.bold,
+              fontSize: isTextSmall ? 14 : 22,
+              fontWeight: FontWeight.w800,
             ),
             textAlign: TextAlign.center,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
-            label,
-            style: GoogleFonts.inter(
-              color: const Color(0xFFCBD5E1),
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
+            label.toUpperCase(),
+            style: GoogleFonts.outfit(
+              color: const Color(0xFF94A3B8),
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
             ),
             textAlign: TextAlign.center,
           ),
@@ -316,6 +395,7 @@ class _MoodDistributionChart extends StatelessWidget {
   const _MoodDistributionChart({required this.stats});
 
   Color _getColorForMood(String mood) {
+    mood = mood.toLowerCase();
     if (mood.contains('happy') || mood.contains('joy')) {
       return const Color(0xFFFFB74D);
     }
@@ -333,8 +413,7 @@ class _MoodDistributionChart extends StatelessWidget {
     }
     if (mood.contains('bored') ||
         mood.contains('low') ||
-        mood.contains('tired') ||
-        mood.contains('fatigue')) {
+        mood.contains('tired')) {
       return const Color(0xFF7986CB);
     }
     if (mood.contains('neutral') || mood.contains('none')) {
@@ -343,36 +422,40 @@ class _MoodDistributionChart extends StatelessWidget {
     if (mood.contains('stress')) {
       return const Color(0xFFFF8A65);
     }
-    return const Color(0xFFB0BEC5); // Blue Grey default
+    return const Color(0xFF94A3B8);
   }
 
   @override
   Widget build(BuildContext context) {
     final distribution = stats['mood_distribution'] as Map<String, int>;
     final total = stats['total_logs'] as int;
-
-    // Sort to keep consistent colors/positions
     final sortedKeys = distribution.keys.toList()..sort();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF141414),
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: const Color(0xFF1E293B).withValues(alpha: 0.05),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          // Pie Chart
           SizedBox(
-            height: 120,
-            width: 120,
+            height: 140,
+            width: 140,
             child: PieChart(
               PieChartData(
                 sectionsSpace: 4,
-                centerSpaceRadius: 40,
+                centerSpaceRadius: 45,
                 sections: sortedKeys.map((mood) {
                   final count = distribution[mood]!;
                   return PieChartSectionData(
@@ -386,42 +469,50 @@ class _MoodDistributionChart extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 24),
-          // Legend
+          const SizedBox(width: 32),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: sortedKeys.map((mood) {
                 final count = distribution[mood]!;
                 final percent = ((count / total) * 100).toStringAsFixed(0);
+                final color = _getColorForMood(mood);
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     children: [
                       Container(
-                        width: 8,
-                        height: 8,
+                        width: 10,
+                        height: 10,
                         decoration: BoxDecoration(
-                          color: _getColorForMood(mood),
+                          color: color,
                           shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: color.withValues(alpha: 0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           mood.toUpperCase(),
-                          style: GoogleFonts.inter(
-                            color: const Color(0xFF64748B),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                          style: GoogleFonts.outfit(
+                            color: const Color(0xFF1E293B),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
                       Text(
                         "$percent%",
                         style: GoogleFonts.inter(
-                          color: const Color(0xFFCBD5E1),
+                          color: const Color(0xFF94A3B8),
                           fontSize: 12,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -442,195 +533,203 @@ class _IntensityChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (history.length < 2) {
-      return Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: const Color(0xFF141414),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-          ),
-        ),
-        child: const Center(
-          child: Text(
-            "Check in more times to see your trend",
-            style: TextStyle(color: Color(0xFFCBD5E1)),
-          ),
-        ),
-      );
-    }
-
-    // Smart Axis Logic
-    final first = DateTime.parse(history.first['created_at']).toLocal();
-    final last = DateTime.parse(history.last['created_at']).toLocal();
-    final isSameDay =
-        first.year == last.year &&
-        first.month == last.month &&
-        first.day == last.day;
-
     return Container(
-      height: 250, // Increased height for better proportions
-      padding: const EdgeInsets.only(
-        left: 24,
-        right: 24,
-        top: 40,
-        bottom: 20,
-      ), // Equal padding for aesthetics
+      height: 300,
+      padding: const EdgeInsets.fromLTRB(8, 20, 16, 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF141414),
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: const Color(0xFF1E293B).withValues(alpha: 0.05),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
-      child: LineChart(
-        LineChartData(
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
-            horizontalInterval: 0.25,
-            getDrawingHorizontalLine: (value) => FlLine(
-              color: const Color(0xFF1E293B).withValues(alpha: 0.05),
-              strokeWidth: 1,
-            ),
-          ),
-          lineTouchData: LineTouchData(
-            handleBuiltInTouches: true,
-            touchSpotThreshold:
-                50, // Massive touch area to make dragging/scrubbing act like hovering
-            touchTooltipData: LineTouchTooltipData(
-              getTooltipColor: (touchedSpot) => const Color(0xFF242424),
-              getTooltipItems: (touchedSpots) {
-                return touchedSpots.map((LineBarSpot touchedSpot) {
-                  return LineTooltipItem(
-                    touchedSpot.y.toStringAsFixed(2),
-                    GoogleFonts.inter(
-                      color: const Color(0xFF1E293B),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  );
-                }).toList();
-              },
-            ),
-          ),
-          titlesData: FlTitlesData(
-            show: true,
-            rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false, reservedSize: 0),
-            ),
-            topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false, reservedSize: 0),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 36, // Allocate proper space for bottom text
-                getTitlesWidget: (value, meta) {
-                  if (value.toInt() >= 0 &&
-                      value.toInt() < history.length &&
-                      value == value.toInt()) {
-                    int idx = value.toInt();
-                    int lastIdx = history.length - 1;
-
-                    bool isFirst = idx == 0;
-                    bool isLast = idx == lastIdx;
-
-                    if (history.length > 4) {
-                      int step = (history.length / 4).round();
-                      if (step < 1) step = 1;
-
-                      bool isMultiple = idx % step == 0;
-
-                      if (!isFirst && !isLast && !isMultiple) {
-                        return const SizedBox.shrink();
-                      }
-
-                      // Stop internal points from rendering if they are way too close to the end tags
-                      if (isMultiple && !isFirst && !isLast) {
-                        if ((lastIdx - idx) <= (step * 0.9) ||
-                            idx <= (step * 0.9)) {
-                          return const SizedBox.shrink();
-                        }
-                      }
-                    }
-                    final date = DateTime.parse(
-                      history[value.toInt()]['created_at'],
-                    ).toLocal();
-
-                    final label = isSameDay
-                        ? DateFormat('h:mm a').format(date)
-                        : DateFormat('MM/dd').format(date);
-
-                    return Container(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      alignment: Alignment.center,
-                      width: 50, // Limit width of text chunk slightly more
-                      child: Text(
-                        label,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          color: const Color(0xFFCBD5E1),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
+      child: history.length < 2
+          ? const Center(
+              child: Text(
+                "Keep tracking to see your trend",
+                style: TextStyle(color: Color(0xFF94A3B8)),
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 20),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                          ),
                         ),
                       ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-                interval: 1,
-              ),
-            ),
-            leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false, reservedSize: 0),
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          minX: -0.5, // Prevents left label clipping
-          maxX: (history.length - 1) + 0.5, // Prevents right label clipping
-          minY: 0,
-          maxY: 1.1,
-          lineBarsData: [
-            LineChartBarData(
-              spots: List.generate(history.length, (index) {
-                final intensity =
-                    (history[index]['intensity'] as num?)?.toDouble() ?? 0.0;
-                return FlSpot(index.toDouble(), intensity);
-              }),
-              isCurved: true,
-              gradient: const LinearGradient(
-                colors: [AppColors.primary, Color(0xFF00C6FF)],
-              ),
-              barWidth: 3,
-              isStrokeCapRound: true,
-              dotData: FlDotData(
-                show: true,
-                getDotPainter: (spot, percent, barData, index) {
-                  return FlDotCirclePainter(
-                    radius: 3,
-                    color: const Color(0xFF1E293B),
-                    strokeWidth: 2,
-                    strokeColor: AppColors.primary,
-                  );
-                },
-              ),
-              belowBarData: BarAreaData(
-                show: true,
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: 0.3),
-                    AppColors.primary.withValues(alpha: 0.0),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                      const SizedBox(width: 8),
+                      Text(
+                        "WEEKLY FLOW",
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: LineChart(
+                    LineChartData(
+                      gridData: const FlGridData(
+                        show: true,
+                        drawVerticalLine: true,
+                        horizontalInterval: 0.25,
+                        verticalInterval: 1,
+                      ),
+                      lineTouchData: LineTouchData(
+                        handleBuiltInTouches: true,
+                        touchTooltipData: LineTouchTooltipData(
+                          getTooltipColor: (spot) => const Color(0xFF1E293B),
+                          getTooltipItems: (spots) => spots.map((s) {
+                            return LineTooltipItem(
+                              "Level: ${(s.y * 10).toStringAsFixed(1)}",
+                              GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        show: true,
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 0.5,
+                            reservedSize: 32,
+                            getTitlesWidget: (value, meta) {
+                              if (value == 0 || value > 1.0)
+                                return const SizedBox();
+                              if (value == 0.5) {
+                                return Text(
+                                  "5",
+                                  style: GoogleFonts.inter(
+                                    color: const Color(0xFFCBD5E1),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              }
+                              if (value == 1.0) {
+                                return Text(
+                                  "10",
+                                  style: GoogleFonts.inter(
+                                    color: const Color(0xFFCBD5E1),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              }
+                              return const SizedBox();
+                            },
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: 1,
+                            reservedSize: 32,
+                            getTitlesWidget: (value, meta) {
+                              final step = (history.length / 5).ceil().clamp(
+                                1,
+                                history.length,
+                              );
+                              final index = value.toInt();
+                              if (index % step != 0) return const SizedBox();
+                              if (index < 0 || index >= history.length) {
+                                return const SizedBox();
+                              }
+                              final dateStr = history[index]['created_at'];
+                              final date = DateTime.tryParse(dateStr);
+                              if (date == null) return const SizedBox();
+                              return Text(
+                                DateFormat('dd/MM').format(date),
+                                style: GoogleFonts.inter(
+                                  color: const Color(0xFF94A3B8),
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      minY: -0.1,
+                      maxY: 1.1,
+                      lineBarsData: [
+                        LineChartBarData(
+                          spots: List.generate(history.length, (index) {
+                            final intensity =
+                                (history[index]['intensity'] as num?)
+                                    ?.toDouble() ??
+                                0.0;
+                            return FlSpot(index.toDouble(), intensity);
+                          }),
+                          isCurved: true,
+                          curveSmoothness: 0.35,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                          ),
+                          barWidth: 5,
+                          isStrokeCapRound: true,
+                          dotData: FlDotData(
+                            show: true,
+                            getDotPainter: (spot, percent, barData, index) {
+                              return FlDotCirclePainter(
+                                radius: 4,
+                                color: Colors.white,
+                                strokeWidth: 3,
+                                strokeColor: const Color(0xFF5E60CE),
+                              );
+                            },
+                          ),
+                          belowBarData: BarAreaData(
+                            show: true,
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFF5E60CE).withValues(alpha: 0.15),
+                                const Color(0xFF5E60CE).withValues(alpha: 0.0),
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -642,6 +741,7 @@ class _HistoryItemCard extends StatelessWidget {
   const _HistoryItemCard({required this.item, required this.index});
 
   Color _getMoodColor(String mood) {
+    mood = mood.toLowerCase();
     if (mood.contains('happy') || mood.contains('joy')) {
       return const Color(0xFFFFB74D);
     }
@@ -659,8 +759,7 @@ class _HistoryItemCard extends StatelessWidget {
     }
     if (mood.contains('bored') ||
         mood.contains('low') ||
-        mood.contains('tired') ||
-        mood.contains('fatigue')) {
+        mood.contains('tired')) {
       return const Color(0xFF7986CB);
     }
     if (mood.contains('neutral') || mood.contains('none')) {
@@ -669,112 +768,88 @@ class _HistoryItemCard extends StatelessWidget {
     if (mood.contains('stress')) {
       return const Color(0xFFFF8A65);
     }
-    return const Color(0xFFB0BEC5); // Blue Grey default
+    return const Color(0xFF94A3B8);
   }
 
   @override
   Widget build(BuildContext context) {
-    final mood = (item['mood'] ?? 'Unknown').toString().toLowerCase();
-    final emotion = item['emotion'] ?? '';
+    final mood = (item['mood'] ?? 'Unknown').toString();
     final intensity = (item['intensity'] as num?)?.toDouble() ?? 0.0;
     final dateStr = item['created_at'] ?? '';
     final date = DateTime.tryParse(dateStr)?.toLocal();
     final color = _getMoodColor(mood);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF141414),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: const Color(0xFF1E293B).withValues(alpha: 0.05),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(Icons.circle, color: color, size: 12),
+            child: Icon(Icons.mood_rounded, color: color, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      mood.toUpperCase(),
-                      style: GoogleFonts.outfit(
-                        color: const Color(0xFF1E293B),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    if (date != null)
-                      Text(
-                        DateFormat('MMM d, h:mm a').format(date),
-                        style: GoogleFonts.inter(
-                          color: const Color(0xFFCBD5E1),
-                          fontSize: 11,
-                        ),
-                      ),
-                  ],
+                Text(
+                  mood.toUpperCase(),
+                  style: GoogleFonts.outfit(
+                    color: const Color(0xFF1E293B),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
                 ),
-                if (emotion.isNotEmpty && emotion.toLowerCase() != mood) ...[
-                  const SizedBox(height: 4),
+                const SizedBox(height: 4),
+                if (date != null)
                   Text(
-                    emotion,
+                    DateFormat('MMM d, h:mm a').format(date),
                     style: GoogleFonts.inter(
-                      color: const Color(0xFF64748B),
+                      color: const Color(0xFF94A3B8),
                       fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                ],
               ],
             ),
           ),
-          // Mini intensity indicator
-          const SizedBox(width: 12),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 (intensity * 10).toStringAsFixed(1),
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF94A3B8),
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF1E293B),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              const SizedBox(height: 2),
-              SizedBox(
-                height: 30,
-                width: 4,
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white10,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    FractionallySizedBox(
-                      heightFactor: intensity,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                  ],
+              Text(
+                "FLOW",
+                style: GoogleFonts.outfit(
+                  color: const Color(0xFFCBD5E1),
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
                 ),
               ),
             ],

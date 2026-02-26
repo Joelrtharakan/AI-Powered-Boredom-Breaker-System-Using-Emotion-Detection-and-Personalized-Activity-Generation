@@ -143,8 +143,10 @@ class LandingScreen extends StatelessWidget {
             left: 0,
             right: 0,
             bottom: 0,
-            child:
-                Container(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isSmallScreen = size.height < 600;
+                return Container(
                   height: size.height * 0.45,
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -159,128 +161,122 @@ class LandingScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 40, 32, 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Beat the loop.\nFind your focus.",
-                          style: GoogleFonts.outfit(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1E293B), // Slate 800
-                            height: 1.2,
-                            letterSpacing: -0.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(40),
+                    ),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(32, 32, 32, 32),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Beat the loop.\nFind your focus.",
+                            style: GoogleFonts.outfit(
+                              fontSize: isSmallScreen ? 24 : 32,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1E293B), // Slate 800
+                              height: 1.1,
+                              letterSpacing: -0.5,
+                            ),
+                            textAlign: TextAlign.center,
+                          ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
 
-                        const SizedBox(height: 16),
+                          SizedBox(height: isSmallScreen ? 8 : 16),
 
-                        Text(
-                          "Dive into curated games, ambient music, and AI-guided mindfulness to reclaim your time.",
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            color: const Color(0xFF64748B), // Slate 500
-                            height: 1.5,
-                          ),
-                          textAlign: TextAlign.center,
-                        ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
+                          Text(
+                            "Dive into curated games, ambient music, and AI-guided mindfulness to reclaim your time.",
+                            style: GoogleFonts.inter(
+                              fontSize: isSmallScreen ? 14 : 16,
+                              color: const Color(0xFF64748B), // Slate 500
+                              height: 1.4,
+                            ),
+                            textAlign: TextAlign.center,
+                          ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1),
 
-                        const Spacer(),
+                          SizedBox(height: isSmallScreen ? 24 : 40),
 
-                        // Action Buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF5E60CE),
-                                      Color(0xFF4EA8DE),
-                                    ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFF4EA8DE,
-                                      ).withValues(alpha: 0.3),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
+                          // Action Buttons
+                          Container(
+                            width: double.infinity,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18),
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFF4EA8DE,
+                                  ).withValues(alpha: 0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 6),
                                 ),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const RegisterScreen(),
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    shadowColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const RegisterScreen(),
                                   ),
-                                  child: Text(
-                                    "Get Started",
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                              ),
+                              child: Text(
+                                "Get Started",
+                                style: GoogleFonts.outfit(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
                             ),
-                          ],
-                        ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
+                          ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1),
 
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
 
-                        Row(
-                          children: [
-                            Expanded(
-                              child: SizedBox(
-                                height: 56,
-                                child: TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const LoginScreen(),
-                                      ),
-                                    );
-                                  },
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: const Color(0xFF5E60CE),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LoginScreen(),
                                   ),
-                                  child: Text(
-                                    "I already have an account",
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: const Color(0xFF5E60CE),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                              ),
+                              child: Text(
+                                "I already have an account",
+                                style: GoogleFonts.inter(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                          ],
-                        ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.1),
-                      ],
+                          ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.1),
+                        ],
+                      ),
                     ),
                   ),
                 ).animate().slideY(
@@ -288,7 +284,9 @@ class LandingScreen extends StatelessWidget {
                   end: 0,
                   duration: 600.ms,
                   curve: Curves.easeOutQuart,
-                ),
+                );
+              },
+            ),
           ),
         ],
       ),
