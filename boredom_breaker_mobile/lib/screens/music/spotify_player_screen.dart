@@ -23,25 +23,20 @@ class SpotifyPlayerScreen extends StatefulWidget {
 class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
   late final WebViewController _controller;
   bool _isLoading = true;
-  bool _isClosing = false;
   String _error = "";
 
-  Future<void> _handlePop([dynamic result]) async {
-    if (!mounted || _isClosing) return;
-    setState(() => _isClosing = true);
+  void _handlePop([dynamic result]) {
+    if (!mounted) return;
 
     // Stop playback immediately
     try {
-      await _controller.loadRequest(Uri.parse('about:blank'));
+      _controller.loadRequest(Uri.parse('about:blank'));
     } catch (e) {
       debugPrint("Error stopping playback: $e");
     }
 
-    // Give time for the widget to fade out smoothly before popping
-    await Future.delayed(const Duration(milliseconds: 200));
-    if (mounted) {
-      Navigator.of(context).pop(result);
-    }
+    // Pop immediately to unleash the silky smooth native flutter route animation!
+    Navigator.of(context).pop(result);
   }
 
   @override
@@ -116,10 +111,13 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: true,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        _handlePop();
+        if (didPop) {
+          try {
+            _controller.loadRequest(Uri.parse('about:blank'));
+          } catch (e) {}
+        }
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -212,13 +210,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                         borderRadius: BorderRadius.circular(
                           widget.isLoginOnly ? 0 : 24,
                         ),
-                        child: AnimatedOpacity(
-                          opacity: _isClosing ? 0.0 : 1.0,
-                          duration: const Duration(milliseconds: 200),
-                          child: Container(
-                            color: Colors.white,
-                            child: WebViewWidget(controller: _controller),
-                          ),
+                        child: Container(
+                          color: Colors.white,
+                          child: WebViewWidget(controller: _controller),
                         ),
                       ),
                     ),
