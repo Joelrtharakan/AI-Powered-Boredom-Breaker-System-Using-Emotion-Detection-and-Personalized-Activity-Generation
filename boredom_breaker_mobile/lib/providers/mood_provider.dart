@@ -18,25 +18,33 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
     state = const AsyncValue.loading();
     try {
       final moodData = await _api.post('/mood/detect', data: {'text': text});
+      final moodRes = moodData.data;
 
-      // 1.5 Log Mood for History
+      // If no emotion was detected, skip planner and show message
+      if (moodRes['decision_source'] == 'no_emotion_detected') {
+        state = AsyncValue.data({
+          'mood': moodRes,
+          'plan': <dynamic>[],
+          'no_emotion': true,
+        });
+        return;
+      }
+
+      // Log Mood for History
       await _api.post(
         '/mood/log',
         data: {
-          'mood': moodData.data['mood'],
-          'emotion': moodData.data['emotion'],
-          'intensity': moodData.data['intensity'],
-          'energy_level': moodData.data['energy_level'],
+          'mood': moodRes['mood'],
+          'emotion': moodRes['emotion'],
+          'intensity': moodRes['intensity'],
+          'energy_level': moodRes['energy_level'],
           'source': 'text',
           'activities_used': [],
         },
         queryParameters: {'user_id': userId},
       );
 
-      final moodRes = moodData.data;
-
-      // 2. Get Suggestion Plan (Calls Planner Agent)
-      // Send FULL text for risk assessment
+      // Get Suggestion Plan (Calls Planner Agent)
       final planRes = await _api.post(
         '/suggest/',
         data: {
@@ -45,12 +53,11 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
           'emotion': moodRes['emotion'],
           'intensity': moodRes['intensity'],
           'time_available_minutes': 30,
-          'text': text, // CRITICAL: Send raw text for risk analysis
+          'text': text,
           'decision_source': moodRes['decision_source'] ?? '',
         },
       );
 
-      // Parse plan items manually to verify data structure
       List<dynamic> plan = [];
       if (planRes.data['plan'] is List) {
         plan = planRes.data['plan'];

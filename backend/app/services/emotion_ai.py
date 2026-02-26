@@ -227,26 +227,35 @@ class EmotionAnalyzer:
              reason = "Identified mundane activity pattern, overriding weak emotional signal."
 
         # Case C: Handle Uncertainty (Confidence < 0.65 -> sadness)
+        # Only if there IS actual emotional content from semantic or risk patterns
         if final_score < 0.65 and not semantic_emotion:
-            final_emotion = "sadness"
-            final_score = 0.65
-            decision_source = "uncertainty_handled"
-            reason = "Confidence < 0.65, defaulting to sadness per Regulation Engine rules."
+            if self.risk_assessor.has_any_pattern_match(text_clean):
+                final_emotion = "sadness"
+                final_score = 0.65
+                decision_source = "uncertainty_handled"
+                reason = "Confidence < 0.65, defaulting to sadness per Regulation Engine rules."
+            # else: let it fall through to Case D's no-emotion check
 
         # Case D: NO EMOTIONAL CONTENT — Random/Nonsensical words
-        # Only for SHORT inputs (1-3 words) where the model has no semantic backup.
-        # Longer sentences (4+ words) likely express real emotion even if keywords aren't in our clusters.
         word_count = len(text_clean.split())
-        if (decision_source == "model_primary" 
-            and not is_mundane
-            and not self.semantic.has_any_emotional_content(text_clean)
-            and not self.risk_assessor.has_any_pattern_match(text_clean)
-            and final_emotion not in ["neutral", "joy"]
-            and word_count <= 3):
-            final_emotion = "neutral"
-            final_score = 0.0
-            decision_source = "no_emotion_detected"
-            reason = "No emotional content found in input. Random or non-emotional text."
+        has_semantic = self.semantic.has_any_emotional_content(text_clean)
+        has_risk = self.risk_assessor.has_any_pattern_match(text_clean)
+        
+        if not has_semantic and not has_risk:
+            # If the model predicts an actual emotion (joy, sadness, fear, anger) 
+            # with very high confidence, we trust it even without keywords.
+            is_strong_emotion = final_emotion != "neutral" and model_score > 0.85
+            
+            if not is_strong_emotion:
+                # If it's weak, or if it's just predicting 'neutral' without explicit neutral keywords:
+                if (word_count <= 4 
+                    or final_emotion == "neutral"
+                    or (word_count <= 8 and model_score < 0.7)
+                    or (word_count > 8 and model_score < 0.5)):
+                    final_emotion = "neutral"
+                    final_score = 0.0
+                    decision_source = "no_emotion_detected"
+                    reason = "No emotional content found in input. Random or non-emotional text."
 
         # 4. Ambivalent Anticipation Rule
         if "nervous" in text_clean and "excited" in text_clean:

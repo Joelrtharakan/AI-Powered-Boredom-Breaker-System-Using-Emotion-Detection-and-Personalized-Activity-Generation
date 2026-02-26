@@ -97,6 +97,148 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         if (data.isEmpty) {
                           return const SizedBox.shrink();
                         }
+                        // No emotion detected — premium animated card
+                        if (data['no_emotion'] == true) {
+                          return Container(
+                                padding: const EdgeInsets.all(24),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      const Color(0xFFF1F5F9),
+                                      Colors.white,
+                                      const Color(0xFFF8FAFC),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: const Color(0xFFE2E8F0),
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFF94A3B8,
+                                      ).withValues(alpha: 0.08),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    // Animated emoji icon
+                                    Container(
+                                          width: 64,
+                                          height: 64,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                const Color(
+                                                  0xFF94A3B8,
+                                                ).withValues(alpha: 0.12),
+                                                const Color(
+                                                  0xFFCBD5E1,
+                                                ).withValues(alpha: 0.08),
+                                              ],
+                                            ),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "🤔",
+                                              style: TextStyle(fontSize: 30),
+                                            ),
+                                          ),
+                                        )
+                                        .animate(
+                                          onPlay: (c) =>
+                                              c.repeat(reverse: true),
+                                        )
+                                        .scaleXY(
+                                          begin: 1.0,
+                                          end: 1.08,
+                                          duration: 1500.ms,
+                                          curve: Curves.easeInOutSine,
+                                        ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                          "Hmm, no emotion detected",
+                                          style: GoogleFonts.outfit(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: const Color(0xFF475569),
+                                          ),
+                                        )
+                                        .animate()
+                                        .fadeIn(delay: 200.ms, duration: 400.ms)
+                                        .slideY(begin: 0.15),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                          "Try telling me how you actually feel —\n\"I'm feeling bored\" or \"I'm so stressed today\"",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.inter(
+                                            fontSize: 13,
+                                            color: const Color(0xFF94A3B8),
+                                            height: 1.5,
+                                          ),
+                                        )
+                                        .animate()
+                                        .fadeIn(delay: 350.ms, duration: 400.ms)
+                                        .slideY(begin: 0.15),
+                                    const SizedBox(height: 20),
+                                    GestureDetector(
+                                          onTap: () {
+                                            ref
+                                                .read(moodProvider.notifier)
+                                                .reset();
+                                            _controller.clear();
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 28,
+                                              vertical: 12,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [
+                                                  Color(0xFF5E60CE),
+                                                  Color(0xFF4EA8DE),
+                                                ],
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: const Color(
+                                                    0xFF4EA8DE,
+                                                  ).withValues(alpha: 0.25),
+                                                  blurRadius: 12,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Text(
+                                              "Try Again",
+                                              style: GoogleFonts.outfit(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .animate()
+                                        .fadeIn(delay: 500.ms, duration: 400.ms)
+                                        .scaleXY(begin: 0.9),
+                                  ],
+                                ),
+                              )
+                              .animate()
+                              .fadeIn(duration: 300.ms)
+                              .slideY(begin: 0.08, duration: 400.ms);
+                        }
                         return _GeneratedPlanCard(
                           data: data,
                           onReset: () {
