@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,10 +37,8 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       debugPrint("Error stopping playback: $e");
     }
 
-    // Determine wait time based on whether we are already in a frame or not,
-    // but a small fixed delay ensures the UI has updated to hide the WebView.
-    // Also gives time for the 'about:blank' request to process.
-    await Future.delayed(const Duration(milliseconds: 100));
+    // Give time for the widget to fade out smoothly before popping
+    await Future.delayed(const Duration(milliseconds: 200));
     if (mounted) {
       Navigator.of(context).pop(result);
     }
@@ -124,23 +123,54 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: const Color(
-          0xFFF8FAFC,
-        ), // Beautiful soft light gray page
+        backgroundColor: Colors.white, // Base background
         body: Stack(
           children: [
-            // Background Glow (match the Music page)
+            // Vibrant Animated Background Gradient Orbs Match Music Page
             Positioned(
-              top: -50,
+              top: -100,
+              left: -50,
+              child: Container(
+                width: 350,
+                height: 350,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF6366F1), // Indigo
+                ),
+              ),
+            ),
+            Positioned(
+              top: 100,
+              right: -100,
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFFEC4899), // Pink
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -50,
               left: -50,
               child: Container(
                 width: 300,
                 height: 300,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(
-                    0xFF6366F1,
-                  ).withValues(alpha: 0.08), // Soft primary glow
+                  color: Color(0xFFF43F5E), // Rose
+                ),
+              ),
+            ),
+            // Heavy Frosted Glass Overlay
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                child: Container(
+                  color: Colors.white.withValues(
+                    alpha: 0.75,
+                  ), // Lightens it for light theme
                 ),
               ),
             ),
@@ -151,20 +181,21 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                   _buildHeader(context),
                   Expanded(
                     child: Container(
-                      margin: EdgeInsets.zero,
+                      margin: widget.isLoginOnly
+                          ? EdgeInsets.zero
+                          : const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 2,
+                            ),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        border: Border(
-                          top: BorderSide(
-                            color: const Color(
-                              0xFF0F172A,
-                            ).withValues(alpha: 0.05),
-                          ),
-                          bottom: BorderSide(
-                            color: const Color(
-                              0xFF0F172A,
-                            ).withValues(alpha: 0.05),
-                          ),
+                        borderRadius: BorderRadius.circular(
+                          widget.isLoginOnly ? 0 : 24,
+                        ),
+                        border: Border.all(
+                          color: const Color(
+                            0xFF0F172A,
+                          ).withValues(alpha: 0.05),
                         ),
                         boxShadow: [
                           if (!widget.isLoginOnly)
@@ -177,9 +208,19 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                             ),
                         ],
                       ),
-                      child: _isClosing
-                          ? Container(color: Colors.white)
-                          : WebViewWidget(controller: _controller),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          widget.isLoginOnly ? 0 : 24,
+                        ),
+                        child: AnimatedOpacity(
+                          opacity: _isClosing ? 0.0 : 1.0,
+                          duration: const Duration(milliseconds: 200),
+                          child: Container(
+                            color: Colors.white,
+                            child: WebViewWidget(controller: _controller),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   if (!widget.isLoginOnly) ...[
