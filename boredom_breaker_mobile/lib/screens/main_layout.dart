@@ -91,12 +91,22 @@ class _MainLayoutState extends State<MainLayout> {
     }
   }
 
-  void _navigateTo(Widget screen) {
+  void _scrollDashboardToTop() {
+    if (_currentIndex == 0 && _scrollControllers[0].hasClients) {
+      _scrollControllers[0].animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+  void _navigateTo(Widget screen) async {
     // Close the drawer first
     Navigator.pop(context);
 
-    // Navigate to the new screen
-    Navigator.push(
+    // Navigate to the new screen and wait for return
+    await Navigator.push(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => screen,
@@ -107,7 +117,7 @@ class _MainLayoutState extends State<MainLayout> {
             child: SlideTransition(
               position:
                   Tween<Offset>(
-                    begin: const Offset(0.1, 0.0), // Subtle horizontal slide
+                    begin: const Offset(0.1, 0.0),
                     end: Offset.zero,
                   ).animate(
                     CurvedAnimation(
@@ -121,6 +131,7 @@ class _MainLayoutState extends State<MainLayout> {
         },
       ),
     );
+    _scrollDashboardToTop();
   }
 
   Widget _buildProfileAvatar() {
@@ -464,9 +475,10 @@ class _MainLayoutState extends State<MainLayout> {
               ],
             ),
           ),
-          _buildDrawerItem(Icons.book_outlined, "Journal", () {
+          _buildDrawerItem(Icons.book_outlined, "Journal", () async {
             Navigator.pop(context); // close drawer
-            Navigator.push(context, JournalPageRoute());
+            await Navigator.push(context, JournalPageRoute());
+            _scrollDashboardToTop();
           }),
           _buildDrawerItem(
             Icons.mic_none_outlined,
@@ -481,14 +493,7 @@ class _MainLayoutState extends State<MainLayout> {
           _buildDrawerItem(Icons.history, "History", () async {
             Navigator.pop(context); // close drawer
             await Navigator.push(context, HistoryScreen.route());
-            // Scroll dashboard back to top when returning
-            if (_scrollControllers[0].hasClients) {
-              _scrollControllers[0].animateTo(
-                0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-              );
-            }
+            _scrollDashboardToTop();
           }),
           const Divider(color: Colors.black12, height: 40),
           _buildDrawerItem(Icons.logout_rounded, "Logout", () async {
@@ -554,12 +559,13 @@ class _MainLayoutState extends State<MainLayout> {
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (index == 3) {
-          Navigator.push(
+          await Navigator.push(
             context,
             CupertinoPageRoute(builder: (_) => const ChatScreen()),
           );
+          _scrollDashboardToTop();
         } else {
           setState(() => _currentIndex = index);
           if (_scrollControllers[index].hasClients) {

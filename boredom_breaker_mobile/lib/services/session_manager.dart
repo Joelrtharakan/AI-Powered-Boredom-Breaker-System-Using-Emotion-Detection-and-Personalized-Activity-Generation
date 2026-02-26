@@ -30,6 +30,11 @@ class SessionManager {
     return prefs.getString(_keyLockboxPasscode);
   }
 
+  static Future<void> clearLockboxPasscode() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_keyLockboxPasscode);
+  }
+
   static Future<int?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt(_keyUserId);

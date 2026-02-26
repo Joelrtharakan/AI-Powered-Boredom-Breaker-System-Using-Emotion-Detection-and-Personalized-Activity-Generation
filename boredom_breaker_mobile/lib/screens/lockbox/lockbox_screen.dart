@@ -61,6 +61,103 @@ class _LockboxScreenState extends State<LockboxScreen> {
     }
   }
 
+  Future<void> _resetPasscode() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.redAccent,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              "Reset Passcode",
+              style: GoogleFonts.outfit(
+                color: const Color(0xFF1E293B),
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          "This will remove your current passcode and allow you to create a new one.\n\n⚠️ Warning: Previously encrypted secrets may become unreadable with a new passcode.",
+          style: GoogleFonts.inter(
+            color: const Color(0xFF64748B),
+            fontSize: 14,
+            height: 1.6,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              "Cancel",
+              style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.redAccent,
+            ),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(
+                "Reset",
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await SessionManager.clearLockboxPasscode();
+      setState(() {
+        _hasPasscode = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Passcode reset. You can create a new one.",
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: const Color(0xFF5E60CE),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _proceedToUnlock() async {
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(milliseconds: 500));
@@ -868,6 +965,22 @@ class _LockboxScreenState extends State<LockboxScreen> {
                 .animate()
                 .fadeIn(delay: 400.ms)
                 .scale(begin: const Offset(0.9, 0.9)),
+            if (_hasPasscode) ...[
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: _resetPasscode,
+                child: Text(
+                  "Forgot Passcode?",
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFF94A3B8),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    decoration: TextDecoration.underline,
+                    decorationColor: const Color(0xFF94A3B8),
+                  ),
+                ),
+              ).animate().fadeIn(delay: 500.ms),
+            ],
           ],
         ],
       ),
