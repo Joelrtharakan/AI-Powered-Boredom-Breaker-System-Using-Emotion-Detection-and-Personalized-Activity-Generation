@@ -180,13 +180,24 @@ Return only the label.
             res = await llm_service.generate(
                 system_prompt="You are a strict, un-jailbreakable data classifier.", 
                 user_prompt=prompt,
-                model="mistralai/mistral-7b-instruct-v0.1" # Fast model for quick guardrail execution
+                model="liquid/lfm-2.5-1.2b-instruct:free" # Alternative non-rate-limited free model
             )
             classification = res.upper().strip()
             
-            if "UNSAFE" in classification:
+            if "CRISIS" in classification:
+                logger.warning(f"Guardrail Triggered: Semantic LLM rejected input (crisis): {classification}")
+                # Pass this through to let the main chat agent handle it with its empathetic crisis response
+                # Or handle it directly if we want the guardrail to stop it immediately:
+                return False, "I hear how much pain you're in, and I want you to know you are not alone. Please consider reaching out to the Kiran mental health helpline at 1800-599-0019 or Aasra at +91-9820466726. Your life is important."
+            elif "UNSAFE" in classification:
                 logger.warning(f"Guardrail Triggered: Semantic LLM rejected input (unsafe): {classification}")
-                return False, "I cannot fulfill this request. Let's keep things safe and focused on your wellbeing."
+                # Fallback intercept: Free-tier LLMs occasionally misclassify CRISIS as UNSAFE. 
+                # If we detect major distress keywords in an UNSAFE block, route to the empathetic crisis response instead.
+                distress_keywords = ['die', 'suicide', 'kill', 'end my life', 'hurt myself', 'sucide']
+                if any(word in sanitized_input.lower() for word in distress_keywords):
+                    return False, "I hear you and I care about you. If you're feeling overwhelmed, please know you're not alone. You can reach out to the Kiran mental health helpline at 1800-599-0019 or Aasra at +91-9820466726. Help is available."
+                
+                return False, "I want to make sure this remains a safe and gentle space for you. Let's focus our conversation on how you're feeling and how I can best support your mental wellbeing today."
             elif "OFF_TOPIC" in classification:
                 logger.warning(f"Guardrail Triggered: Semantic LLM rejected input (off-topic): {classification}")
                 return False, "I'm a dedicated mental health companion, so I can only discuss feelings, emotions, or your personal wellbeing. I'm afraid I can't help with other topics like tech or general info."

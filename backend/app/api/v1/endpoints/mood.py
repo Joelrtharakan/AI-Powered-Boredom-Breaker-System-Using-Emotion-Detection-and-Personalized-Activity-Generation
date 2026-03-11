@@ -44,7 +44,7 @@ def log_mood(request: MoodLogRequest, user_id: int, db: Session = Depends(get_db
 
 @router.get("/history", response_model=List[MoodHistoryItem])
 def get_history(user_id: int, db: Session = Depends(get_db)):
-    logs = db.query(MoodHistory).filter(MoodHistory.user_id == user_id).order_by(MoodHistory.created_at.desc()).limit(20).all()
+    logs = db.query(MoodHistory).filter(MoodHistory.user_id == user_id).order_by(MoodHistory.created_at.desc()).limit(100).all()
     
     # Ensure timezone is UTC for correct frontend parsing
     for log in logs:

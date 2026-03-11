@@ -47,7 +47,7 @@ Required Strategy: {strategy}
             dynamic_instruction += """
 1. Acknowledge & Validate (show deep empathy)
 2. Support/Grounding (slow the moment)
-3. Gentle Next Step (encourage professional connection)
+3. Gentle Next Step (encourage professional connection to Indian Helplines: Kiran at 1800-599-0019 or Aasra at +91-9820466726)
 Keep it under 2 sentences. Be exceptionally warm.
 """
         elif risk_level == "MODERATE_DISTRESS":

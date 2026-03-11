@@ -9,9 +9,8 @@ class OpenRouterService:
         self.api_key = settings.OPENROUTER_API_KEY
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.logger = logging.getLogger(__name__)
-        # Default model: Mistral 7B (Confirmed stable endpoint). 
-        # (It will now correctly obey the short constraints due to our 'max_tokens' fix and appended system note).
-        self.model = "mistralai/mistral-7b-instruct-v0.1" 
+        # Default model: Liquid 2.5 1.2B (Not hosted by Venice, avoiding 429s).
+        self.model = "liquid/lfm-2.5-1.2b-instruct:free" 
         
     async def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
         if not self.api_key:
@@ -35,14 +34,15 @@ class OpenRouterService:
             ]
         }
         
-        max_retries = 3
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        max_retries = 2
+        async with httpx.AsyncClient(timeout=15.0) as client:
             for attempt in range(max_retries):
                 try:
                     response = await client.post(self.base_url, headers=headers, json=data)
                     response.raise_for_status()
                     result = response.json()
-                    return result['choices'][0]['message']['content'].strip()
+                    content = result.get('choices', [{}])[0].get('message', {}).get('content', '')
+                    return content.strip() if content else ""
                 except httpx.HTTPStatusError as e:
                     print(f"❌ OpenRouter HTTP Error: {e.response.status_code} - {e.response.text}")
                     self.logger.error(f"OpenRouter HTTP Error: {e.response.status_code} - {e.response.text}")

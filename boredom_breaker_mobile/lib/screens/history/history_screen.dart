@@ -7,8 +7,11 @@ import 'package:intl/intl.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/history_provider.dart';
 
-class HistoryScreen extends ConsumerWidget {
+class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
+
+  @override
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
 
   /// Smooth page route with premium slide + fade transition
   static Route<dynamic> route() {
@@ -64,9 +67,22 @@ class HistoryScreen extends ConsumerWidget {
       },
     );
   }
+}
+
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
+  String? _selectedFilterMood;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    // Fetch latest data silently immediately after frame loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(historyProvider.notifier).fetchHistory();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final historyState = ref.watch(historyProvider);
     final size = MediaQuery.of(context).size;
 
@@ -263,6 +279,12 @@ class HistoryScreen extends ConsumerWidget {
     Map<String, dynamic> stats,
   ) {
     final chronologicalHistory = List.from(history.reversed);
+    final filteredHistory = _selectedFilterMood == null
+        ? history
+        : history.where((item) {
+            final mood = (item['mood'] as String?)?.toLowerCase() ?? 'unknown';
+            return mood == _selectedFilterMood;
+          }).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
@@ -329,23 +351,93 @@ class HistoryScreen extends ConsumerWidget {
 
           const SizedBox(height: 40),
 
-          // 4. Recent History List
+          // 4. Recent History List & Filters
           const _SectionTitle(title: "RECENT LOGS"),
           const SizedBox(height: 16),
-          ListView.separated(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: history.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final item = history[index];
-              return _HistoryItemCard(item: item, index: index)
-                  .animate()
-                  .fadeIn(delay: (index * 50 + 500).ms)
-                  .slideX(begin: 0.05);
-            },
-          ),
+          if (stats['mood_distribution'] != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String?>(
+                    isExpanded: true,
+                    value: _selectedFilterMood,
+                    icon: const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Color(0xFF94A3B8),
+                    ),
+                    style: GoogleFonts.outfit(
+                      color: const Color(0xFF1E293B),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedFilterMood = newValue;
+                      });
+                    },
+                    items: [
+                      DropdownMenuItem<String?>(
+                        value: null,
+                        child: Text("All Moods"),
+                      ),
+                      ...((stats['mood_distribution'] as Map<String, int>).keys
+                              .toList()
+                            ..sort())
+                          .map((mood) {
+                            return DropdownMenuItem<String?>(
+                              value: mood,
+                              child: Text(
+                                mood.replaceAll('_', ' ').toUpperCase(),
+                              ),
+                            );
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          filteredHistory.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
+                    child: Text(
+                      "No logs found for this emotion.",
+                      style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filteredHistory.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final item = filteredHistory[index];
+                    return _HistoryItemCard(item: item, index: index)
+                        .animate()
+                        .fadeIn(delay: (index * 50 + 500).ms)
+                        .slideX(begin: 0.05);
+                  },
+                ),
         ],
       ),
     );
@@ -554,14 +646,18 @@ class _MoodDistributionChart extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          mood.toUpperCase(),
+                          mood.replaceAll('_', ' ').toUpperCase(),
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.fade,
                           style: GoogleFonts.outfit(
                             color: const Color(0xFF1E293B),
-                            fontSize: 13,
+                            fontSize: 12, // Reduced slightly to fit better
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
+                      const SizedBox(width: 8), // Re-added spacing
                       Text(
                         "$percent%",
                         style: GoogleFonts.inter(
@@ -758,7 +854,9 @@ class _IntensityChart extends StatelessWidget {
                           barWidth: 5,
                           isStrokeCapRound: true,
                           dotData: FlDotData(
-                            show: true,
+                            show:
+                                history.length <=
+                                20, // Only show dots if sparse data
                             getDotPainter: (spot, percent, barData, index) {
                               return FlDotCirclePainter(
                                 radius: 4,
