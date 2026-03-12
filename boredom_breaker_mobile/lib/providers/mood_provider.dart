@@ -17,53 +17,26 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
   Future<void> analyzeMood(String text, int userId) async {
     state = const AsyncValue.loading();
     try {
-      final moodData = await _api.post('/mood/detect', data: {'text': text});
-      final moodRes = moodData.data;
-
-      // If no emotion was detected, skip planner and show message
-      if (moodRes['decision_source'] == 'no_emotion_detected') {
-        state = AsyncValue.data({
-          'mood': moodRes,
-          'plan': <dynamic>[],
-          'no_emotion': true,
-        });
-        return;
-      }
-
-      // Log Mood for History
-      await _api.post(
-        '/mood/log',
-        data: {
-          'mood': moodRes['mood'],
-          'emotion': moodRes['emotion'],
-          'intensity': moodRes['intensity'],
-          'energy_level': moodRes['energy_level'],
-          'source': 'text',
-          'activities_used': [],
-        },
-        queryParameters: {'user_id': userId},
+      // TURBO MODE: Combined single-trip request for Emotion + Plan + Log
+      // This collapses 3 sequential requests into 1 parallelized backend operation
+      final response = await _api.post(
+        '/mood/detect-and-plan',
+        data: {'text': text, 'user_id': userId},
       );
 
-      // Get Suggestion Plan (Calls Planner Agent)
-      final planRes = await _api.post(
-        '/suggest/',
-        data: {
-          'user_id': userId,
-          'mood': moodRes['mood'],
-          'emotion': moodRes['emotion'],
-          'intensity': moodRes['intensity'],
-          'time_available_minutes': 30,
-          'text': text,
-          'decision_source': moodRes['decision_source'] ?? '',
-        },
-      );
+      final data = response.data;
+      final moodRes = data['mood'];
+      final plan = data['plan'] as List<dynamic>;
 
-      List<dynamic> plan = [];
-      if (planRes.data['plan'] is List) {
-        plan = planRes.data['plan'];
-      }
+      final ds = moodRes['decision_source'] ?? '';
+      bool noEmotion =
+          (ds == 'no_emotion_detected' || ds == 'neutral_override');
 
-      state = AsyncValue.data({'mood': moodRes, 'plan': plan});
+      state = AsyncValue.data({
+        'mood': moodRes,
+        'plan': plan,
+        'no_emotion': noEmotion,
+      });
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

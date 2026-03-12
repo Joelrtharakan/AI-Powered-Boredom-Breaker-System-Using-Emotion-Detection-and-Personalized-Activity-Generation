@@ -18,49 +18,22 @@ class HistoryScreen extends ConsumerStatefulWidget {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
           const HistoryScreen(),
-      transitionDuration: const Duration(milliseconds: 450),
-      reverseTransitionDuration: const Duration(milliseconds: 350),
+      transitionDuration: const Duration(milliseconds: 350),
+      reverseTransitionDuration: const Duration(milliseconds: 250),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        // Entry: slide up + fade in
-        final enterSlide =
-            Tween<Offset>(
-              begin: const Offset(0.0, 0.04),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-            );
-        final enterFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-          ),
+        // High-performance enter transition
+        final fade = CurvedAnimation(parent: animation, curve: Curves.linear);
+        final slide = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
         );
 
-        // Exit: slide right + fade out
-        final exitSlide =
-            Tween<Offset>(
-              begin: Offset.zero,
-              end: const Offset(0.3, 0.0),
-            ).animate(
-              CurvedAnimation(parent: animation, curve: Curves.easeInCubic),
-            );
-        final exitFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: const Interval(0.0, 0.8, curve: Curves.easeIn),
-          ),
-        );
-
-        // Use the forward animation for both entry and exit
-        // (animation goes 0→1 on push, 1→0 on pop)
         return FadeTransition(
-          opacity: animation.status == AnimationStatus.reverse
-              ? exitFade
-              : enterFade,
+          opacity: fade,
           child: SlideTransition(
-            position: animation.status == AnimationStatus.reverse
-                ? exitSlide
-                : enterSlide,
+            position: slide.drive(
+              Tween<Offset>(begin: const Offset(0.0, 0.08), end: Offset.zero),
+            ),
             child: child,
           ),
         );
@@ -71,6 +44,7 @@ class HistoryScreen extends ConsumerStatefulWidget {
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   String? _selectedFilterMood;
+  bool _readyToAnimate = false;
 
   @override
   void initState() {
@@ -78,6 +52,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     // Fetch latest data silently immediately after frame loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(historyProvider.notifier).fetchHistory();
+      // Delay complex animations until page transition is likely finished
+      Future.delayed(const Duration(milliseconds: 350), () {
+        if (mounted) setState(() => _readyToAnimate = true);
+      });
     });
   }
 
@@ -171,37 +149,43 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             left: 0,
             right: 0,
             bottom: 0,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 30,
-                    offset: Offset(0, -10),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(40),
+            child: RepaintBoundary(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 30,
+                      offset: Offset(0, -10),
+                    ),
+                  ],
                 ),
-                child: historyState.when(
-                  data: (history) {
-                    if (history.isEmpty) {
-                      return _buildEmptyState();
-                    }
-                    final stats = _calculateStats(history);
-                    return _buildContent(context, history, stats);
-                  },
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(40),
                   ),
-                  error: (err, stack) => Center(
-                    child: Text(
-                      "Error loading insights",
-                      style: GoogleFonts.inter(color: const Color(0xFF94A3B8)),
+                  child: historyState.when(
+                    data: (history) {
+                      if (history.isEmpty) {
+                        return _buildEmptyState();
+                      }
+                      final stats = _calculateStats(history);
+                      return _buildContent(context, history, stats);
+                    },
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    error: (err, stack) => Center(
+                      child: Text(
+                        "Error loading insights",
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF94A3B8),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -295,40 +279,45 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           // 1. Key Metrics (Premium Cards)
           const _SectionTitle(title: "QUICK STATS"),
           const SizedBox(height: 16),
-          IntrinsicHeight(
-            child: Row(
-              children: [
-                Expanded(
-                  child: _MetricCard(
-                    label: "Avg Flow",
-                    value:
-                        "${(stats['avg_intensity'] * 10).toStringAsFixed(1)}",
-                    icon: Icons.water_drop_rounded,
-                    color: const Color(0xFF6D4EFF),
-                  ),
+          SizedBox(
+                height:
+                    120, // Fixed height instead of IntrinsicHeight for performance
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _MetricCard(
+                        label: "Avg Flow",
+                        value:
+                            "${(stats['avg_intensity'] * 10).toStringAsFixed(1)}",
+                        icon: Icons.water_drop_rounded,
+                        color: const Color(0xFF6D4EFF),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _MetricCard(
+                        label: "Total logs",
+                        value: "${stats['total_logs']}",
+                        icon: Icons.bolt_rounded,
+                        color: const Color(0xFF00C6FF),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _MetricCard(
+                        label: "Dominant",
+                        value: stats['dominant_mood'].toString().toUpperCase(),
+                        icon: Icons.psychology_rounded,
+                        color: const Color(0xFFFF416C),
+                        isTextSmall: true,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _MetricCard(
-                    label: "Total logs",
-                    value: "${stats['total_logs']}",
-                    icon: Icons.bolt_rounded,
-                    color: const Color(0xFF00C6FF),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _MetricCard(
-                    label: "Dominant",
-                    value: stats['dominant_mood'].toString().toUpperCase(),
-                    icon: Icons.psychology_rounded,
-                    color: const Color(0xFFFF416C),
-                    isTextSmall: true,
-                  ),
-                ),
-              ],
-            ),
-          ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
+              )
+              .animate(target: _readyToAnimate ? 1 : 0)
+              .fadeIn(duration: 400.ms)
+              .slideY(begin: 0.1),
 
           const SizedBox(height: 40),
 
@@ -336,8 +325,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           const _SectionTitle(title: "EMOTIONAL SPECTRUM"),
           const SizedBox(height: 16),
           _MoodDistributionChart(stats: stats)
-              .animate()
-              .fadeIn(delay: 200.ms)
+              .animate(target: _readyToAnimate ? 1 : 0)
+              .fadeIn(delay: 100.ms)
               .scale(begin: const Offset(0.95, 0.95)),
 
           const SizedBox(height: 40),
@@ -345,9 +334,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           // 3. Intensity Trend
           const _SectionTitle(title: "INTENSITY TREND"),
           const SizedBox(height: 16),
-          _IntensityChart(
-            history: chronologicalHistory,
-          ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+          _IntensityChart(history: chronologicalHistory)
+              .animate(target: _readyToAnimate ? 1 : 0)
+              .fadeIn(delay: 200.ms)
+              .slideY(begin: 0.1),
 
           const SizedBox(height: 40),
 
@@ -424,19 +414,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ),
                   ),
                 )
-              : ListView.separated(
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: filteredHistory.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final item = filteredHistory[index];
-                    return _HistoryItemCard(item: item, index: index)
-                        .animate()
-                        .fadeIn(delay: (index * 50 + 500).ms)
-                        .slideX(begin: 0.05);
-                  },
+              : Column(
+                  children: [
+                    for (int i = 0; i < filteredHistory.length; i++) ...[
+                      if (i > 0) const SizedBox(height: 12),
+                      _HistoryItemCard(item: filteredHistory[i], index: i)
+                          .animate(target: _readyToAnimate ? 1 : 0)
+                          .fadeIn(delay: (i * 30).ms)
+                          .slideX(begin: 0.05),
+                    ],
+                  ],
                 ),
         ],
       ),
@@ -720,14 +707,21 @@ class _IntensityChart extends StatelessWidget {
                         height: 12,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
+                          gradient: const LinearGradient(
+                            begin: Alignment.bottomLeft,
+                            end: Alignment.topRight,
+                            colors: [
+                              Color(0xFFF72585), // Pink
+                              Color(0xFF7209B7), // Purple
+                              Color(0xFF4361EE), // Blue
+                              Color(0xFF4CC9F0), // Cyan
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        "WEEKLY FLOW",
+                        "AVERAGE FLOW PER EMOTION",
                         style: GoogleFonts.outfit(
                           color: const Color(0xFF94A3B8),
                           fontSize: 10,
@@ -739,147 +733,183 @@ class _IntensityChart extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: LineChart(
-                    LineChartData(
-                      gridData: const FlGridData(
-                        show: true,
-                        drawVerticalLine: true,
-                        horizontalInterval: 0.25,
-                        verticalInterval: 1,
-                      ),
-                      lineTouchData: LineTouchData(
-                        handleBuiltInTouches: true,
-                        touchTooltipData: LineTouchTooltipData(
-                          getTooltipColor: (spot) => const Color(0xFF1E293B),
-                          getTooltipItems: (spots) => spots.map((s) {
-                            return LineTooltipItem(
-                              "Level: ${(s.y * 10).toStringAsFixed(1)}",
-                              GoogleFonts.outfit(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      titlesData: FlTitlesData(
-                        show: true,
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            interval: 0.5,
-                            reservedSize: 32,
-                            getTitlesWidget: (value, meta) {
-                              if (value == 0 || value > 1.0) {
-                                return const SizedBox();
-                              }
-                              if (value == 0.5) {
-                                return Text(
-                                  "5",
-                                  style: GoogleFonts.inter(
-                                    color: const Color(0xFFCBD5E1),
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                );
-                              }
-                              if (value == 1.0) {
-                                return Text(
-                                  "10",
-                                  style: GoogleFonts.inter(
-                                    color: const Color(0xFFCBD5E1),
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                );
-                              }
-                              return const SizedBox();
-                            },
-                          ),
-                        ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            interval: 1,
-                            reservedSize: 32,
-                            getTitlesWidget: (value, meta) {
-                              final step = (history.length / 5).ceil().clamp(
-                                1,
-                                history.length,
-                              );
-                              final index = value.toInt();
-                              if (index % step != 0) return const SizedBox();
-                              if (index < 0 || index >= history.length) {
-                                return const SizedBox();
-                              }
-                              final dateStr = history[index]['created_at'];
-                              final date = DateTime.tryParse(dateStr);
-                              if (date == null) return const SizedBox();
-                              return Text(
-                                DateFormat('dd/MM').format(date),
-                                style: GoogleFonts.inter(
-                                  color: const Color(0xFF94A3B8),
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      borderData: FlBorderData(show: false),
-                      minY: -0.1,
-                      maxY: 1.1,
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: List.generate(history.length, (index) {
-                            final intensity =
-                                (history[index]['intensity'] as num?)
-                                    ?.toDouble() ??
-                                0.0;
-                            return FlSpot(index.toDouble(), intensity);
-                          }),
-                          isCurved: true,
-                          curveSmoothness: 0.35,
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF5E60CE), Color(0xFF4EA8DE)],
-                          ),
-                          barWidth: 5,
-                          isStrokeCapRound: true,
-                          dotData: FlDotData(
-                            show:
-                                history.length <=
-                                20, // Only show dots if sparse data
-                            getDotPainter: (spot, percent, barData, index) {
-                              return FlDotCirclePainter(
-                                radius: 4,
-                                color: Colors.white,
-                                strokeWidth: 3,
-                                strokeColor: const Color(0xFF5E60CE),
-                              );
-                            },
-                          ),
-                          belowBarData: BarAreaData(
+                  child: Builder(
+                    builder: (context) {
+                      // Calculate average intensity per mood
+                      final moodIntensities = <String, List<double>>{};
+                      for (var item in history) {
+                        final mood = (item['mood'] ?? '')
+                            .toString()
+                            .toLowerCase();
+                        final intensity =
+                            (item['intensity'] as num?)?.toDouble() ?? 0.0;
+                        if (!moodIntensities.containsKey(mood)) {
+                          moodIntensities[mood] = [];
+                        }
+                        moodIntensities[mood]!.add(intensity);
+                      }
+
+                      // Aggregate and sort
+                      final averagedData =
+                          moodIntensities
+                              .map((mood, intensities) {
+                                final avg =
+                                    intensities.reduce((a, b) => a + b) /
+                                    intensities.length;
+                                return MapEntry(mood, avg);
+                              })
+                              .entries
+                              .toList()
+                            ..sort((a, b) => a.key.compareTo(b.key));
+
+                      return BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: 1.0,
+                          minY: 0,
+                          gridData: const FlGridData(
                             show: true,
-                            gradient: LinearGradient(
-                              colors: [
-                                const Color(0xFF5E60CE).withValues(alpha: 0.15),
-                                const Color(0xFF5E60CE).withValues(alpha: 0.0),
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                            drawVerticalLine: false,
+                            horizontalInterval: 0.25,
+                          ),
+                          borderData: FlBorderData(show: false),
+                          barTouchData: BarTouchData(
+                            enabled: true,
+                            touchTooltipData: BarTouchTooltipData(
+                              getTooltipColor: (group) =>
+                                  const Color(0xFF1E293B),
+                              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                final mood = averagedData[groupIndex].key
+                                    .toUpperCase()
+                                    .replaceAll('_', ' ');
+                                return BarTooltipItem(
+                                  "$mood\nAvg Flow: ${(rod.toY * 10).toStringAsFixed(1)}",
+                                  GoogleFonts.outfit(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                );
+                              },
                             ),
                           ),
+                          titlesData: FlTitlesData(
+                            show: true,
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                interval: 0.5,
+                                reservedSize: 28,
+                                getTitlesWidget: (value, meta) {
+                                  if (value == 0 || value > 1.0)
+                                    return const SizedBox();
+                                  if (value == 0.5 || value == 1.0) {
+                                    return Text(
+                                      (value * 10).toInt().toString(),
+                                      style: GoogleFonts.inter(
+                                        color: const Color(0xFFCBD5E1),
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    );
+                                  }
+                                  return const SizedBox();
+                                },
+                              ),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 32,
+                                getTitlesWidget: (value, meta) {
+                                  final index = value.toInt();
+                                  if (index < 0 || index >= averagedData.length)
+                                    return const SizedBox();
+
+                                  // Truncate mood name for label
+                                  String moodName = averagedData[index].key
+                                      .toUpperCase()
+                                      .replaceAll('_', '');
+                                  String shortName = moodName.length > 4
+                                      ? moodName.substring(0, 4)
+                                      : moodName;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      shortName,
+                                      style: GoogleFonts.outfit(
+                                        color: const Color(0xFF94A3B8),
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                          barGroups: List.generate(averagedData.length, (
+                            index,
+                          ) {
+                            final mood = averagedData[index].key;
+                            final intensity = averagedData[index].value;
+
+                            Color barColor = const Color(0xFF94A3B8);
+                            if (mood.contains('happy') || mood.contains('joy'))
+                              barColor = const Color(0xFFFFB74D);
+                            else if (mood.contains('sad') ||
+                                mood.contains('depress'))
+                              barColor = const Color(0xFF4E92FF);
+                            else if (mood.contains('ang') ||
+                                mood.contains('frust'))
+                              barColor = const Color(0xFFFF5252);
+                            else if (mood.contains('anx') ||
+                                mood.contains('nerv'))
+                              barColor = const Color(0xFFBA68C8);
+                            else if (mood.contains('calm') ||
+                                mood.contains('relax'))
+                              barColor = const Color(0xFF4DB6AC);
+                            else if (mood.contains('bored') ||
+                                mood.contains('low') ||
+                                mood.contains('tired'))
+                              barColor = const Color(0xFF7986CB);
+                            else if (mood.contains('neutral') ||
+                                mood.contains('none'))
+                              barColor = const Color(0xFF81C784);
+                            else if (mood.contains('stress'))
+                              barColor = const Color(0xFFFF8A65);
+
+                            return BarChartGroupData(
+                              x: index,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: intensity == 0 ? 0.05 : intensity,
+                                  color: barColor,
+                                  width:
+                                      14, // Wider bars since there are fewer categories
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(6),
+                                  ),
+                                  backDrawRodData: BackgroundBarChartRodData(
+                                    show: true,
+                                    toY: 1.0,
+                                    color: const Color(0xFFF8FAFC),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ),
               ],

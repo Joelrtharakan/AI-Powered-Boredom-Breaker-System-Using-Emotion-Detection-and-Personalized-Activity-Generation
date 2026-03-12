@@ -217,14 +217,17 @@ class EmotionAnalyzer:
                 else:
                     reason = "Contrastive logic detected ('but/however'), trusting Transformer context over Keywords."
 
-        # Case B: Mundane/Neutral Handling
+        # Case B: Mundane/Neutral/Request Handling
         mundane_markers = ["toast", "breakfast", "lunch", "dinner", "walk the", "dog", "cat", "wall", "car", "parked", "reading", "book", "email", "chilling", "progress", "steady", "shopping", "weather", "temperature", "rain", "sunny", "cloudy day"]
+        request_markers = ["give me", "show me", "tell me", "how to", "make me", "send me", "do a", "execute", "run", "what is", "calculate", "write a", "create a"]
         is_mundane = any(m in text_clean for m in mundane_markers)
-        if is_mundane and model_score < 0.95 and final_emotion != "joy" and not semantic_emotion:
+        is_request = any(r in text_clean for r in request_markers)
+        
+        if (is_mundane or is_request) and model_score < 0.95 and final_emotion != "joy" and not semantic_emotion:
              final_emotion = "neutral"
-             final_score = 0.85
-             decision_source = "mundane_override"
-             reason = "Identified mundane activity pattern, overriding weak emotional signal."
+             final_score = 0.85 if is_mundane else 0.0
+             decision_source = "neutral_override" if is_mundane else "no_emotion_detected"
+             reason = "Identified mundane activity or task-based request, overriding weak emotional signal."
 
         # Case C: Handle Uncertainty (Confidence < 0.65 -> sadness)
         # Only if there IS actual emotional content from semantic or risk patterns

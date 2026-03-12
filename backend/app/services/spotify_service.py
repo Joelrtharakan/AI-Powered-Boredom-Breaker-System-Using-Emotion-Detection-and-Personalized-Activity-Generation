@@ -11,7 +11,7 @@ class SpotifyService:
         self.client_id = os.getenv("SPOTIFY_CLIENT_ID")
         self.client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
         self.sp = None
-        
+        self._cache = {}
         if self.client_id and self.client_secret:
             try:
                 self.sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
@@ -25,6 +25,12 @@ class SpotifyService:
             print(f"DEBUG: Spotify Keys Missing! ID: {self.client_id}")
 
     def get_mood_playlists(self, mood: str, limit: int = 12):
+        # 0. Check Cache First (Speed Boost!)
+        if mood in self._cache and len(self._cache[mood]) >= limit:
+            results = list(self._cache[mood])
+            random.shuffle(results)
+            return results[:limit]
+
         if not self.sp:
             print("DEBUG: Spotify Client is None")
             return self._get_mock_data(mood)

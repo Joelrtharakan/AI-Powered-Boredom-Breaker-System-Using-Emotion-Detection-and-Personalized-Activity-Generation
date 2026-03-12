@@ -419,6 +419,12 @@ class _GamesScreenState extends State<GamesScreen> {
     );
   }
 
+  Color _getContrastColor(Color background) {
+    return background.computeLuminance() > 0.5
+        ? const Color(0xFF1E293B)
+        : Colors.white;
+  }
+
   Widget _buildGrid(List<GameData> games) {
     if (games.isEmpty) {
       return Center(
@@ -534,7 +540,7 @@ class _GamesScreenState extends State<GamesScreen> {
                                 child: Text(
                                   game.title,
                                   style: GoogleFonts.outfit(
-                                    color: Colors.white,
+                                    color: _getContrastColor(game.color),
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     height: 1.1,
@@ -552,7 +558,9 @@ class _GamesScreenState extends State<GamesScreen> {
                               Text(
                                 game.category,
                                 style: GoogleFonts.inter(
-                                  color: Colors.white.withValues(alpha: 0.8),
+                                  color: _getContrastColor(
+                                    game.color,
+                                  ).withValues(alpha: 0.8),
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 0.5,
@@ -565,7 +573,7 @@ class _GamesScreenState extends State<GamesScreen> {
                                   child: Text(
                                     "🔥 ${_highScores[game.backendId]!['score']}${game.backendId == 'reaction' ? 'ms' : ''} by ${_highScores[game.backendId]!['username']}",
                                     style: GoogleFonts.outfit(
-                                      color: Colors.white,
+                                      color: _getContrastColor(game.color),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
                                     ),

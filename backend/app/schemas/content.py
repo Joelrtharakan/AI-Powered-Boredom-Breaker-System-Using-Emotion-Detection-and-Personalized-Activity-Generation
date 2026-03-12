@@ -10,6 +10,8 @@ class SuggestionRequest(BaseModel):
     preferences: Optional[dict] = {}
     text: Optional[str] = None
     decision_source: Optional[str] = None
+    subtype: Optional[str] = None
+    nervous_system_state: Optional[str] = None
 
 class PlanItem(BaseModel):
     type: str # 'breathing', 'micro_task', 'activity', 'music', 'no_emotion'

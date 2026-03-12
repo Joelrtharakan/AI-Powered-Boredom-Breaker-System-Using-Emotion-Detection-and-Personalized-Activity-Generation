@@ -11,12 +11,13 @@ class ChimpTestScreen extends StatefulWidget {
 }
 
 class _ChimpTestScreenState extends State<ChimpTestScreen> {
-  int _level = 1; // Start at Level 1 based on user feedback
-  List<int?> _grid = List.filled(30, null); // 5x6 Grid = 30 slots
+  int _level = 1;
+  List<int?> _grid = List.filled(30, null);
   int _nextExpected = 1;
   bool _hideNumbers = false;
   bool _isGameOver = false;
   bool _gameStarted = false;
+  int _lives = 3;
 
   @override
   void initState() {
@@ -65,11 +66,17 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
         }
       });
     } else {
-      // Wrong Number
+      // Wrong Number - Lose a life
       setState(() {
-        _isGameOver = true;
+        _lives--;
+        if (_lives <= 0) {
+          _isGameOver = true;
+          _showGameOverDialog();
+        } else {
+          // Reset the same level
+          _startLevel();
+        }
       });
-      _showGameOverDialog();
     }
   }
 
@@ -85,10 +92,12 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.cyanAccent.withValues(alpha: 0.3)),
+            border: Border.all(
+              color: const Color(0xFF0EA5E9).withValues(alpha: 0.3),
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.cyanAccent.withValues(alpha: 0.05),
+                color: const Color(0xFF0EA5E9).withValues(alpha: 0.05),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -100,7 +109,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
               const Icon(
                 Icons.psychology_alt_rounded,
                 size: 80,
-                color: Colors.cyanAccent,
+                color: Color(0xFF0EA5E9),
               ).animate().shake(duration: 600.ms),
               const SizedBox(height: 24),
               Text(
@@ -155,12 +164,15 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                         Navigator.pop(context);
                         setState(() {
                           _level = 1; // Reset to Level 1
+                          _lives = 3; // Reset lives
                           _gameStarted = true;
                         });
                         _startLevel();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.cyanAccent,
+                        backgroundColor: const Color(
+                          0xFF0EA5E9,
+                        ), // Better contrast blue
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -170,7 +182,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                       child: Text(
                         "RETRY",
                         style: GoogleFonts.outfit(
-                          color: Colors.black,
+                          color: const Color(0xFF1E293B),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -247,13 +259,51 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                               ),
                             ),
 
+                            // Lives Indicator
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.redAccent.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.favorite_rounded,
+                                    color: Colors.redAccent,
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    "$_lives",
+                                    style: GoogleFonts.outfit(
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ).animate(target: _lives < 3 ? 1.0 : 0.0).shake(),
+
                             // Title
                             Column(
                               children: [
                                 Text(
                                   "CHIMP TEST",
                                   style: GoogleFonts.outfit(
-                                    color: Colors.cyanAccent,
+                                    color: const Color(
+                                      0xFF0EA5E9,
+                                    ), // Improved contrast blue
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 2,
@@ -280,18 +330,20 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.cyanAccent.withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFF0EA5E9,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.cyanAccent.withValues(
-                                    alpha: 0.3,
-                                  ),
+                                  color: const Color(
+                                    0xFF0EA5E9,
+                                  ).withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Text(
                                 "LVL $_level",
                                 style: GoogleFonts.outfit(
-                                  color: Colors.cyanAccent,
+                                  color: const Color(0xFF0EA5E9),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -447,17 +499,17 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.cyanAccent.withValues(alpha: 0.1),
+              color: const Color(0xFF0EA5E9).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: Colors.cyanAccent, size: 24),
+            child: Icon(icon, color: const Color(0xFF0EA5E9), size: 24),
           ),
           const SizedBox(width: 20),
           Expanded(
             child: Text(
               text,
               style: GoogleFonts.inter(
-                color: const Color(0xFF64748B),
+                color: const Color(0xFF1E293B),
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 height: 1.4,
@@ -481,13 +533,13 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.cyanAccent.withValues(alpha: 0.05),
+                  color: const Color(0xFF0EA5E9).withValues(alpha: 0.05),
                   border: Border.all(
-                    color: Colors.cyanAccent.withValues(alpha: 0.2),
+                    color: const Color(0xFF0EA5E9).withValues(alpha: 0.2),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.cyanAccent.withValues(alpha: 0.1),
+                      color: const Color(0xFF0EA5E9).withValues(alpha: 0.1),
                       blurRadius: 30,
                     ),
                   ],
@@ -495,7 +547,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                 child: const Icon(
                   Icons.psychology_rounded,
                   size: 60,
-                  color: Colors.cyanAccent,
+                  color: Color(0xFF0EA5E9),
                 ),
               ).animate().scale(duration: 1.seconds, curve: Curves.elasticOut),
 
@@ -514,7 +566,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
               Text(
                 "Can you beat the chimp?",
                 style: GoogleFonts.inter(
-                  color: const Color(0xFF06B6D4),
+                  color: const Color(0xFF0284C7), // Darker Cyan/Blue (Sky 600)
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,
@@ -549,18 +601,20 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyanAccent,
+                      backgroundColor: const Color(0xFF0EA5E9),
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 15,
-                      shadowColor: Colors.cyanAccent.withValues(alpha: 0.4),
+                      shadowColor: const Color(
+                        0xFF0EA5E9,
+                      ).withValues(alpha: 0.4),
                     ),
                     child: Text(
                       "START EXPERIMENT",
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         letterSpacing: 1.5,

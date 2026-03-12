@@ -275,7 +275,9 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                 Text(
                                   "VISUAL MEMORY",
                                   style: GoogleFonts.outfit(
-                                    color: Colors.amberAccent,
+                                    color: const Color(
+                                      0xFFB45309,
+                                    ), // Amber 700 for contrast
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 2,
@@ -318,14 +320,14 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                                 children: [
                                   const Icon(
                                     Icons.favorite,
-                                    color: Colors.amberAccent,
+                                    color: Color(0xFFB45309),
                                     size: 14,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
                                     "$_lives",
                                     style: GoogleFonts.outfit(
-                                      color: Colors.amberAccent,
+                                      color: const Color(0xFFB45309),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
                                     ),
@@ -535,7 +537,7 @@ class _VisualMemoryGameState extends State<VisualMemoryGame> {
                     child: Text(
                       "START TEST",
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: const Color(0xFF1E293B),
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         letterSpacing: 1.5,

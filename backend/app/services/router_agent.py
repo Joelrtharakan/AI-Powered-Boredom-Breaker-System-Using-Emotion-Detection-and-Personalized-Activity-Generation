@@ -15,7 +15,15 @@ class RouterAgent:
                 # Fallback if agent returned empty
                 mood = mood_data.get("mood", "")
                 emotion = mood_data.get("emotion", "unknown")
-                return await planner_agent.generate_plan(f"{mood} (Detected Emotion: {emotion})", 0.5, user_id, interests, text=text)
+                return await planner_agent.generate_plan(
+                    f"{mood} (Detected Emotion: {emotion})", 
+                    0.5, 
+                    user_id, 
+                    interests, 
+                    text=text,
+                    subtype=mood_data.get("subtype"),
+                    ns_state=mood_data.get("nervous_system_state")
+                )
             return items
         except Exception as e:
             self.logger.error(f"Router Error: {e}")
@@ -29,13 +37,17 @@ class RouterAgent:
         emotion = mood_data.get("emotion", "neutral")
         intensity = mood_data.get("intensity", 0.5)
         decision_source = mood_data.get("decision_source", "")
+        subtype = mood_data.get("subtype")
+        ns_state = mood_data.get("nervous_system_state")
 
         self.logger.info(f"Routing for Mood: {mood}, Emotion: {emotion}, Source: {decision_source}")
 
         # 0. NO EMOTION DETECTED -> Planner Agent handles with "express your feelings" response
         if decision_source == "no_emotion_detected":
              self.logger.info("Selected Agent: PlannerAgent (No Emotion Detected)")
-             return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text)
+             return await planner_agent.generate_plan(
+                 mood, intensity, user_id, interests, text=text, subtype=subtype, ns_state=ns_state
+             )
 
         # 1. Critical/Heavy Emotions -> Planner Agent (Needs structured help)
         fatigue_keywords = ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything"]
@@ -45,12 +57,28 @@ class RouterAgent:
 
         if emotion in ["sadness", "anger", "fear", "exhaustion", "stressed", "anxious", "sad"] or is_fatigued:
              self.logger.info("Selected Agent: PlannerAgent")
-             return await planner_agent.generate_plan(f"{mood} (Detected Emotion: {emotion})", intensity, user_id, interests, text=text)
+             return await planner_agent.generate_plan(
+                 f"{mood} (Detected Emotion: {emotion})", 
+                 intensity, 
+                 user_id, 
+                 interests, 
+                 text=text,
+                 subtype=subtype,
+                 ns_state=ns_state
+             )
 
         # 2. Boredom -> Planner Agent (Full Plan: Micro-task + Activity + Music)
         elif emotion == "boredom":
              self.logger.info("Selected Agent: PlannerAgent (Boredom)")
-             return await planner_agent.generate_plan(f"{mood} (Detected Emotion: {emotion})", intensity, user_id, interests, text=text)
+             return await planner_agent.generate_plan(
+                 f"{mood} (Detected Emotion: {emotion})", 
+                 intensity, 
+                 user_id, 
+                 interests, 
+                 text=text,
+                 subtype=subtype,
+                 ns_state=ns_state
+             )
 
         # 3. Neutral -> Surprise Agent (Spark joy)
         elif emotion == "neutral":

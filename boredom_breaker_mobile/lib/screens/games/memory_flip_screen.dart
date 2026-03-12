@@ -528,7 +528,7 @@ class _MemoryFlipScreenState extends State<MemoryFlipScreen> {
                 child: Text(
                   "START GAME",
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     letterSpacing: 1,

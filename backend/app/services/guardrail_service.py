@@ -31,7 +31,7 @@ class GuardrailService:
             r"integrate.*dx",
             r"(?:solve|calculate).*x\s*=",
             r"\b(flutter|dart|react|javascript|python|java|c\+\+|node)\b",
-            r"\b(coding|programming|how to code|debug|compile|app dev)\b"
+            r"\b(coding|programming|how to code|debug|compile|app dev|code)\b"
         ]
 
         # 3. Toxicity / Profanity (Basic static list for fast rejection)
@@ -83,6 +83,10 @@ class GuardrailService:
         if self.code_math_regex.search(sanitized_input):
             logger.warning("Guardrail Triggered: Code/Math attempt.")
             return False, "I am an AI Companion focused purely on mental health and emotional support. I am unable to write code, solve math problems, or process technical requests."
+
+        # Step 2.5: Fast Path for short, safe-looking messages (Instant Speed Boost!)
+        if len(sanitized_input) < 30:
+            return True, sanitized_input
 
         # Step 3: Semantic Guardrail (LLM Moderation)
         # Using XML tags to isolate user input from the prompt instructions (prevents Prompt Injection)

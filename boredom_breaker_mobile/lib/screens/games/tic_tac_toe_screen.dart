@@ -540,7 +540,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
                   onPressed: _startGame,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _primaryColor,
-                    foregroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF1E293B),
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),

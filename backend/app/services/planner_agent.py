@@ -161,21 +161,33 @@ class PlannerAgent:
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     # MAIN PLAN GENERATOR
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    async def generate_plan(self, mood: str, intensity: float, user_id: int = None, interests: list = None, text: str = ""):
+    async def generate_plan(self, mood: str, intensity: float, user_id: int = None, interests: list = None, text: str = "", subtype: str = None, ns_state: str = None, risk_level: str = None):
         """
         Generates a structured micro-intervention plan based on emotion + risk.
         Follows the 5-section production specification.
         """
         # 1. RISK ASSESSMENT
-        analysis = emotion_analyzer.analyze(text) if text else {"risk_level": "LOW_NORMAL", "emotion": "neutral", "intensity": 0.5, "subtype": None, "nervous_system_state": "regulated"}
+        # 1. OPTIMIZED RISK/EMOTION ASSESSMENT
+        if subtype or ns_state or risk_level:
+            # We already have the metadata, use it! (HUGE SPEED BOOST)
+            analysis = {
+                "risk_level": risk_level or "LOW_NORMAL",
+                "emotion": mood.split("(Detected Emotion:")[1].strip().replace(")", "") if "(Detected Emotion:" in mood else "neutral",
+                "subtype": subtype,
+                "nervous_system_state": ns_state or "regulated",
+                "intensity": intensity
+            }
+        else:
+            # Fallback for old calls or missing data
+            analysis = emotion_analyzer.analyze(text) if text else {"risk_level": "LOW_NORMAL", "emotion": "neutral", "intensity": 0.5, "subtype": None, "nervous_system_state": "regulated"}
+        
         risk_level = analysis.get("risk_level", "LOW_NORMAL")
         emotion = analysis.get("emotion", "neutral")
         subtype = analysis.get("subtype", None)
         ns_state = analysis.get("nervous_system_state", "regulated")
         detected_intensity = analysis.get("intensity", intensity)
-        needs_strengthening = analysis.get("needs_strengthening", False)
 
-        self.logger.info(f"Planner: risk={risk_level}, emotion={emotion}, subtype={subtype}, intensity={detected_intensity}, ns_state={ns_state}")
+        self.logger.info(f"Planner [Fast Track]: risk={risk_level}, emotion={emotion}, subtype={subtype}, intensity={detected_intensity}, ns_state={ns_state}")
 
         # ⚖️ LAYER 2 SAFETY OVERRIDE: Work Context
         work_keywords = ["work", "assignment", "submit", "project", "deadline", "study", "exam", "task", "job"]
