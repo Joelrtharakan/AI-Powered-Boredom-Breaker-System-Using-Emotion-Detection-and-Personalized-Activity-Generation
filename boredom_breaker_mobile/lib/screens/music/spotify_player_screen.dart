@@ -51,30 +51,40 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       String? type;
       String? id;
 
-      if (finalUrl.contains("spotify:playlist:")) {
-        type = "playlist";
-        id = finalUrl.split("spotify:playlist:").last;
-      } else if (finalUrl.contains("playlist/")) {
-        type = "playlist";
-        id = finalUrl.split("playlist/").last.split("?").first;
-      } else if (finalUrl.contains("spotify:track:")) {
-        type = "track";
-        id = finalUrl.split("spotify:track:").last;
-      } else if (finalUrl.contains("track/")) {
-        type = "track";
-        id = finalUrl.split("track/").last.split("?").first;
+      // Handle URIs (spotify:track:ID)
+      if (finalUrl.contains("spotify:")) {
+        final uriParts = finalUrl.split(':');
+        if (uriParts.length >= 3) {
+          type = uriParts[1];
+          id = uriParts[2];
+        }
       }
-      id = id?.split(':').first;
+      // Handle URLs (open.spotify.com/track/ID)
+      else if (finalUrl.contains("spotify.com/")) {
+        final path = finalUrl.split("spotify.com/").last.split("?").first;
+        final parts = path.split('/');
+        if (parts.length >= 2) {
+          type = parts[0];
+          id = parts[1];
+        }
+      }
 
       if (type != null && id != null && id.isNotEmpty) {
+        // ID might still have query params if split failed
+        id = id.split('?').first;
         finalUrl =
             "https://open.spotify.com/embed/$type/$id?utm_source=generator";
       }
     }
 
+    debugPrint("DEBUG: Loading Spotify URL: $finalUrl");
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
+      ..setUserAgent(
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
@@ -100,7 +110,14 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(finalUrl));
+      ..loadRequest(
+        Uri.parse(finalUrl),
+        headers: {
+          'Accept':
+              'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.5',
+        },
+      );
   }
 
   @override

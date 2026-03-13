@@ -14,6 +14,8 @@ import '../journal/journal_screen.dart';
 import '../history/history_screen.dart';
 import '../lockbox/lockbox_screen.dart';
 import '../voice/voice_mode_screen.dart';
+import '../../providers/game_launch_provider.dart';
+import '../../providers/music_launch_provider.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   final ScrollController? scrollController;
@@ -241,6 +243,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         }
                         return _GeneratedPlanCard(
                           data: data,
+                          onTabSwitch: widget.onTabSwitch,
                           onReset: () {
                             ref.read(moodProvider.notifier).reset();
                             _controller.clear();
@@ -573,14 +576,19 @@ class _MoodInputSection extends StatelessWidget {
   }
 }
 
-class _GeneratedPlanCard extends StatelessWidget {
+class _GeneratedPlanCard extends ConsumerWidget {
   final Map<String, dynamic> data;
+  final void Function(int)? onTabSwitch;
   final VoidCallback onReset;
 
-  const _GeneratedPlanCard({required this.data, required this.onReset});
+  const _GeneratedPlanCard({
+    required this.data,
+    this.onTabSwitch,
+    required this.onReset,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final plan = data['plan'] as List;
     final mood = data['mood']['mood'];
 
@@ -742,7 +750,7 @@ class _GeneratedPlanCard extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          _buildActionLink(context, item),
+                          _buildActionLink(context, ref, item, onTabSwitch),
                         ],
                       ),
                     ),
@@ -755,7 +763,12 @@ class _GeneratedPlanCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionLink(BuildContext context, Map<String, dynamic> item) {
+  Widget _buildActionLink(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, dynamic> item,
+    void Function(int)? onTabSwitch,
+  ) {
     final String description = item['description'];
     final Map<String, dynamic>? metadata = item['metadata'];
     final lowerDesc = description.toLowerCase();
@@ -764,6 +777,9 @@ class _GeneratedPlanCard extends StatelessWidget {
     Widget? screen;
     IconData? icon;
     Color? color;
+    String? playlistName;
+    String? spotifyUrl;
+    String? trackName;
 
     final String type = item['type'] ?? '';
 
@@ -787,10 +803,6 @@ class _GeneratedPlanCard extends StatelessWidget {
             (metadata.containsKey('spotify_uri') ||
                 metadata.containsKey('playlist_name')))) {
       label = "Open Music";
-
-      String? playlistName;
-      String? spotifyUrl;
-      String? trackName;
 
       if (metadata != null) {
         if (metadata.containsKey('spotify_uri')) {
@@ -862,10 +874,43 @@ class _GeneratedPlanCard extends StatelessWidget {
       padding: const EdgeInsets.only(top: 12),
       child: InkWell(
         onTap: () {
+          if (type == 'music' || type == 'calming_audio') {
+            final url = spotifyUrl ?? (item['spotify_uri'] ?? "");
+            if (url.isNotEmpty) {
+              ref.read(musicLaunchProvider.notifier).state = MusicLaunchData(
+                title: playlistName ?? "AI Pick",
+                url: url,
+              );
+              if (onTabSwitch != null) onTabSwitch(2); // Land on Music Tab
+              return;
+            }
+          }
+
           if (screen is HistoryScreen) {
             Navigator.push(context, HistoryScreen.route());
           } else if (screen is JournalScreen) {
             Navigator.push(context, JournalPageRoute());
+          } else if (screen is GamesScreen) {
+            final gameTitle = screen.initialGameTitle;
+            if (gameTitle != null) {
+              ref.read(gameLaunchProvider.notifier).state = gameTitle;
+            }
+            if (onTabSwitch != null) onTabSwitch(1); // Switch to Games Tab
+          } else if (screen is MusicScreen) {
+            final musicScreen = screen;
+            final title =
+                musicScreen.initialTitle ??
+                musicScreen.initialPlaylistName ??
+                "AI Pick";
+            final url = musicScreen.initialSpotifyUrl;
+
+            if (url != null) {
+              ref.read(musicLaunchProvider.notifier).state = MusicLaunchData(
+                title: title,
+                url: url,
+              );
+            }
+            if (onTabSwitch != null) onTabSwitch(2); // Switch to Music Tab
           } else {
             Navigator.push(context, MaterialPageRoute(builder: (_) => screen!));
           }

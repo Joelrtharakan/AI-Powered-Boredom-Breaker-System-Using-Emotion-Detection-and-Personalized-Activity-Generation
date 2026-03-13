@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_theme.dart';
 import 'spotify_player_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/music_launch_provider.dart';
 
 class MusicScreen extends StatefulWidget {
   final String? initialPlaylistName;
@@ -143,6 +145,28 @@ class _MusicScreenState extends State<MusicScreen> {
     }
   }
 
+  Future<void> _logoutSpotify() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isSpotifyConnected', false);
+    setState(() => _isConnected = false);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Logged out of Spotify",
+            style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+          ),
+          backgroundColor: const Color(0xFF0F172A),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
   void _openInAppPlayer(String title, String url) {
     Navigator.push(
       context,
@@ -155,84 +179,149 @@ class _MusicScreenState extends State<MusicScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-      );
-    }
+    return Consumer(
+      builder: (context, ref, child) {
+        // Listen for cross-tab music launches
+        ref.listen(musicLaunchProvider, (previous, next) {
+          if (next != null) {
+            // Clear immediately so it doesn't re-trigger on rebuild
+            ref.read(musicLaunchProvider.notifier).state = null;
+            _openInAppPlayer(next.title, next.url);
+          }
+        });
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: CustomScrollView(
-          controller: widget.scrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    _buildMasterHeader(),
-                    const SizedBox(height: 48),
-                    _buildSpotifyBridge(),
-                    const SizedBox(height: 64),
-                    Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "CURATED",
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w900,
-                                    color: const Color(
-                                      0xFF0F172A,
-                                    ).withValues(alpha: 0.4),
-                                    letterSpacing: 4,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                      "Atmospheres",
-                                      style: GoogleFonts.playfairDisplay(
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.bold,
-                                        color: const Color(0xFF0F172A),
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    )
-                                    .animate(onPlay: (c) => c.repeat())
-                                    .shimmer(
-                                      duration: 1.5.seconds,
-                                      delay: 3.seconds,
-                                      color: Colors.black12,
-                                    ),
-                              ],
-                            ),
-                            _buildFrequencyIndicator(),
-                          ],
-                        )
-                        .animate()
-                        .fadeIn(delay: 400.ms, duration: 800.ms)
-                        .slideY(begin: 0.05, curve: Curves.easeOutQuart),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
+        if (_isLoading) {
+          return const Scaffold(
+            backgroundColor: Colors.white,
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
             ),
-            _buildMoodGrid(),
-            const SliverToBoxAdapter(child: SizedBox(height: 140)),
-          ],
-        ),
-      ),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: CustomScrollView(
+              controller: widget.scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!_isConnected)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 24),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF8FAFC),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: const Color(0xFFE2E8F0),
+                                  width: 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.02),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF475569),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.lock_outline_rounded,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Text(
+                                      "PREVIEW MODE ACTIVE",
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w900,
+                                        color: const Color(0xFF475569),
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ).animate().fadeIn().slideY(begin: -0.1),
+                        _buildMasterHeader(),
+                        const SizedBox(height: 48),
+                        _buildSpotifyBridge(),
+                        const SizedBox(height: 64),
+                        Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "CURATED",
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w900,
+                                        color: const Color(
+                                          0xFF0F172A,
+                                        ).withValues(alpha: 0.4),
+                                        letterSpacing: 4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                          "Atmospheres",
+                                          style: GoogleFonts.playfairDisplay(
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.bold,
+                                            color: const Color(0xFF0F172A),
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                        )
+                                        .animate(onPlay: (c) => c.repeat())
+                                        .shimmer(
+                                          duration: 1.5.seconds,
+                                          delay: 3.seconds,
+                                          color: Colors.black12,
+                                        ),
+                                  ],
+                                ),
+                                _buildFrequencyIndicator(),
+                              ],
+                            )
+                            .animate()
+                            .fadeIn(delay: 400.ms, duration: 800.ms)
+                            .slideY(begin: 0.05, curve: Curves.easeOutQuart),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
+                ),
+                _buildMoodGrid(),
+                const SliverToBoxAdapter(child: SizedBox(height: 140)),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -484,104 +573,118 @@ class _MusicScreenState extends State<MusicScreen> {
               ),
             ],
           ),
-          child: Row(
+          child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1DB954),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF1DB954).withValues(alpha: 0.4),
-                      blurRadius: 25,
-                      spreadRadius: -5,
-                    ),
-                  ],
-                ),
-                child:
-                    const Icon(
-                          Icons.bolt_rounded,
-                          color: Color(0xFF0F172A),
-                          size: 28,
-                        )
-                        .animate(onPlay: (c) => c.repeat(reverse: true))
-                        .scaleXY(
-                          begin: 1.0,
-                          end: 1.2,
-                          duration: 1.seconds,
-                          curve: Curves.easeInOut,
-                        ),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _isConnected ? "BRIDGE ACTIVE" : "SPOTIFY LINK",
-                      style: GoogleFonts.outfit(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF1E293B),
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    Text(
-                      _isConnected
-                          ? "Direct frequency synchronization"
-                          : "Unlock the full high-fidelity library",
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: const Color(0xFF64748B),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (!_isConnected)
-                InkWell(
-                  onTap: _connectSpotify,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 14,
-                    ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF1DB954).withAlpha(200),
-                          const Color(0xFF1DB954),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
+                      color: const Color(0xFF1DB954),
+                      shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF1DB954).withValues(alpha: 0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          color: const Color(0xFF1DB954).withValues(alpha: 0.4),
+                          blurRadius: 25,
+                          spreadRadius: -5,
                         ),
                       ],
                     ),
                     child:
-                        Text(
-                              "LINK SPOTIFY",
-                              style: GoogleFonts.outfit(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                                letterSpacing: 1,
-                              ),
+                        const Icon(
+                              Icons.bolt_rounded,
+                              color: Color(0xFF0F172A),
+                              size: 28,
                             )
-                            .animate(onPlay: (c) => c.repeat())
-                            .shimmer(
-                              duration: 1.5.seconds,
-                              delay: 3.seconds,
-                              color: Colors.white54,
+                            .animate(onPlay: (c) => c.repeat(reverse: true))
+                            .scaleXY(
+                              begin: 1.0,
+                              end: 1.2,
+                              duration: 1.seconds,
+                              curve: Curves.easeInOut,
                             ),
                   ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _isConnected ? "BRIDGE ACTIVE" : "SPOTIFY LINK",
+                          style: GoogleFonts.outfit(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            color: const Color(0xFF1E293B),
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        Text(
+                          _isConnected
+                              ? "Direct frequency synchronization"
+                              : "Unlock the full high-fidelity library",
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: const Color(0xFF64748B),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_isConnected)
+                    IconButton(
+                      onPressed: _logoutSpotify,
+                      icon: const Icon(
+                        Icons.logout_rounded,
+                        color: Color(0xFF64748B),
+                      ),
+                      tooltip: "Logout Spotify",
+                    ),
+                ],
+              ),
+              if (!_isConnected) ...[
+                const SizedBox(height: 32),
+                InkWell(
+                  onTap: _connectSpotify,
+                  child:
+                      Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF1DB954), Color(0xFF15803D)],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFF1DB954,
+                                  ).withValues(alpha: 0.3),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                "LINK SPOTIFY ACCOUNT",
+                                style: GoogleFonts.outfit(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 14,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                            ),
+                          )
+                          .animate(onPlay: (c) => c.repeat())
+                          .shimmer(
+                            duration: 1.5.seconds,
+                            delay: 3.seconds,
+                            color: Colors.white54,
+                          ),
                 ),
+              ],
             ],
           ),
         )

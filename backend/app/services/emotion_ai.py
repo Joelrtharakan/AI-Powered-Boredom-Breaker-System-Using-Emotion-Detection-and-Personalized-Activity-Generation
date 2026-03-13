@@ -10,7 +10,7 @@ class SemanticEngine:
         self.clusters = {
             "sadness": ["pain", "devastated", "broken", "pointless", "heartbroken", "crushed", "empty", "shattered", "unbearable", "grief", "heart hurts", "so heavy", "worthless", "misery", "bleak", "invisible", "hopeless", "drowning", "tear", "tears", "crying", "lonely", "disappointed", "rejection", "touch breaks", "dead inside", "bittersweet", "depths of despair", "hope tomorrow is better", "wish he would call", "silence is loud", "miss", "missing", "homesick", "longing", "nostalgic", "yearn", "left behind", "far from home", "lost without", "ache", "hurt", "regret", "sorrow", "gloomy", "melancholy", "abandoned", "neglected", "forgotten"],
             "fear": ["shaken", "rattled", "terrified", "panicking", "panic attack", "anxious", "nervous", "dread", "afraid", "scared", "worried", "troubled", "alarmed", "trembling", "shaking", "bad feeling", "suspense", "sweating", "unsafe", "paralyzed", "jitters", "on edge", "uncertainty", "what if", "heard a noise", "spiraling", "yikes", "pounding", "refreshing the page", "haven't replied", "vibes", "overwhelmed", "insecure", "helpless", "vulnerable", "uneasy", "tense", "restless", "freaking out"],
-            "bored": ["lethargic", "sluggish", "lazy", "unmotivated", "listless", "apathetic", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "so bored", "doomscrolling", "dragging", "don't want to get out of bed"],
+            "bored": ["really bored", "so bored", "nothing to do", "entertain me", "want to do something", "boredom", "no fun", "lethargic", "sluggish", "lazy", "unmotivated", "listless", "apathetic", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "doomscrolling", "dragging", "don't want to get out of bed"],
             "fatigue": ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep", "too tired", "brain is fried", "brain shutting down", "wiped out"],
             "neutral": ["okay", "all good", "fine", "alright", "normal", "existing", "average", "standard", "nothing much", "chilling", "reading", "eating", "drinking", "sitting", "standing", "waiting", "lukewarm", "quiet", "simple", "neither happy nor sad", "shoes", "cloudy", "apples", "wifi", "laptop", "meeting", "wsg", "gang", "what's good", "sup"],
             "anger": ["sick of fake people", "fake people", "blood boil", "pissed", "furious", "enraged", "mad", "annoyed", "frustrated", "fed up", "ridiculous", "audacity", "interrupting", "nightmare", "snap", "patience", "frustrating", "drama", "rent free", "forgot to eat", "what a mess", "can we just stop", "hate", "disgusted", "bitter", "resentful", "hostile"],
@@ -277,14 +277,21 @@ class EmotionAnalyzer:
              decision_source = "neutral_override" if is_mundane else "no_emotion_detected"
              reason = "Identified mundane activity or task-based request, overriding weak emotional signal."
 
-        # Case C: Handle Uncertainty (Confidence < 0.65 -> sadness)
+        # Case C: Handle Uncertainty (Confidence < 0.65 -> fallback check)
         # Only if there IS actual emotional content from semantic or risk patterns
         if final_score < 0.65 and not semantic_emotion:
             if self.risk_assessor.has_any_pattern_match(text_clean):
-                final_emotion = "sadness"
-                final_score = 0.65
-                decision_source = "uncertainty_handled"
-                reason = "Confidence < 0.65, defaulting to sadness per Regulation Engine rules."
+                # Check if it was boredom specifically!
+                if "bored" in text_clean or "nothing to do" in text_clean:
+                    final_emotion = "bored"
+                    final_score = 0.7
+                    decision_source = "uncertainty_handled"
+                    reason = "Confidence < 0.65, identified Boredom from pattern match."
+                else:
+                    final_emotion = "sadness"
+                    final_score = 0.65
+                    decision_source = "uncertainty_handled"
+                    reason = "Confidence < 0.65, defaulting to sadness per Regulation Engine rules."
             # else: let it fall through to Case D's no-emotion check
 
         # Case D: NO EMOTIONAL CONTENT — Random/Nonsensical words

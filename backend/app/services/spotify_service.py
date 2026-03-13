@@ -29,7 +29,25 @@ class SpotifyService:
             print("DEBUG: Spotify Client is None")
             return []
 
-        search_query = f"{mood} energy" if mood in ["energize", "focus"] else f"{mood} chill"
+        # Map moods to more specific, high-quality search terms to avoid generic regional bias
+        mood_queries = {
+            "chill": ["lofi hip hop beats", "chill lofi study", "ambient focus", "deep focus", "coding beats", "soft piano instrumental"],
+            "energize": ["upbeat electronic", "workout energizer", "high energy pop", "electro chill", "motivation mix"],
+            "happy": ["feel good tracks", "happy hits", "sunny day vibes", "uptempo indiepop", "positive energy"],
+            "focus": ["deep focus", "brown noise", "instrumental study", "nature sounds", "minimalist techno"],
+            "sad": ["uplifting instrumental", "hopeful acoustic", "mood booster", "comforting melodies", "gentle positive vibes"],
+            "angry": ["heavy instrumental", "aggressive electronics", "tension relief", "cathartic beats"]
+        }
+        
+        # Get a list of queries for the current mood, fallback to a general "mood chill" if missing
+        queries = mood_queries.get(mood.lower(), [f"{mood} chill", f"{mood} energy"])
+        base_query = random.choice(queries)
+        
+        # Explicitly enforce English/International results to avoid regional bias
+        if random.random() > 0.5:
+            search_query = f"{base_query} English global"
+        else:
+            search_query = f"{base_query} top international"
         try:
             results = self.sp.search(q=search_query, type='playlist', limit=limit)
             playlists = []

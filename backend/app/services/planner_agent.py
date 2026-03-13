@@ -23,10 +23,10 @@ class PlannerAgent:
         # - Music is supportive, not primary intervention
 
         music_map = {
-            "sadness": {"description": "Soft piano, slow instrumental", "purpose": "emotional_comfort", "mood_key": "chill"},
+            "sadness": {"description": "Uplifting and comforting instrumental music", "purpose": "mood_transition", "mood_key": "sad"},
             "fear": {"description": "Low tempo ambient, deep breathing tones", "purpose": "nervous_system_regulation", "mood_key": "chill"},
-            "anger": {"description": "Rhythmic instrumental, controlled tempo", "purpose": "de_escalation", "mood_key": "chill"},
-            "fatigue": {"description": "Ambient, white noise, rainfall", "purpose": "restoration", "mood_key": "chill"},
+            "anger": {"description": "Rhythmic instrumental, controlled tempo", "purpose": "de_escalation", "mood_key": "angry"},
+            "fatigue": {"description": "Ambient, white noise, rainfall", "purpose": "restoration", "mood_key": "focus"},
             "bored": {"description": "Upbeat, energetic music", "purpose": "stimulation", "mood_key": "energize"},
             "joy": {"description": "Celebratory, feel-good music", "purpose": "amplification", "mood_key": "happy"},
             "neutral": {"description": "Light background music", "purpose": "ambient", "mood_key": "chill"},

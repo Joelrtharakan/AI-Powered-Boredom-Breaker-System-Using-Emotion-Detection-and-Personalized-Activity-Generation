@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'snake_game_screen.dart';
@@ -12,6 +13,7 @@ import 'chimp_test_screen.dart';
 import 'aim_trainer_screen.dart';
 import 'memory_flip_screen.dart';
 import '../../services/games_api.dart';
+import '../../providers/game_launch_provider.dart';
 
 class GamesScreen extends StatefulWidget {
   final String? initialGameTitle;
@@ -37,6 +39,8 @@ class _GamesScreenState extends State<GamesScreen> {
   void initState() {
     super.initState();
     _loadHighScores();
+
+    // Check for initial game title from widget
     if (widget.initialGameTitle != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _navigateToGame(widget.initialGameTitle!);
@@ -186,61 +190,78 @@ class _GamesScreenState extends State<GamesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final allGames = _getAllGames();
-    final featuredGame = allGames.firstWhere(
-      (g) => g.title == "Snake Evolution",
-    );
+    return Consumer(
+      builder: (context, ref, child) {
+        // Listen for cross-tab game launches
+        ref.listen(gameLaunchProvider, (previous, next) {
+          if (next != null) {
+            // Clear immediately so it doesn't re-trigger on rebuild
+            ref.read(gameLaunchProvider.notifier).state = null;
+            _navigateToGame(next);
+          }
+        });
 
-    // Exclude the featured game from the grid to prevent duplicates
-    // and preserve a perfect 2-column layout (8 remaining games)
-    final gridGames = allGames
-        .where((g) => g.title != featuredGame.title)
-        .toList();
+        final allGames = _getAllGames();
+        final featuredGame = allGames.firstWhere(
+          (g) => g.title == "Snake Evolution",
+        );
 
-    // Filtered games based on category
-    final displayedGames = _selectedCategoryIndex == 0
-        ? gridGames
-        : gridGames
-              .where((g) => g.category == _categories[_selectedCategoryIndex])
-              .toList();
+        // Exclude the featured game from the grid to prevent duplicates
+        // and preserve a perfect 2-column layout (8 remaining games)
+        final gridGames = allGames
+            .where((g) => g.title != featuredGame.title)
+            .toList();
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          controller: widget.scrollController,
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              const _SectionTitle(title: "FEATURED GAME"),
-              const SizedBox(height: 16),
-              _buildFeaturedCard(featuredGame)
-                  .animate()
-                  .fadeIn(delay: 200.ms)
-                  .scale(begin: const Offset(0.95, 0.95)),
+        // Filtered games based on category
+        final displayedGames = _selectedCategoryIndex == 0
+            ? gridGames
+            : gridGames
+                  .where(
+                    (g) => g.category == _categories[_selectedCategoryIndex],
+                  )
+                  .toList();
 
-              const SizedBox(height: 32),
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              controller: widget.scrollController,
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  const _SectionTitle(title: "FEATURED GAME"),
+                  const SizedBox(height: 16),
+                  _buildFeaturedCard(featuredGame)
+                      .animate()
+                      .fadeIn(delay: 200.ms)
+                      .scale(begin: const Offset(0.95, 0.95)),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [const _SectionTitle(title: "EXPLORE COLLECTION")],
+                  const SizedBox(height: 32),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const _SectionTitle(title: "EXPLORE COLLECTION"),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildCategoryChips(),
+                  const SizedBox(height: 20),
+
+                  _buildGrid(displayedGames)
+                      .animate(key: ValueKey(_selectedCategoryIndex))
+                      .fadeIn(duration: 300.ms),
+
+                  const SizedBox(height: 120),
+                ],
               ),
-              const SizedBox(height: 16),
-              _buildCategoryChips(),
-              const SizedBox(height: 20),
-
-              _buildGrid(displayedGames)
-                  .animate(key: ValueKey(_selectedCategoryIndex))
-                  .fadeIn(duration: 300.ms),
-
-              const SizedBox(height: 120),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

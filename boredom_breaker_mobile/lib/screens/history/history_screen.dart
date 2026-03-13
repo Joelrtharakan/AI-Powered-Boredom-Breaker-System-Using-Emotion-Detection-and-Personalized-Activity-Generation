@@ -280,8 +280,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           const _SectionTitle(title: "QUICK STATS"),
           const SizedBox(height: 16),
           SizedBox(
-                height:
-                    120, // Fixed height instead of IntrinsicHeight for performance
+                height: 140, // Increased to prevent overflow
                 child: Row(
                   children: [
                     Expanded(
@@ -469,7 +468,7 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -495,7 +494,7 @@ class _MetricCard extends StatelessWidget {
             ),
             child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             value,
             style: GoogleFonts.outfit(
