@@ -2,6 +2,7 @@ from transformers import pipeline
 import logging
 import os
 import re
+import threading
 
 class SemanticEngine:
     """Handles deep semantic keyword matching with synonym clusters."""
@@ -141,31 +142,51 @@ class EmotionAnalyzer:
         self.semantic = SemanticEngine()
         self.risk_assessor = RiskAssessment()
         self.logger = logging.getLogger(__name__)
+        self._lock = threading.Lock()
+        self.is_loading = False
 
     def load_model(self):
-        if self.classifier:
-            return
+        with self._lock:
+            if self.classifier:
+                return
+            if self.is_loading:
+                return
+            self.is_loading = True
+            
+            try:
+                self.logger.info("Loading V14 Final Model...")
+                v14_path = os.path.abspath("models/v14_final_model")
+                v12_path = os.path.abspath("models/v12_context_model")
+                v11_path = os.path.abspath("models/v11_master_model")
+                v10_path = os.path.abspath("models/fine_tuned_roberta_v10")
+                v9_path = os.path.abspath("models/fine_tuned_roberta_v9")
+                base_model = "cardiffnlp/twitter-roberta-base-emotion"
 
-        self.logger.info("Loading V14 Final Model...")
-        v14_path = os.path.abspath("models/v14_final_model")
-        v12_path = os.path.abspath("models/v12_context_model")
-        v11_path = os.path.abspath("models/v11_master_model")
-        v10_path = os.path.abspath("models/fine_tuned_roberta_v10")
-        v9_path = os.path.abspath("models/fine_tuned_roberta_v9")
-        base_model = "cardiffnlp/twitter-roberta-base-emotion"
-
-        # Priority: V14 -> V12 -> V11 -> V10 -> V9 -> Base
-        model_to_use = v14_path if os.path.exists(v14_path) else (v12_path if os.path.exists(v12_path) else (v11_path if os.path.exists(v11_path) else (v10_path if os.path.exists(v10_path) else (v9_path if os.path.exists(v9_path) else base_model))))
-        
-        try:
-            self.classifier = pipeline("text-classification", model=model_to_use, top_k=None)
-            self.logger.info(f"✨ Emotion Model ({model_to_use}) loaded successfully.")
-        except Exception as e:
-            self.logger.error(f"❌ Failed to load {model_to_use}: {e}")
-            self.classifier = pipeline("text-classification", model=base_model, top_k=None)
+                # Priority: V14 -> V12 -> V11 -> V10 -> V9 -> Base
+                model_to_use = v14_path if os.path.exists(v14_path) else (v12_path if os.path.exists(v12_path) else (v11_path if os.path.exists(v11_path) else (v10_path if os.path.exists(v10_path) else (v9_path if os.path.exists(v9_path) else base_model))))
+                
+                self.classifier = pipeline("text-classification", model=model_to_use, top_k=None)
+                self.logger.info(f"✨ Emotion Model ({model_to_use}) loaded successfully.")
+            except Exception as e:
+                self.logger.error(f"❌ Failed to load model: {e}")
+                self.classifier = pipeline("text-classification", model="cardiffnlp/twitter-roberta-base-emotion", top_k=None)
+            finally:
+                self.is_loading = False
 
     def analyze(self, text: str):
-        self.load_model()
+        # 0. Initialize variables to prevent UnboundLocalError
+        model_score = 0.5
+        secondary = None
+        model_emotion = "neutral"
+        final_emotion = "neutral"
+        final_score = 0.5
+        decision_source = "system_fallback"
+        reason = "Implicit initialization."
+
+        # Trigger load in background if not already done, but don't block
+        if not self.classifier and not self.is_loading:
+             import threading
+             threading.Thread(target=self.load_model).start()
         
         # 0. Basic Preprocessing
         text_clean = text.strip().lower()
@@ -175,16 +196,43 @@ class EmotionAnalyzer:
         # 1. Semantic Signal (Rule-based + Keywords)
         semantic_emotion, semantic_score = self.semantic.find_best_match(text_clean)
 
+        # 🚀 SEMANTIC FAST-PATH 🚀
+        # If we have a very strong keyword match and the text is not overly complex,
+        # we can skip the heavy Transformer inference (saves ~1-2 seconds on CPU).
+        if semantic_emotion and semantic_score > 0.8 and len(text_clean.split()) < 10:
+            self.logger.info(f"🚀 Fast-Path: '{semantic_emotion}' detected via Semantic Engine.")
+            
+            # Construct a response similar to the fused one but without model results
+            risk_level = self.risk_assessor.assess(text, semantic_emotion, semantic_score)
+            return {
+                "mood": semantic_emotion if semantic_emotion != "bored" else "boredom",
+                "emotion": semantic_emotion,
+                "intensity": semantic_score,
+                "energy_level": "low" if semantic_emotion in ["sadness", "fatigue", "bored"] else "medium",
+                "risk_level": risk_level,
+                "decision_source": "semantic_fast_path",
+                "reason": f"High-confidence semantic match for '{semantic_emotion}' (Skipped Model Inference)."
+            }
+
         # 2. Model Signal (Transformer)
         try:
-            model_results = self.classifier(text)[0]
-            model_results.sort(key=lambda x: x['score'], reverse=True)
+            model_score = 0.5 # Default
+            secondary = None # Default
             
-            primary = model_results[0]
-            secondary = model_results[1] if len(model_results) > 1 else None
-            
-            model_emotion = primary['label']
-            model_score = primary['score']
+            if self.classifier:
+                model_results = self.classifier(text)[0]
+                model_results.sort(key=lambda x: x['score'], reverse=True)
+                primary = model_results[0]
+                secondary = model_results[1] if len(model_results) > 1 else None
+                model_emotion = primary['label']
+                model_score = primary['score']
+            else:
+                # Fallback if model is still loading 
+                self.logger.warning("Model not ready. Using semantic-only logic.")
+                model_emotion = semantic_emotion or "neutral"
+                model_score = semantic_score or 0.5
+                model_results = []
+                primary = {"label": model_emotion, "score": model_score}
         except Exception as e:
             self.logger.error(f"Model prediction failed: {e}")
             model_emotion = "neutral"

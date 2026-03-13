@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import random
@@ -51,21 +52,26 @@ class PlannerAgent:
 
         return base
 
-    def _inject_spotify(self, plan: list, mood_key: str) -> list:
-        """Attach Spotify playlist metadata to music/calming_audio steps."""
+    async def _inject_spotify(self, plan: list, mood_key: str) -> list:
+        """Attach Spotify playlist metadata to music/calming_audio steps sequentially in a thread-safe way."""
+        if not plan:
+            return plan
+
+        loop = asyncio.get_event_loop()
         for step in plan:
             if step.get("type") in ["music", "calming_audio"]:
-                try:
-                    playlists = spotify_service.get_mood_playlists(mood_key, limit=1)
-                    if playlists:
-                        if "metadata" not in step:
-                            step["metadata"] = {}
-                        step["metadata"]["spotify_uri"] = playlists[0]["uri"]
-                        step["metadata"]["playlist_name"] = playlists[0]["name"]
-                        step["metadata"]["image"] = playlists[0].get("image")
-                        step["description"] += f" (Try: {playlists[0]['name']})"
-                except Exception as e:
-                    self.logger.warning(f"Spotify injection failed: {e}")
+                # Use executor to avoid blocking the event loop
+                playlists = await loop.run_in_executor(None, spotify_service.get_mood_playlists, mood_key, 1)
+                if playlists:
+                    step["metadata"] = {
+                        "spotify_uri": playlists[0]["uri"],
+                        "playlist_name": playlists[0]["name"],
+                        "image": playlists[0].get("image")
+                    }
+                    # Append name to description safely
+                    if playlists[0]["name"] not in (step.get("description") or ""):
+                        step["description"] = f"{step.get('description', '')} (Try: {playlists[0]['name']})"
+        
         return plan
 
     # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -222,7 +228,7 @@ class PlannerAgent:
                 {"type": "calming_audio", "description": f"{music_info['description']} — only after you feel grounded.", "time_minutes": 10, "purpose": "supportive_music"}
             ]
             plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
-            return self._inject_spotify(plan, music_info['mood_key'])
+            return await self._inject_spotify(plan, music_info['mood_key'])
 
         # 😰 HIGH DISTRESS PROTOCOL
         if risk_level == "HIGH_DISTRESS":
@@ -232,7 +238,7 @@ class PlannerAgent:
                 {"type": "calming_audio", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "nervous_system_regulation"}
             ]
             plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
-            return self._inject_spotify(plan, music_info['mood_key'])
+            return await self._inject_spotify(plan, music_info['mood_key'])
 
         # 💤 FATIGUE PROTOCOL
         if risk_level == "FATIGUE":
@@ -242,7 +248,7 @@ class PlannerAgent:
                 {"type": "calming_audio", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "soothing"}
             ]
             plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
-            return self._inject_spotify(plan, music_info['mood_key'])
+            return await self._inject_spotify(plan, music_info['mood_key'])
 
         # 🚧 TASK BLOCKED PROTOCOL
         if risk_level == "TASK_BLOCKED":
@@ -253,7 +259,7 @@ class PlannerAgent:
                 {"type": "calming_audio", "description": "Focus instrumental music — no lyrics.", "time_minutes": 10, "purpose": "focus_support"}
             ]
             plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
-            return self._inject_spotify(plan, music_info['mood_key'])
+            return await self._inject_spotify(plan, music_info['mood_key'])
 
         # 🎮 BOREDOM PROTOCOL
         if risk_level == "BOREDOM":
@@ -265,7 +271,7 @@ class PlannerAgent:
                 {"type": "micro_task", "description": "Do something totally new for 2 minutes (doodle, stretch, dance).", "time_minutes": 2, "purpose": "novelty"},
                 {"type": "music", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "stimulation"}
             ]
-            return self._inject_spotify(plan, music_info['mood_key'])
+            return await self._inject_spotify(plan, music_info['mood_key'])
 
         # 😟 MODERATE DISTRESS PROTOCOL (UPGRADED)
         if risk_level == "MODERATE_DISTRESS":
@@ -274,7 +280,7 @@ class PlannerAgent:
                 {"type": "micro_task", "description": "Take a moment — place your hand on your chest and breathe slowly.", "time_minutes": 2, "purpose": "grounding"},
             ]
             plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
-            return self._inject_spotify(plan, music_info['mood_key'])
+            return await self._inject_spotify(plan, music_info['mood_key'])
 
         # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         # LOW_NORMAL — Minimal / Optional intervention

@@ -18,8 +18,11 @@ from app.schemas.mood import MoodDetectAndPlanRequest, DetectAndPlanResponse
 from app.services.planner_agent import planner_agent
 from app.models.user import User
 import ast
+import asyncio
+import time
 
-def _log_mood_background(db: Session, user_id: int, result: dict, text: str):
+def _log_mood_background(user_id: int, result: dict, text: str):
+    db = SessionLocal()
     try:
         log = MoodHistory(
             user_id=user_id,
@@ -34,12 +37,41 @@ def _log_mood_background(db: Session, user_id: int, result: dict, text: str):
         db.commit()
     except Exception as e:
         print(f"Background Logging Failed: {e}")
+    finally:
+        db.close()
 
 @router.post("/detect-and-plan", response_model=DetectAndPlanResponse)
 async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    # 1. Guardrails
-    is_safe, check_result = await guardrail_service.analyze(request.text)
+    start_time = time.time()
+    # ⚡ CONCURRENCY BOOST: Run safety checks and emotion analysis in parallel ⚡
+    # Guardrails is network-bound (LLM), Emotion is CPU-bound (Transformer)
+    loop = asyncio.get_event_loop()
     
+    safety_task = asyncio.create_task(guardrail_service.analyze(request.text))
+    emotion_task = loop.run_in_executor(None, emotion_analyzer.analyze, request.text)
+    
+    # Also fetch user interests in a thread if needed
+    interests = []
+    if request.user_id:
+        def fetch_interests():
+            user = db.query(User).filter(User.id == request.user_id).first()
+            if user and user.interests:
+                try:
+                    return ast.literal_eval(user.interests)
+                except:
+                    pass
+            return []
+        
+        # We can run this in parallel too!
+        interests_task = loop.run_in_executor(None, fetch_interests)
+        is_safe, check_result = await safety_task
+        result = await emotion_task
+        interests = await interests_task
+    else:
+        is_safe, check_result = await safety_task
+        result = await emotion_task
+    
+    # 1. Guardrail Check Result
     if not is_safe:
         mood_res = {
             "mood": "neutral",
@@ -51,9 +83,7 @@ async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: B
         }
         return {"mood": mood_res, "plan": []}
 
-    # 2. Emotion Analysis
-    result = emotion_analyzer.analyze(request.text)
-    
+    # 2. Construct Mood Response
     mood_res = {
         "mood": result['mood'],
         "emotion": result['emotion'],
@@ -69,19 +99,9 @@ async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: B
 
     # 3. Background Log
     if request.user_id:
-        background_tasks.add_task(_log_mood_background, db, request.user_id, result, request.text)
+        background_tasks.add_task(_log_mood_background, request.user_id, result, request.text)
 
-    # 4. Generate Plan (Reuse results for speed)
-    interests = []
-    if request.user_id:
-        user = db.query(User).filter(User.id == request.user_id).first()
-        if user and user.interests:
-            try:
-                interests = ast.literal_eval(user.interests)
-            except:
-                pass
-
-    # Note: Using planner directly here to skip router_agent's extra overhead
+    # 4. Generate Plan (Fast Track)
     plan = await planner_agent.generate_plan(
         mood=f"{result['mood']} (Detected Emotion: {result['emotion']})",
         intensity=result['intensity'],
@@ -92,6 +112,9 @@ async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: B
         ns_state=result.get('nervous_system_state'),
         risk_level=result.get('risk_level')
     )
+
+    duration = time.time() - start_time
+    print(f"⏱️ Turbo Response generated in {duration:.4f}s")
 
     return {
         "mood": mood_res,

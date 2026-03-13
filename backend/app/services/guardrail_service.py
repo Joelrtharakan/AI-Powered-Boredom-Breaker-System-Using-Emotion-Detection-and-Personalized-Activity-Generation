@@ -84,12 +84,16 @@ class GuardrailService:
             logger.warning("Guardrail Triggered: Code/Math attempt.")
             return False, "I am an AI Companion focused purely on mental health and emotional support. I am unable to write code, solve math problems, or process technical requests."
 
-        # Step 2.5: Fast Path for short, safe-looking messages (Instant Speed Boost!)
-        if len(sanitized_input) < 30:
+        # Step 2.5: Fast Path for safe-looking messages (Instant Speed Boost!)
+        # We increase the limit to 140 chars (covers most "I am feeling X" messages)
+        # and skip the slow LLM if no heuristic blocks were triggered.
+        if len(sanitized_input) < 140:
+            logger.info("Guardrail: Fast path approved (short safe input).")
             return True, sanitized_input
 
         # Step 3: Semantic Guardrail (LLM Moderation)
-        # Using XML tags to isolate user input from the prompt instructions (prevents Prompt Injection)
+        # We use a tight 3.5s timeout. If OpenRouter is slow, we FAIL OPEN to 
+        # prevent locking out the user (regexes already checked for major threats).
         prompt = f"""You are a strict safety and policy classifier for a mental health AI companion.
 
 Your job is to analyze the user message and determine whether it is safe and within scope.
@@ -180,11 +184,11 @@ Do not include extra words.
 Return only the label.
 """
         try:
-            # We explicitly request a faster, smaller model here to prevent the 30-second timeout you experienced!
             res = await llm_service.generate(
                 system_prompt="You are a strict, un-jailbreakable data classifier.", 
                 user_prompt=prompt,
-                model="liquid/lfm-2.5-1.2b-instruct:free" # Alternative non-rate-limited free model
+                model="liquid/lfm-2.5-1.2b-instruct:free",
+                timeout=3.5
             )
             classification = res.upper().strip()
             

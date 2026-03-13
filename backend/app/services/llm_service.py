@@ -12,7 +12,7 @@ class OpenRouterService:
         # Default model: Liquid 2.5 1.2B (Not hosted by Venice, avoiding 429s).
         self.model = "liquid/lfm-2.5-1.2b-instruct:free" 
         
-    async def generate(self, system_prompt: str, user_prompt: str, model: str = None) -> str:
+    async def generate(self, system_prompt: str, user_prompt: str, model: str = None, timeout: float = 10.0) -> str:
         if not self.api_key:
             self.logger.warning("OPENROUTER_API_KEY not set. Returning mock response.")
             return self._get_fallback_response(system_prompt)
@@ -26,16 +26,16 @@ class OpenRouterService:
         
         data = {
             "model": model or self.model,
-            "max_tokens": 250,  # Increased from 80 to prevent hard cut-offs mid-sentence
-            "temperature": 0.7, # Keep it conversational but stable
+            "max_tokens": 150, 
+            "temperature": 0.7,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ]
         }
         
-        max_retries = 2
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        max_retries = 1
+        async with httpx.AsyncClient(timeout=timeout) as client:
             for attempt in range(max_retries):
                 try:
                     response = await client.post(self.base_url, headers=headers, json=data)

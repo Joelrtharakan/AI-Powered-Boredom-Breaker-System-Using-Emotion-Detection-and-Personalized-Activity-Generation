@@ -26,7 +26,9 @@ from app.services.emotion_ai import emotion_analyzer
 
 @app.on_event("startup")
 async def startup_event():
-    # Preload the emotion model to avoid latency on first request
+    # Preload the emotion model to avoid latency on first request (Main Branch Method)
+    print("Loading Emotion Model...")
     emotion_analyzer.load_model()
+    print("✨ Emotion Model Preloaded")
 
 app.include_router(api_router, prefix="/api")
