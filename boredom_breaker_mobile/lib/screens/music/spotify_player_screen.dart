@@ -35,7 +35,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       debugPrint("Error stopping playback: $e");
     }
 
-    // Pop immediately to unleash the silky smooth native flutter route animation!
+    // Pop immediately
     Navigator.of(context).pop(result);
   }
 
@@ -63,27 +63,55 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       else if (finalUrl.contains("spotify.com/")) {
         final path = finalUrl.split("spotify.com/").last.split("?").first;
         final parts = path.split('/');
-        if (parts.length >= 2) {
-          type = parts[0];
-          id = parts[1];
+
+        // Find playlist, album, or track in parts
+        for (int i = 0; i < parts.length - 1; i++) {
+          if (parts[i] == 'playlist' ||
+              parts[i] == 'album' ||
+              parts[i] == 'track' ||
+              parts[i] == 'artist') {
+            type = parts[i];
+            id = parts[i + 1];
+            break;
+          }
         }
       }
 
       if (type != null && id != null && id.isNotEmpty) {
-        // ID might still have query params if split failed
         id = id.split('?').first;
-        finalUrl =
-            "https://open.spotify.com/embed/$type/$id?utm_source=generator";
+        finalUrl = "https://open.spotify.com/embed/$type/$id";
       }
     }
 
     debugPrint("DEBUG: Loading Spotify URL: $finalUrl");
 
+    final String htmlContent =
+        '''
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <style>
+            body { margin: 0; padding: 0; background-color: #000; overflow: hidden; height: 100vh; width: 100vw; }
+            iframe { border: none; width: 100%; height: 100%; }
+          </style>
+        </head>
+        <body>
+          <iframe 
+            src="$finalUrl?utm_source=generator" 
+            allowfullscreen="" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+            loading="lazy">
+          </iframe>
+        </body>
+      </html>
+    ''';
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.white)
+      ..setBackgroundColor(Colors.black)
       ..setUserAgent(
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
       )
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -109,15 +137,16 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
             });
           },
         ),
-      )
-      ..loadRequest(
-        Uri.parse(finalUrl),
-        headers: {
-          'Accept':
-              'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-        },
       );
+
+    if (widget.isLoginOnly) {
+      _controller.loadRequest(Uri.parse(finalUrl));
+    } else {
+      _controller.loadHtmlString(
+        htmlContent,
+        baseUrl: "https://open.spotify.com",
+      );
+    }
   }
 
   @override
@@ -140,10 +169,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white, // Base background
+        backgroundColor: Colors.white,
         body: Stack(
           children: [
-            // Vibrant Animated Background Gradient Orbs Match Music Page
             Positioned(
               top: -100,
               left: -50,
@@ -152,7 +180,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                 height: 350,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFF6366F1), // Indigo
+                  color: Color(0xFF6366F1),
                 ),
               ),
             ),
@@ -164,7 +192,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                 height: 400,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFFEC4899), // Pink
+                  color: Color(0xFFEC4899),
                 ),
               ),
             ),
@@ -176,22 +204,16 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                 height: 300,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Color(0xFFF43F5E), // Rose
+                  color: Color(0xFFF43F5E),
                 ),
               ),
             ),
-            // Heavy Frosted Glass Overlay
             Positioned.fill(
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-                child: Container(
-                  color: Colors.white.withValues(
-                    alpha: 0.75,
-                  ), // Lightens it for light theme
-                ),
+                child: Container(color: Colors.white.withValues(alpha: 0.75)),
               ),
             ),
-
             SafeArea(
               child: Column(
                 children: [
@@ -238,7 +260,6 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                   ),
                   if (!widget.isLoginOnly) ...[
                     const SizedBox(height: 12),
-                    // Preview limitation banner
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.symmetric(
@@ -309,12 +330,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                 ],
               ),
             ),
-
             if (_isLoading)
               const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF6366F1),
-                ), // Primary
+                child: CircularProgressIndicator(color: Color(0xFF6366F1)),
               ),
           ],
         ),
@@ -388,17 +406,14 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
 
   Future<void> _launchInFullApp() async {
     String url = widget.spotifyUrl;
-
-    // Convert spotify:playlist:ID or spotify:track:ID to a proper URL
     if (url.startsWith('spotify:')) {
-      final parts = url.split(':'); // ["spotify", "playlist", "ID"]
+      final parts = url.split(':');
       if (parts.length >= 3) {
-        final type = parts[1]; // "playlist" or "track"
+        final type = parts[1];
         final id = parts[2];
         url = 'https://open.spotify.com/$type/$id';
       }
     }
-
     final uri = Uri.parse(url);
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
