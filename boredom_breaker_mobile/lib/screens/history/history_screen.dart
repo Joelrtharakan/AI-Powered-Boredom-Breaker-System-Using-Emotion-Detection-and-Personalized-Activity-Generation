@@ -18,23 +18,41 @@ class HistoryScreen extends ConsumerStatefulWidget {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) =>
           const HistoryScreen(),
-      transitionDuration: const Duration(milliseconds: 350),
-      reverseTransitionDuration: const Duration(milliseconds: 250),
+      transitionDuration: const Duration(milliseconds: 500),
+      reverseTransitionDuration: const Duration(milliseconds: 400),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        // High-performance enter transition
-        final fade = CurvedAnimation(parent: animation, curve: Curves.linear);
-        final slide = CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
+        // High-end push-in transition from right
+        final slideIn =
+            Tween<Offset>(
+              begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.fastLinearToSlowEaseIn,
+              ),
+            );
+
+        // Subtle scale-back effect for the page being covered
+        final scaleBack = Tween<double>(begin: 1.0, end: 0.92).animate(
+          CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: Curves.easeInOutCubic,
+          ),
+        );
+
+        final opacityFade = Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(
+            parent: animation,
+            curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+          ),
         );
 
         return FadeTransition(
-          opacity: fade,
-          child: SlideTransition(
-            position: slide.drive(
-              Tween<Offset>(begin: const Offset(0.0, 0.08), end: Offset.zero),
-            ),
-            child: child,
+          opacity: opacityFade,
+          child: ScaleTransition(
+            scale: scaleBack,
+            child: SlideTransition(position: slideIn, child: child),
           ),
         );
       },
@@ -52,8 +70,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     // Fetch latest data silently immediately after frame loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(historyProvider.notifier).fetchHistory();
-      // Delay complex animations until page transition is likely finished
-      Future.delayed(const Duration(milliseconds: 350), () {
+      // Wait for the premium 500ms transition to finish before firing internal animations
+      // This prevents CPU spikes and ensures the slide-in is buttery smooth.
+      Future.delayed(const Duration(milliseconds: 600), () {
         if (mounted) setState(() => _readyToAnimate = true);
       });
     });
@@ -167,12 +186,29 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     top: Radius.circular(40),
                   ),
                   child: historyState.when(
-                    data: (history) {
+                    data: (data) {
+                      final history = data['items'] as List<dynamic>;
+                      final total = data['total'] as int;
+
                       if (history.isEmpty) {
-                        return _buildEmptyState();
+                        return RefreshIndicator(
+                          onRefresh: () =>
+                              ref.read(historyProvider.notifier).fetchHistory(),
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: size.height * 0.7,
+                              child: _buildEmptyState(),
+                            ),
+                          ),
+                        );
                       }
-                      final stats = _calculateStats(history);
-                      return _buildContent(context, history, stats);
+                      final stats = _calculateStats(history, total);
+                      return RefreshIndicator(
+                        onRefresh: () =>
+                            ref.read(historyProvider.notifier).fetchHistory(),
+                        child: _buildContent(context, history, stats),
+                      );
                     },
                     loading: () => const Center(
                       child: CircularProgressIndicator(
@@ -197,9 +233,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     );
   }
 
-  Map<String, dynamic> _calculateStats(List<dynamic> history) {
+  Map<String, dynamic> _calculateStats(List<dynamic> history, int total) {
     if (history.isEmpty) {
-      return {};
+      return {'total_logs': total};
     }
 
     double totalIntensity = 0;
@@ -219,7 +255,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     return {
       'avg_intensity': totalIntensity / history.length,
-      'total_logs': history.length,
+      'total_logs': total,
       'dominant_mood': dominantMood,
       'mood_distribution': moodCounts,
     };
@@ -608,7 +644,9 @@ class _MoodDistributionChart extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: sortedKeys.map((mood) {
                 final count = distribution[mood]!;
-                final percent = ((count / total) * 100).toStringAsFixed(0);
+                final percent = total > 0
+                    ? ((count / total) * 100).toStringAsFixed(0)
+                    : "0";
                 final color = _getColorForMood(mood);
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -638,12 +676,12 @@ class _MoodDistributionChart extends StatelessWidget {
                           overflow: TextOverflow.fade,
                           style: GoogleFonts.outfit(
                             color: const Color(0xFF1E293B),
-                            fontSize: 12, // Reduced slightly to fit better
+                            fontSize: 12,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8), // Re-added spacing
+                      const SizedBox(width: 8),
                       Text(
                         "$percent%",
                         style: GoogleFonts.inter(
@@ -706,7 +744,7 @@ class _IntensityChart extends StatelessWidget {
                         height: 12,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             begin: Alignment.bottomLeft,
                             end: Alignment.topRight,
                             colors: [
@@ -806,8 +844,9 @@ class _IntensityChart extends StatelessWidget {
                                 interval: 0.5,
                                 reservedSize: 28,
                                 getTitlesWidget: (value, meta) {
-                                  if (value == 0 || value > 1.0)
+                                  if (value == 0 || value > 1.0) {
                                     return const SizedBox();
+                                  }
                                   if (value == 0.5 || value == 1.0) {
                                     return Text(
                                       (value * 10).toInt().toString(),
@@ -828,8 +867,10 @@ class _IntensityChart extends StatelessWidget {
                                 reservedSize: 32,
                                 getTitlesWidget: (value, meta) {
                                   final index = value.toInt();
-                                  if (index < 0 || index >= averagedData.length)
+                                  if (index < 0 ||
+                                      index >= averagedData.length) {
                                     return const SizedBox();
+                                  }
 
                                   // Truncate mood name for label
                                   String moodName = averagedData[index].key
@@ -862,29 +903,31 @@ class _IntensityChart extends StatelessWidget {
                             final intensity = averagedData[index].value;
 
                             Color barColor = const Color(0xFF94A3B8);
-                            if (mood.contains('happy') || mood.contains('joy'))
+                            if (mood.contains('happy') ||
+                                mood.contains('joy')) {
                               barColor = const Color(0xFFFFB74D);
-                            else if (mood.contains('sad') ||
-                                mood.contains('depress'))
+                            } else if (mood.contains('sad') ||
+                                mood.contains('depress')) {
                               barColor = const Color(0xFF4E92FF);
-                            else if (mood.contains('ang') ||
-                                mood.contains('frust'))
+                            } else if (mood.contains('ang') ||
+                                mood.contains('frust')) {
                               barColor = const Color(0xFFFF5252);
-                            else if (mood.contains('anx') ||
-                                mood.contains('nerv'))
+                            } else if (mood.contains('anx') ||
+                                mood.contains('nerv')) {
                               barColor = const Color(0xFFBA68C8);
-                            else if (mood.contains('calm') ||
-                                mood.contains('relax'))
+                            } else if (mood.contains('calm') ||
+                                mood.contains('relax')) {
                               barColor = const Color(0xFF4DB6AC);
-                            else if (mood.contains('bored') ||
+                            } else if (mood.contains('bored') ||
                                 mood.contains('low') ||
-                                mood.contains('tired'))
+                                mood.contains('tired')) {
                               barColor = const Color(0xFF7986CB);
-                            else if (mood.contains('neutral') ||
-                                mood.contains('none'))
+                            } else if (mood.contains('neutral') ||
+                                mood.contains('none')) {
                               barColor = const Color(0xFF81C784);
-                            else if (mood.contains('stress'))
+                            } else if (mood.contains('stress')) {
                               barColor = const Color(0xFFFF8A65);
+                            }
 
                             return BarChartGroupData(
                               x: index,
@@ -892,8 +935,7 @@ class _IntensityChart extends StatelessWidget {
                                 BarChartRodData(
                                   toY: intensity == 0 ? 0.05 : intensity,
                                   color: barColor,
-                                  width:
-                                      14, // Wider bars since there are fewer categories
+                                  width: 14,
                                   borderRadius: const BorderRadius.vertical(
                                     top: Radius.circular(6),
                                   ),

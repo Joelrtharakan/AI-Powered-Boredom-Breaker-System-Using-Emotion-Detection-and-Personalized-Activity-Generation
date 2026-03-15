@@ -551,7 +551,7 @@ class _AimTrainerScreenState extends State<AimTrainerScreen> {
                   child: Text(
                     "INITIATE SEQUENCE",
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF1E293B),
+                      color: Colors.white,
                       fontWeight: FontWeight.w900,
                       fontSize: 16,
                       letterSpacing: 2,

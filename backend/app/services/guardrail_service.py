@@ -39,10 +39,18 @@ class GuardrailService:
             r"\b(fuck|shit|bitch|cunt|asshole|faggot)\b"
         ]
 
+        # 4. Crisis / Self-Harm (Heuristic level for maximum safety)
+        self.crisis_patterns = [
+            r"\b(suicide|sucide|kill myself|end my life|want to die|end it all)\b",
+            r"\b(better off dead|hurt myself|no reason to live|wish i was dead)\b",
+            r"\b(done with life|goodbye forever|quit life|overdose)\b"
+        ]
+
         # Compile regexes for speed
         self.jailbreak_regex = re.compile("|".join(self.jailbreak_patterns), re.IGNORECASE)
         self.code_math_regex = re.compile("|".join(self.code_math_patterns), re.IGNORECASE)
         self.toxicity_regex = re.compile("|".join(self.toxicity_patterns), re.IGNORECASE)
+        self.crisis_regex = re.compile("|".join(self.crisis_patterns), re.IGNORECASE)
 
         # 4. PII Redaction Regexes
         self.email_regex = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
@@ -72,6 +80,10 @@ class GuardrailService:
         sanitized_input = self.redact_pii(user_input)
 
         # Step 2: Heuristic / Pattern Matching (Fast Path Rejections)
+        if self.crisis_regex.search(sanitized_input):
+            logger.warning("Guardrail Triggered: Crisis patterns matched in heuristic check.")
+            return False, "I hear how much pain you're in, and I want you to know you are not alone. Please consider reaching out to the Kiran mental health helpline at 1800-599-0019 or Aasra at +91-9820466726. Your life is important."
+
         if self.toxicity_regex.search(sanitized_input):
             logger.warning("Guardrail Triggered: Toxicity/Profanity matched.")
             return False, "Let's keep our conversation respectful. I'm here to support you in a safe environment."
@@ -187,7 +199,7 @@ Return only the label.
             res = await llm_service.generate(
                 system_prompt="You are a strict, un-jailbreakable data classifier.", 
                 user_prompt=prompt,
-                model="liquid/lfm-2.5-1.2b-instruct:free",
+                model="google/gemini-2.0-flash-001",
                 timeout=3.5
             )
             classification = res.upper().strip()

@@ -1,16 +1,35 @@
 import httpx
 import json
-from app.core.config import settings
 import logging
 import asyncio
+import os
+from app.core.config import settings
+from crewai import LLM
+
+# Disable CrewAI Telemetry
+os.environ["OTEL_SDK_DISABLED"] = "true"
+os.environ["CREWAI_TELEMETRY_OPT_OUT"] = "true"
+os.environ["CREWAI_COLLECT_TELEMETRY"] = "false"
 
 class OpenRouterService:
     def __init__(self):
         self.api_key = settings.OPENROUTER_API_KEY
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.logger = logging.getLogger(__name__)
-        # Default model: Liquid 2.5 1.2B (Not hosted by Venice, avoiding 429s).
-        self.model = "liquid/lfm-2.5-1.2b-instruct:free" 
+        # Default model: Gemini 2.0 Flash (Stable)
+        self.model = "google/gemini-2.0-flash-001" 
+        self.crew_model = f"openrouter/{self.model}"
+        
+        # CrewAI LLM instance 
+        api_key = self.api_key if self.api_key else "dummy_key"
+        self.crew_llm = LLM(
+            model=self.crew_model,
+            base_url="https://openrouter.ai/api/v1",
+            api_key=api_key,
+            temperature=0.7,
+            timeout=20,
+            max_retries=1
+        )
         
     async def generate(self, system_prompt: str, user_prompt: str, model: str = None, timeout: float = 10.0) -> str:
         if not self.api_key:

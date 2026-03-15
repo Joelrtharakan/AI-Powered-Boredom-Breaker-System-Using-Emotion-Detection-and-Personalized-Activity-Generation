@@ -614,7 +614,7 @@ class _ChimpTestScreenState extends State<ChimpTestScreen> {
                     child: Text(
                       "START EXPERIMENT",
                       style: GoogleFonts.outfit(
-                        color: const Color(0xFF1E293B),
+                        color: Colors.white,
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
                         letterSpacing: 1.5,

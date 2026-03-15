@@ -631,7 +631,7 @@ class _RockPaperScissorsScreenState extends State<RockPaperScissorsScreen> {
                 child: Text(
                   "FIGHT!",
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF1E293B),
+                    color: Colors.white,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2,
                   ),

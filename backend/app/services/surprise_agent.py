@@ -1,49 +1,64 @@
+import asyncio
 import random
+import logging
+from crewai import Agent, Task, Crew
+from app.services.llm_service import llm_service
 from app.services.microtask_agent import microtask_agent
 
 class SurpriseAgent:
     def __init__(self):
-        self.facts = [
-            "Honey never spoils. You can eat 3000 year old honey.",
-            "Octopuses have three hearts.",
-            "Bananas are curved because they grow towards the sun."
-        ]
-        self.jokes = [
-            "Why don't scientists trust atoms? Because they make up everything!",
-            "I'm on a seafood diet. I see food and I eat it.",
-            "Parallel lines have so much in common. It’s a shame they’ll never meet."
-        ]
-        self.motivational = [
-            "The best time to plant a tree was 20 years ago. The second best time is now.",
-            "You are stronger than you think.",
-            "Every moment is a fresh beginning."
-        ]
+        self.logger = logging.getLogger(__name__)
+        self.types = ["fact", "joke", "motivational", "micro_task", "challenge"]
         
-    def generate(self):
-        # type: fact, joke, challenge, motivational, or micro-task
-        type_ = random.choice(["fact", "joke", "motivational", "micro_task", "challenge"])
+    async def generate(self):
+        """Generates a joyful surprise using the CrewAI Joy Specialist."""
+        type_ = random.choice(self.types)
         
-        if type_ == "fact":
-             content = random.choice(self.facts)
-        elif type_ == "joke":
-             content = random.choice(self.jokes)
-        elif type_ == "motivational":
-             content = random.choice(self.motivational)
-        elif type_ == "micro_task":
-             content = microtask_agent.generate()['micro_task']
-        else: # challenge
-             challenges = [
-                 "Drink a glass of water right now.",
-                 "Text a friend that you appreciate them.",
-                 "Do a slow, deep stretch for 30 seconds.",
-                 "Close your eyes and take 5 deep breaths.",
-                 "Name 3 things you are grateful for."
-             ]
-             content = random.choice(challenges)
-             
-        return {
-            "surprise": content,
-            "type": type_
-        }
+        # 1. Routing to Micro-Task Agent if selected
+        if type_ == "micro_task":
+             content = await microtask_agent.generate()
+             return {
+                 "surprise": content['micro_task'],
+                 "type": "micro_task"
+             }
+
+        # 2. Logic for Challenges (Short actionable tasks)
+        if type_ == "challenge":
+            challenges = [
+                "Drink a glass of water right now.",
+                "Text a friend that you appreciate them.",
+                "Do a slow, deep stretch for 30 seconds.",
+                "Close your eyes and take 5 deep breaths.",
+                "Name 3 things you are grateful for."
+            ]
+            return {"surprise": random.choice(challenges), "type": "challenge"}
+
+        # 3. Agentic Generation for Facts, Jokes, and Motivation
+        agent = await asyncio.to_thread(
+            Agent, 
+            from_repository="joy-specialist", 
+            llm=llm_service.crew_llm
+        )
+
+        task = Task(
+            description=f"Generate one unique and interesting {type_}. Keep it extremely short (under 20 words).",
+            expected_output=f"A single short {type_} string.",
+            agent=agent
+        )
+
+        crew = Crew(agents=[agent], tasks=[task], verbose=False)
+
+        try:
+            response = await asyncio.to_thread(crew.kickoff)
+            return {
+                "surprise": str(response).strip(),
+                "type": type_
+            }
+        except Exception as e:
+            self.logger.error(f"Surprise Agent Failed: {e}")
+            return {
+                "surprise": "Did you know? Honey never spoils. Archaeologists have found edible honey in ancient Egyptian tombs!",
+                "type": "fact"
+            }
 
 surprise_agent = SurpriseAgent()

@@ -1,107 +1,70 @@
 import re
+import asyncio
+import logging
+from crewai import Agent, Task, Crew
 from app.services.llm_service import llm_service
 from app.services.emotion_ai import emotion_analyzer
 from app.services.guardrail_service import guardrail_service
 
 class ChatAgent:
     def __init__(self):
-        # Base Persona
-        self.base_system_prompt = """You are Luno, an empathetic and supportive AI companion.
-Your objective is to provide a safe space, support the user's emotional wellbeing, and act as a gentle confidant.
-Always be warm, understanding, and validating.
-
-STRICT FORMATTING RULE:
-Keep your responses EXTREMELY concise and conversational. Act like you are text messaging a friend.
-NEVER write more than 1 to 2 short sentences unless explicitly asked to explain something. Do not write multiple paragraphs.
-"""
+        self.logger = logging.getLogger(__name__)
+        # Your specific persona constraints
+        self.persona_rules = """
+        STRICT FORMATTING RULE:
+        Keep responses EXTREMELY concise (1-2 sentences). Act like you are text messaging a friend.
+        
+        MAPPING RULES:
+        - If anxious/scared: Suggest 'Chill playlist' or 'Zen Mode'.
+        - If sad/lonely: Suggest 'Happy', 'Christian', or 'Chill' playlist.
+        - If bored/unmotivated: Suggest 'Energize' or 'Top Hits' playlist, or 'Snake'/'Memory Flip'.
+        - If angry/frustrated: Suggest 'Focus playlist', 'Zen Mode', or 'Tic Tac Toe'.
+        """
 
     async def generate_response(self, user_message: str, history: list = None, session_context: str = "") -> str:
-        # 0. Execute Robust Multi-Layer Guardrail
+        # 1. Guardrails
         is_safe, refusal_reason = await guardrail_service.analyze(user_message)
-        if not is_safe:
-            return refusal_reason
+        if not is_safe: return refusal_reason
 
-        # 1. Analyze Emotion & Risk (V14 Model)
-        try:
-            analysis = emotion_analyzer.analyze(user_message)
-            risk_level = analysis.get("risk_level", "LOW_NORMAL")
-            emotion = analysis.get("emotion", "neutral")
-            strategy = analysis.get("strategy", "Provide clear help.")
-        except Exception as e:
-            print(f"Emotion Analysis Failed: {e}")
-            risk_level = "LOW_NORMAL"
-            emotion = "neutral"
-            strategy = "Provide warm, comforting support."
+        # 2. Emotional Context
+        analysis = emotion_analyzer.analyze(user_message)
+        emotion = analysis.get("emotion", "neutral")
+        risk_level = analysis.get("risk_level", "LOW_NORMAL")
 
-        # 2. Construct Context-Aware Prompt
-        dynamic_instruction = f"""
-[CURRENT CONTEXT]
-Active Session Summary/Memory: {session_context if session_context else "New Session."}
-User Emotion: {emotion}
-Risk Level: {risk_level}
-Required Strategy: {strategy}
-
-[RESPONSE FORMAT GUIDANCE]
-"""
-        if risk_level in ["CRISIS", "HIGH_DISTRESS"]:
-            dynamic_instruction += """
-1. Acknowledge & Validate (show deep empathy)
-2. Support/Grounding (slow the moment)
-3. Gentle Next Step (encourage professional connection to Indian Helplines: Kiran at 1800-599-0019 or Aasra at +91-9820466726)
-Keep it under 2 sentences. Be exceptionally warm.
-"""
-        elif risk_level == "MODERATE_DISTRESS":
-            dynamic_instruction += """
-1. Validate the feeling. Be extremely comforting.
-2. Offer supportive guidance or a therapeutic perspective.
-Keep it strictly under 2 sentences.
-"""
-        else:
-            dynamic_instruction += """
-Respond warmly and conversationally in just 1 or 2 short sentences. Act like a friend texting back.
-"""
-            
-        dynamic_instruction += """
-When suggesting activities, you must map them properly to the user's current emotion:
-- If they are anxious, scared, worried, or panicked: SUGGEST the "Chill playlist" or "Zen Mode" (breathing). DO NOT suggest "Focus" or "Energize".
-- If they are sad, lonely, or depressed: SUGGEST the "Happy playlist", "Christian playlist", or "Chill playlist".
-- If they are bored or lack motivation: SUGGEST the "Energize playlist", "Top Hits playlist", or games like "Snake" or "Memory Flip".
-- If they are angry or frustrated: SUGGEST the "Focus playlist", "Zen Mode", or "Tic Tac Toe".
-ALWAYS explicitly name one of these EXACT playlists when suggesting music: Chill, Focus, Energize, Sad, Happy, Christian, or Top Hits. (e.g., "try the Chill playlist").
-ALWAYS explicitly name one of these EXACT games when suggesting games: Snake, Tic Tac Toe, Memory Flip, or Aim Trainer.
-"""
-
-        full_system_prompt = self.base_system_prompt + dynamic_instruction
-        
         # 3. Memory Pipeline
-        full_transcript = ""
+        transcript = ""
         if history:
-            # We already have the previous messages. Let's pick the last 6 for context depth.
-            context_msgs = history[-6:]
-            for msg in context_msgs:
-                content = msg.get('content', '')
-                # Prevent "API Error" fallback messages from poisoning the AI's contextual memory
-                if "API Error" in content or "Trouble connecting to my brain" in content:
-                    continue
-                    
-                role_label = "User" if msg.get("role") == "user" else "Assistant"
-                full_transcript += f"{role_label}: {content}\n"
-        
-        full_transcript += f"User: {user_message}\nAssistant: [SYSTEM NOTE: Remember to reply with a maximum of 2 short sentences.]\n"
+            for msg in history[-6:]:
+                role = "User" if msg.get("role") == "user" else "Luno"
+                transcript += f"{role}: {msg.get('content')}\n"
+        transcript += f"User: {user_message}\n"
 
-        # 4. Call LLM
-        response = await llm_service.generate(
-            system_prompt=full_system_prompt,
-            user_prompt=full_transcript
+        # 4. CrewAI Call
+        agent = await asyncio.to_thread(
+            Agent, 
+            from_repository="empathetic-ai-companion", 
+            llm=llm_service.crew_llm
         )
-        
-        # Clean artifacts
-        cleaned = re.sub(r'\[.*?\]', '', response) 
-        cleaned = cleaned.replace("<s>", "").replace("</s>", "").strip()
-        # Edge case artifacting on generic LLM
-        if cleaned.startswith("Assistant:"):
-            cleaned = cleaned[10:].strip()
-            
-        return cleaned
+
+        task = Task(
+            description=(
+                f"A friend is reaching out. They feel {emotion}.\n"
+                f"History:\n{transcript}\n"
+                f"Rules: {self.persona_rules}\n"
+                f"Session Summary: {session_context}"
+            ),
+            expected_output="A warm, text-style response (1-2 sentences max).",
+            agent=agent
+        )
+
+        crew = Crew(agents=[agent], tasks=[task], verbose=False)
+
+        try:
+            response = await asyncio.to_thread(crew.kickoff)
+            cleaned = re.sub(r'\[.*?\]', '', str(response)).strip()
+            return cleaned if not cleaned.startswith("Luno:") else cleaned[5:].strip()
+        except Exception as e:
+            self.logger.error(f"Luno Chat Error: {e}")
+            return "I'm here for you, always. Tell me more?"
 
 chat_agent = ChatAgent()

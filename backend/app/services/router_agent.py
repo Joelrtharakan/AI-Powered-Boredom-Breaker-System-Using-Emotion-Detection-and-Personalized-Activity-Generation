@@ -1,5 +1,5 @@
 import logging
-import random
+import asyncio
 from app.services.planner_agent import planner_agent
 from app.services.microtask_agent import microtask_agent
 from app.services.surprise_agent import surprise_agent
@@ -9,90 +9,61 @@ class RouterAgent:
         self.logger = logging.getLogger(__name__)
 
     async def route(self, mood_data: dict, user_id: int, interests: list = None, text: str = ""):
+        """Entry point for routing user requests based on processed mood data."""
         try:
             items = await self._route_logic(mood_data, user_id, interests, text)
-            if not items:
-                # Fallback if agent returned empty
-                mood = mood_data.get("mood", "")
-                emotion = mood_data.get("emotion", "unknown")
-                return await planner_agent.generate_plan(
-                    f"{mood} (Detected Emotion: {emotion})", 
-                    0.5, 
-                    user_id, 
-                    interests, 
-                    text=text,
-                    subtype=mood_data.get("subtype"),
-                    ns_state=mood_data.get("nervous_system_state")
-                )
-            return items
+            return items if items else await self._get_fallback_plan(mood_data, user_id, interests, text)
         except Exception as e:
-            self.logger.error(f"Router Error: {e}")
+            self.logger.error(f"Router Exception: {e}")
             return await planner_agent.generate_plan("neutral", 0.5, user_id, interests, text=text)
 
     async def _route_logic(self, mood_data: dict, user_id: int, interests: list = None, text: str = ""):
-        """
-        Internal routing logic
-        """
         mood = mood_data.get("mood", "neutral")
         emotion = mood_data.get("emotion", "neutral")
         intensity = mood_data.get("intensity", 0.5)
-        decision_source = mood_data.get("decision_source", "")
-        subtype = mood_data.get("subtype")
-        ns_state = mood_data.get("nervous_system_state")
-
-        self.logger.info(f"Routing for Mood: {mood}, Emotion: {emotion}, Source: {decision_source}")
-
-        # 0. NO EMOTION DETECTED -> Planner Agent handles with "express your feelings" response
-        if decision_source == "no_emotion_detected":
-             self.logger.info("Selected Agent: PlannerAgent (No Emotion Detected)")
-             return await planner_agent.generate_plan(
-                 mood, intensity, user_id, interests, text=text, subtype=subtype, ns_state=ns_state
-             )
-
-        # 1. Critical/Heavy Emotions -> Planner Agent (Needs structured help)
-        fatigue_keywords = ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything"]
+        source = mood_data.get("decision_source", "")
         
-        # Check raw text for fatigue too
-        is_fatigued = any(k in mood.lower() for k in fatigue_keywords) or (text and any(k in text.lower() for k in fatigue_keywords))
+        # 1. NO EMOTION -> Planner (Prompt user)
+        if source == "no_emotion_detected":
+             return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="NO_EMOTION")
 
+        # 2. Fatigue Check
+        fatigue_keys = ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "low energy", "fatigued"]
+        is_fatigued = any(k in mood.lower() for k in fatigue_keys) or (text and any(k in text.lower() for k in fatigue_keys))
+
+        # Boredom Check
+        bored_keys = ["bored", "boring", "nothing to do", "unmotivated", "lack of interest", "meh"]
+        is_bored = any(k in mood.lower() for k in bored_keys) or (text and any(k in text.lower() for k in bored_keys))
+
+        # 3. Path Routing based on Risk & Emotion
+        detected_risk = mood_data.get("risk_level", "LOW_NORMAL")
+        
+        # CRISIS always goes to Planner
+        if detected_risk == "CRISIS":
+             return await planner_agent.generate_plan(f"{mood}", intensity, user_id, interests, text=text, risk_level="CRISIS")
+
+        # Negative Emotions -> Planner Agent
         if emotion in ["sadness", "anger", "fear", "exhaustion", "stressed", "anxious", "sad"] or is_fatigued:
-             self.logger.info("Selected Agent: PlannerAgent")
-             return await planner_agent.generate_plan(
-                 f"{mood} (Detected Emotion: {emotion})", 
-                 intensity, 
-                 user_id, 
-                 interests, 
-                 text=text,
-                 subtype=subtype,
-                 ns_state=ns_state
-             )
+             risk = "FATIGUE" if is_fatigued else detected_risk
+             if risk == "LOW_NORMAL": risk = "MODERATE_DISTRESS" # Default escalation for negative emotions
+             return await planner_agent.generate_plan(f"{mood}", intensity, user_id, interests, text=text, risk_level=risk)
 
-        # 2. Boredom -> Planner Agent (Full Plan: Micro-task + Activity + Music)
-        elif emotion == "boredom":
-             self.logger.info("Selected Agent: PlannerAgent (Boredom)")
-             return await planner_agent.generate_plan(
-                 f"{mood} (Detected Emotion: {emotion})", 
-                 intensity, 
-                 user_id, 
-                 interests, 
-                 text=text,
-                 subtype=subtype,
-                 ns_state=ns_state
-             )
+        # 4. Boredom -> Planner Agent (Game Injection)
+        elif emotion == "boredom" or is_bored:
+             return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="BOREDOM")
 
-        # 3. Neutral -> Surprise Agent (Spark joy)
+        # 5. Neutral -> Surprise Agent (Spark Joy + Grounding)
         elif emotion == "neutral":
-             self.logger.info("Selected Agent: SurpriseAgent")
-             surprise = surprise_agent.generate()
-             return [{
-                 "type": "surprise",
-                 "description": surprise['surprise'],
-                 "time_minutes": 1
-             }]
+             surprise = await surprise_agent.generate()
+             return [
+                 {"type": "breathing", "description": "Take one slow, deep breath to center yourself.", "time_minutes": 1, "purpose": "grounding"},
+                 {"type": "surprise", "description": surprise['surprise'], "time_minutes": 1, "purpose": "spark_joy"}
+             ]
 
-        # 4. Happy/Optimism -> Planner Agent (Sustainability Plan)
-        else:
-             self.logger.info("Selected Agent: PlannerAgent (Default)")
-             return await planner_agent.generate_plan(f"{mood} (Detected Emotion: {emotion})", intensity, user_id, interests, text=text)
+        # 6. Default (Happy/Optimism) -> Planner
+        return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="LOW_NORMAL")
+
+    async def _get_fallback_plan(self, mood_data, user_id, interests, text):
+        return await planner_agent.generate_plan("neutral", 0.5, user_id, interests, text=text)
 
 router_agent = RouterAgent()

@@ -422,7 +422,7 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                           child: Text(
                             _isGameOver ? "TRY AGAIN" : "START GAME",
                             style: GoogleFonts.outfit(
-                              color: const Color(0xFF1E293B),
+                              color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1,
@@ -430,20 +430,25 @@ class _SnakeGameScreenState extends State<SnakeGameScreen>
                           ),
                         ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
 
-                        if (_isGameOver) ...[
-                          const SizedBox(height: 16),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(
-                              "EXIT GAME",
-                              style: GoogleFonts.outfit(
-                                color: const Color(0xFF94A3B8),
-                                fontSize: 14,
-                                letterSpacing: 1,
-                              ),
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
                             ),
-                          ).animate().fadeIn(delay: 400.ms),
-                        ],
+                          ),
+                          child: Text(
+                            "EXIT GAME",
+                            style: GoogleFonts.outfit(
+                              color: const Color(0xFF64748B),
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ).animate().fadeIn(delay: 400.ms),
                       ],
                     ),
                   ),

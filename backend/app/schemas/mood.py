@@ -46,3 +46,7 @@ class MoodHistoryItem(BaseModel):
     
     class Config:
         from_attributes = True
+
+class HistoryResponse(BaseModel):
+    items: List[MoodHistoryItem]
+    total: int

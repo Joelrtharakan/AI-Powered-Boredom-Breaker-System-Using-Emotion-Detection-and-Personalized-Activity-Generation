@@ -20,7 +20,11 @@ class Settings(BaseSettings):
     # OpenRouter
     OPENROUTER_API_KEY: Optional[str] = None
 
+    # CrewAI
+    CREWAI_AUTH_TOKEN: Optional[str] = None
+
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()

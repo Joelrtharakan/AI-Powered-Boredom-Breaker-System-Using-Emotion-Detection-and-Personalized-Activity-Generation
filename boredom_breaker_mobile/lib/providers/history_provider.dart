@@ -3,11 +3,13 @@ import '../services/api_client.dart';
 import '../services/session_manager.dart';
 
 final historyProvider =
-    StateNotifierProvider<HistoryNotifier, AsyncValue<List<dynamic>>>((ref) {
+    StateNotifierProvider<HistoryNotifier, AsyncValue<Map<String, dynamic>>>((
+      ref,
+    ) {
       return HistoryNotifier();
     });
 
-class HistoryNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
+class HistoryNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
   final _api = ApiClient().client;
 
   HistoryNotifier() : super(const AsyncValue.loading()) {
@@ -22,9 +24,14 @@ class HistoryNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
         queryParameters: {'user_id': userId},
       );
 
-      // Ensure we have a list
-      final List<dynamic> history = response.data is List ? response.data : [];
-      state = AsyncValue.data(history);
+      if (response.data is Map) {
+        final Map<String, dynamic> data = Map<String, dynamic>.from(
+          response.data as Map,
+        );
+        state = AsyncValue.data(data);
+      } else {
+        state = const AsyncValue.data({'items': [], 'total': 0});
+      }
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

@@ -29,25 +29,23 @@ class SpotifyService:
             print("DEBUG: Spotify Client is None")
             return []
 
-        # Map moods to more specific, high-quality search terms to avoid generic regional bias
+        # Map moods to targeted, high-quality, and therapeutic search terms
         mood_queries = {
-            "chill": ["lofi hip hop beats", "chill lofi study", "ambient focus", "deep focus", "coding beats", "soft piano instrumental"],
-            "energize": ["upbeat electronic", "workout energizer", "high energy pop", "electro chill", "motivation mix"],
-            "happy": ["feel good tracks", "happy hits", "sunny day vibes", "uptempo indiepop", "positive energy"],
-            "focus": ["deep focus", "brown noise", "instrumental study", "nature sounds", "minimalist techno"],
-            "sad": ["uplifting instrumental", "hopeful acoustic", "mood booster", "comforting melodies", "gentle positive vibes"],
-            "angry": ["heavy instrumental", "aggressive electronics", "tension relief", "cathartic beats"]
+            "chill": ["Ambient Relief", "Stress Relief Instrumental", "Calm Piano Solos", "Liquid Mind", "Deep Sleep Ambient"],
+            "energize": ["Positive Energy Boost", "Upbeat Morning", "Success Motivation", "High Performance Beats", "Confidence Boost"],
+            "happy": ["Serotonin Boost", "Sunny Day Vibes", "Feel Good Classics", "Pure Happiness", "Good Vibe Nation"],
+            "focus": ["Binaural Beats Focus", "Deep Flow State", "ADHD Focus Lofi", "Beta Waves Concentration", "Cinematic Study"],
+            "sad": ["Uplifting Instrumentals", "Hopeful Melodies", "Emotional Healing Piano", "Mood Booster Positive", "Light at the end of the tunnel"],
+            "angry": ["Cathartic Heavy Instrumental", "Boxing Power Training", "Aggressive Workout Beats", "Stress Release Industrial", "Rhythm of Resilience"],
+            "distress": ["Nervous System Regulation", "Panic Attack Relief Audio", "Vagus Nerve Healing", "Safe Space Ambient"]
         }
         
-        # Get a list of queries for the current mood, fallback to a general "mood chill" if missing
-        queries = mood_queries.get(mood.lower(), [f"{mood} chill", f"{mood} energy"])
-        base_query = random.choice(queries)
+        # Select search term based on mood
+        query_list = mood_queries.get(mood.lower(), ["Peaceful Instrumental"])
+        search_query = random.choice(query_list)
         
-        # Explicitly enforce English/International results to avoid regional bias
-        if random.random() > 0.5:
-            search_query = f"{base_query} English global"
-        else:
-            search_query = f"{base_query} top international"
+        # Add 'Playlist' to ensure we get curated collections
+        search_query = f"{search_query} Playlist"
         try:
             results = self.sp.search(q=search_query, type='playlist', limit=limit)
             playlists = []

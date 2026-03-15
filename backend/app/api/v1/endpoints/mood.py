@@ -5,7 +5,7 @@ from datetime import timezone
 
 from app.db.session import SessionLocal
 from app.models.mood import MoodHistory
-from app.schemas.mood import MoodDetectRequest, MoodResponse, MoodLogRequest, MoodHistoryItem
+from app.schemas.mood import MoodDetectRequest, MoodResponse, MoodLogRequest, MoodHistoryItem, HistoryResponse
 from app.services.emotion_ai import emotion_analyzer
 from app.api.v1.endpoints.auth import get_db # Reuse dependency
 
@@ -73,6 +73,31 @@ async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: B
     
     # 1. Guardrail Check Result
     if not is_safe:
+        # Check if this was a crisis rejection
+        is_crisis = any(word in request.text.lower() for word in ["suicide", "sucide", "kill myself", "want to die", "end it all"])
+        
+        if is_crisis:
+            # Emergency Crisis Path: Even if guardrail blocked for security, we MUST provide help
+            crisis_plan = await planner_agent.generate_plan(
+                mood="sadness (CRISIS)",
+                intensity=0.99,
+                user_id=request.user_id,
+                interests=interests,
+                text=request.text,
+                risk_level="CRISIS"
+            )
+            return {
+                "mood": {
+                    "mood": "sad",
+                    "emotion": "sadness",
+                    "intensity": 0.99,
+                    "energy_level": "low",
+                    "decision_source": "safety_override",
+                    "reason": check_result
+                },
+                "plan": crisis_plan
+            }
+            
         mood_res = {
             "mood": "neutral",
             "emotion": "neutral",
@@ -97,9 +122,25 @@ async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: B
         "reason": result.get('reason')
     }
 
-    # 3. Background Log
+    # 3. Synchronous Logging (Real-time sync)
+    # Background tasks can cause race conditions where the UI refreshes before the DB commit finishes.
     if request.user_id:
-        background_tasks.add_task(_log_mood_background, request.user_id, result, request.text)
+        try:
+            log = MoodHistory(
+                user_id=request.user_id,
+                mood=result['mood'],
+                emotion=result['emotion'],
+                intensity=result['intensity'],
+                energy_level=result['energy_level'],
+                activities_used="[]",
+                source="text"
+            )
+            db.add(log)
+            db.commit()
+            print(f"✅ Mood Logged: {result['mood']} for User {request.user_id}")
+        except Exception as e:
+            db.rollback()
+            print(f"❌ Logging Failed: {e}")
 
     # 4. Generate Plan (Fast Track)
     plan = await planner_agent.generate_plan(
@@ -137,8 +178,12 @@ def log_mood(request: MoodLogRequest, user_id: int, db: Session = Depends(get_db
     db.commit()
     return {"ok": True, "id": log.id}
 
-@router.get("/history", response_model=List[MoodHistoryItem])
+@router.get("/history", response_model=HistoryResponse)
 def get_history(user_id: int, db: Session = Depends(get_db)):
+    # Get total count first
+    total = db.query(MoodHistory).filter(MoodHistory.user_id == user_id).count()
+    
+    # Get last 100 logs
     logs = db.query(MoodHistory).filter(MoodHistory.user_id == user_id).order_by(MoodHistory.created_at.desc()).limit(100).all()
     
     # Ensure timezone is UTC for correct frontend parsing
@@ -146,4 +191,4 @@ def get_history(user_id: int, db: Session = Depends(get_db)):
         if log.created_at and log.created_at.tzinfo is None:
             log.created_at = log.created_at.replace(tzinfo=timezone.utc)
             
-    return logs
+    return {"items": logs, "total": total}

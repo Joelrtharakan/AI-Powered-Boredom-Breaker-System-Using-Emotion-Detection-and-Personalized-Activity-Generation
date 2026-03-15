@@ -16,3 +16,9 @@ httpx
 requests
 alembic
 email-validator
+crewai
+langchain-openai
+
+litellm
+spotipy
+sentence-transformers

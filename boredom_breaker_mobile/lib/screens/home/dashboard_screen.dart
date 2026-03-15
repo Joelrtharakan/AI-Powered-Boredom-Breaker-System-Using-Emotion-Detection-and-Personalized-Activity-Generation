@@ -9,6 +9,7 @@ import '../../services/session_manager.dart';
 import '../../theme/app_theme.dart';
 import '../zen_screen.dart';
 import '../music/music_screen.dart';
+import '../music/spotify_player_screen.dart';
 import '../games/games_screen.dart';
 import '../journal/journal_screen.dart';
 import '../history/history_screen.dart';
@@ -864,6 +865,19 @@ class _GeneratedPlanCard extends ConsumerWidget {
       screen = const JournalScreen();
       icon = Icons.book_rounded;
       color = const Color(0xFF4FACFE);
+    } else if (type == 'crisis' || lowerDesc.contains('helpline')) {
+      label = "Emergency Help";
+      icon = Icons.emergency_share_rounded;
+      color = Colors.redAccent;
+    } else if (type == 'social' || lowerDesc.contains('call')) {
+      label = "Call Contact";
+      icon = Icons.phone_in_talk_rounded;
+      color = const Color(0xFF22C55E);
+    } else if (type == 'grounding' || type == 'breathing') {
+      label = "Start Grounding";
+      screen = const ZenScreen();
+      icon = Icons.air_rounded;
+      color = const Color(0xFF06B6D4);
     }
 
     if (label == null) {
@@ -875,13 +889,20 @@ class _GeneratedPlanCard extends ConsumerWidget {
       child: InkWell(
         onTap: () {
           if (type == 'music' || type == 'calming_audio') {
-            final url = spotifyUrl ?? (item['spotify_uri'] ?? "");
+            final url = spotifyUrl ??
+                (item['spotify_url'] ?? item['spotify_uri']) ??
+                "";
             if (url.isNotEmpty) {
-              ref.read(musicLaunchProvider.notifier).state = MusicLaunchData(
-                title: playlistName ?? "AI Pick",
-                url: url,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SpotifyPlayerScreen(
+                    title: playlistName ?? "AI Pick",
+                    spotifyUrl: url,
+                  ),
+                  fullscreenDialog: true,
+                ),
               );
-              if (onTabSwitch != null) onTabSwitch(2); // Land on Music Tab
               return;
             }
           }
@@ -911,6 +932,14 @@ class _GeneratedPlanCard extends ConsumerWidget {
               );
             }
             if (onTabSwitch != null) onTabSwitch(2); // Switch to Music Tab
+          } else if (type == 'crisis') {
+            // Support button could trigger dialer, for now just show info
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text("Please reach out to emergency services.")),
+            );
+          } else if (type == 'social') {
+            // Potential dialer logic or just show info
           } else {
             Navigator.push(context, MaterialPageRoute(builder: (_) => screen!));
           }

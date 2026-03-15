@@ -8,8 +8,8 @@ class SemanticEngine:
     """Handles deep semantic keyword matching with synonym clusters."""
     def __init__(self):
         self.clusters = {
-            "sadness": ["pain", "devastated", "broken", "pointless", "heartbroken", "crushed", "empty", "shattered", "unbearable", "grief", "heart hurts", "so heavy", "worthless", "misery", "bleak", "invisible", "hopeless", "drowning", "tear", "tears", "crying", "lonely", "disappointed", "rejection", "touch breaks", "dead inside", "bittersweet", "depths of despair", "hope tomorrow is better", "wish he would call", "silence is loud", "miss", "missing", "homesick", "longing", "nostalgic", "yearn", "left behind", "far from home", "lost without", "ache", "hurt", "regret", "sorrow", "gloomy", "melancholy", "abandoned", "neglected", "forgotten"],
-            "fear": ["shaken", "rattled", "terrified", "panicking", "panic attack", "anxious", "nervous", "dread", "afraid", "scared", "worried", "troubled", "alarmed", "trembling", "shaking", "bad feeling", "suspense", "sweating", "unsafe", "paralyzed", "jitters", "on edge", "uncertainty", "what if", "heard a noise", "spiraling", "yikes", "pounding", "refreshing the page", "haven't replied", "vibes", "overwhelmed", "insecure", "helpless", "vulnerable", "uneasy", "tense", "restless", "freaking out"],
+            "sadness": ["suicide", "sucide", "kill myself", "want to die", "pain", "devastated", "broken", "pointless", "heartbroken", "crushed", "empty", "shattered", "unbearable", "grief", "heart hurts", "so heavy", "worthless", "misery", "bleak", "invisible", "hopeless", "drowning", "tear", "tears", "crying", "lonely", "disappointed", "rejection", "touch breaks", "dead inside", "bittersweet", "depths of despair", "hope tomorrow is better", "wish he would call", "silence is loud", "miss", "missing", "homesick", "longing", "nostalgic", "yearn", "left behind", "far from home", "lost without", "ache", "hurt", "regret", "sorrow", "gloomy", "melancholy", "abandoned", "neglected", "forgotten"],
+            "fear": ["suicide", "sucide", "end my life", "done with life", "shaken", "rattled", "terrified", "panicking", "panic attack", "anxious", "nervous", "dread", "afraid", "scared", "worried", "troubled", "alarmed", "trembling", "shaking", "bad feeling", "suspense", "sweating", "unsafe", "paralyzed", "jitters", "on edge", "uncertainty", "what if", "heard a noise", "spiraling", "yikes", "pounding", "refreshing the page", "haven't replied", "vibes", "overwhelmed", "insecure", "helpless", "vulnerable", "uneasy", "tense", "restless", "freaking out"],
             "bored": ["really bored", "so bored", "nothing to do", "entertain me", "want to do something", "boredom", "no fun", "lethargic", "sluggish", "lazy", "unmotivated", "listless", "apathetic", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "doomscrolling", "dragging", "don't want to get out of bed"],
             "fatigue": ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep", "too tired", "brain is fried", "brain shutting down", "wiped out"],
             "neutral": ["okay", "all good", "fine", "alright", "normal", "existing", "average", "standard", "nothing much", "chilling", "reading", "eating", "drinking", "sitting", "standing", "waiting", "lukewarm", "quiet", "simple", "neither happy nor sad", "shoes", "cloudy", "apples", "wifi", "laptop", "meeting", "wsg", "gang", "what's good", "sup"],
@@ -196,6 +196,19 @@ class EmotionAnalyzer:
         # 1. Semantic Signal (Rule-based + Keywords)
         semantic_emotion, semantic_score = self.semantic.find_best_match(text_clean)
 
+        # 🚀 CRISIS FAST-PATH 🚀
+        risk_check = self.risk_assessor.assess(text_clean, semantic_emotion or "neutral", semantic_score or 0.5)
+        if risk_check == "CRISIS":
+            self.logger.warning(f"🚨 CRISIS FAST-PATH triggered for input: '{text_clean}'")
+            return {
+                "mood": "sad",
+                "emotion": "sadness",
+                "intensity": 0.99,
+                "risk_level": "CRISIS",
+                "decision_source": "crisis_fast_path",
+                "reason": "Immediate crisis keyword detection. Bypassing other engines for safety."
+            }
+
         # 🚀 SEMANTIC FAST-PATH 🚀
         # If we have a very strong keyword match and the text is not overly complex,
         # we can skip the heavy Transformer inference (saves ~1-2 seconds on CPU).
@@ -323,8 +336,8 @@ class EmotionAnalyzer:
             reason = "Detected 'Nervous Anticipation' pattern, prioritizing Anxiety over Excitement."
             
         # 5. SAFETY OVERRIDE: Existential, Hopelessness, Multilingual Distress
-        existential_phrases = ["why am i alive", "what's the point", "why do i exist", "not worth living",
-                               "want to die", "kill myself", "end it all", "better off dead", "done with life", "i dont want to exist", "i don't want to exist"]
+        existential_phrases = ["suicide", "sucide", "kill myself", "want to die", "end my life", "why am i alive", "what's the point", "why do i exist", "not worth living",
+                               "end it all", "better off dead", "done with life", "i dont want to exist", "i don't want to exist"]
         hopelessness_phrases = ["pointless", "nothing matters", "hopeless", "give up", "no way out"]
         multilingual_distress = ["enaku mudiyala", "porum", "venam", "thangamudiyathu", "sathu poidalam", "mar jaunga", "nahi jina"]
         

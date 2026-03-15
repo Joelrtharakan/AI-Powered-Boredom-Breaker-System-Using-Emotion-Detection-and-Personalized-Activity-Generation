@@ -1,18 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/api_client.dart';
+import 'history_provider.dart';
 
 final moodProvider =
     StateNotifierProvider<MoodNotifier, AsyncValue<Map<String, dynamic>>>((
       ref,
     ) {
-      return MoodNotifier();
+      return MoodNotifier(ref);
     });
 
 class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
-  // Use the API Client
+  final Ref _ref;
   final _api = ApiClient().client;
 
-  MoodNotifier() : super(const AsyncValue.data({}));
+  MoodNotifier(this._ref) : super(const AsyncValue.data({}));
 
   Future<void> analyzeMood(String text, int userId) async {
     state = const AsyncValue.loading();
@@ -37,6 +38,9 @@ class MoodNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
         'plan': plan,
         'no_emotion': noEmotion,
       });
+
+      // TURBO SYNC: Force-refresh history so logs appear in real-time
+      _ref.invalidate(historyProvider);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }

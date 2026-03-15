@@ -1,91 +1,154 @@
 # 🚀 AI-Powered Boredom Breaker System
-**An intelligent, mood-aware application designed to combat boredom and improve mental well-being.**
+**An intelligent, mood-aware ecosystem designed to detect burnout, combat boredom, and enhance mental well-being for students.**
 
-## 📌 Project Overview
-The Boredom Breaker System detects a user's current emotional state using advanced Natural Language Processing (NLP) and generates personalized activities, games, music recommendations, and supportive chat interactions based on their specific mood. It combines deep learning with rule-based safety checks to provide an empathetic and responsive user experience. 
+---
+
+## 📌 Project Vision
+Most boredom-reduction apps simply provide random distractions. The **AI Boredom Breaker** takes a clinical yet empathetic approach by first understanding the user's *internal state*. Whether a user is "Restless Bored" (high energy, no outlet) or "Low Energy Bored" (exhaustion masquerading as boredom), the system adapts its strategy to provide the right intervention at the right time.
+
+---
+
+## 🧠 The Emotion Intelligence Engine (Deep Dive)
+The core of this project is a multi-layered **Hybrid Classification Engine** that combines Deep Learning with a Rule-Based Expert System.
+
+### 1. The Emotion Workflow
+When a user provides input (Journal, Chat, or Mood Check), the text passes through a 6-stage pipeline:
+
+1.  **🚀 Semantic Fast-Path**: If the input is short (<10 words) and contains definitive keywords (e.g., "so bored"), the system uses the **Semantic Engine** for an instant result, bypassing GPU/CPU inference to save ~2 seconds of latency.
+2.  **🛡️ Safety & Risk Intercept**: Before any AI processing, a **Risk Assessment** layer scans for Crisis signals (self-harm, deep distress) in multiple languages (including English and Tamil). If detected, it triggers a **Crisis Protocol** override.
+3.  **🤖 Transformer Inference (Fine-Tuned RoBERTa)**: The text is processed by a `roberta-base` model. We use an ensemble approach, prioritizing our latest fine-tuned weights (`v14_final_model`) before falling back to base versions.
+4.  **🎭 Ensemble Fusion**: The system "fuses" the Transformer's context awareness with the Semantic Engine's keyword accuracy.
+    *   *Consensus:* If both agree, confidence is boosted.
+    *   *Contrastive Logic:* If the user says "I am sad BUT happy for him," the system identifies the "But" and prioritizes the Transformer's contextual understanding over simple keyword counts.
+5.  **📉 Tactical Overrides**:
+    *   *Mundane Filter:* Prevents "Happy" or "Sad" flags for logistical text (e.g., "I'm eating toast").
+    *   *Task-Blocked Detection:* Identifies when a user is frustrated specifically by work/assignments.
+6.  **🚦 State Synthesis**: The engine outputs a multi-dimensional state:
+    *   **Mood/Emotion**: (e.g., `Anxious`, `Stressed`, `Boredom`).
+    *   **Nervous System State**: `Hyperaroused` (Anxiety/Anger) vs `Hypoaroused` (Boredom/Depression).
+    *   **Strategy Guidance**: Direct instructions for the LLM on how to treat the user (e.g., "NO GAMES. PRIORITY: REST.").
+
+---
+
+## 🛠 Fine-Tuning Methodology
+The standard `cardiffnlp/twitter-roberta-base-emotion` model is trained on broad social media categories (Joy, Anger, etc.). To make it effective for student wellness, we performed **Domain Adaptation**.
+
+### Why Fine-Tune?
+Standard models often confuse "Boredom" with "Neutrality" or "Sadness." We needed the model to distinguish between:
+*   **Restless Boredom**: Needs engagement (Arcade/Activity).
+*   **Cognitive Fatigue**: Needs rest/breathing.
+*   **Overthinking**: Needs grounding/micro-tasks.
+
+### The Training Pipeline
+*   **Base Architecture**: `RoBERTa-base`.
+*   **Data Strategy**: Synthetic curation of ~50-100 high-signal student expressions (e.g., "My brain is fried," "I'm just doomscrolling").
+*   **Label Schema**: 10 custom labels including `restless_bored`, `overthinking`, `focused`, and `emotionally_flat`.
+*   **Fallback Logic**: The `EmotionAnalyzer` uses a `threading.Lock` to load models dynamically. If the fine-tuned weights Fail to load, it seamlessly reverts to the base `twitter-roberta` to ensure 100% uptime.
+
+---
+
+## 🤖 The Multi-Agent Ecosystem (CrewAI Orchestration)
+The system is powered by **CrewAI Enterprise**, using a distributed agentic workforce managed via a cloud-based **Agents Repository**. This ensures that agent personas remain consistent across multiple environments.
+
+*   **Empathetic AI Companion**: Optimized for emotional support and warm, concise conversation. Acts as a gentle confidant.
+*   **Psychological Health Planner**: Expert in behavioral psychology. Implements structured micro-intervention protocols based on user risk levels.
+*   **Micro-Task Specialist**: Specializes in quick, 60-second actionable transitions such as mindfulness, creativity, or light physical movement.
+*   **Joy Specialist**: Focused on delivering delightful surprises, interesting facts, jokes, or mini-challenges to boost dopamine and morale.
+
+### Orchestration Workflow
+1.  **Request Ingestion**: The FastAPI backend receives the user's emotional state.
+2.  **Remote Persona Loading**: Agents are instantiated using `from_repository` to pull the latest optimized personas from the CrewAI Cloud.
+3.  **Task Execution**: Each agent is assigned a context-aware `Task` with strict formatting requirements (JSON plans or concise conversational strings).
+4.  **Ensemble Kickoff**: A Crew is formed to execute the task asynchronously, ensuring responsive performance in the mobile app.
+
+---
+
+## 🎮 Arcade Zone
+When the system detects `Restless Boredom`, it unlocks the Arcade:
+*   **Tic-Tac-Toe**: Features an unbeatable AI using the **Minimax Algorithm**.
+*   **Snake**: A classic reflex-based game for grounding.
+*   **Rock Paper Scissors**: A quick, low-stakes decision game.
+
+---
+
+## 💻 Tech Stack
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React (Vite), Tailwind CSS, Framer Motion, Recharts |
+| **Mobile** | Flutter (Dart) |
+| **Backend** | Python FastAPI, SQLAlchemy, Pydantic |
+| **AI/ML** | Hugging Face Transformers, PyTorch, CrewAI, Langchain, OpenRouter |
+| **Database** | SQLite (Relational), ChromaDB (Vector/RAG) |
+
+---
 
 ## ✨ Key Features
-- **Intelligent Dashboard & Mood Detection**: Analyzes text or voice input to understand your current state.
-- **RAG Planner**: Generates personalized, step-by-step 3-part activity plans (e.g., Breathing, Micro-task, Activity) based on mood and energy level.
-- **Voice Assistant (Luno)**: A real-time, bi-directional conversational AI with STT/TTS and context memory.
-- **🧠 Arcade Zone**: Play classic games like Tic-Tac-Toe (against an unbeatable Minimax AI), Snake, and Rock-Paper-Scissors.
-- **📝 Mood Journal**: An encrypted diary where users can log entries, complete with sentiment analysis and a history graph.
-- **💬 AI Friend Chat**: A supportive chatbot that adopts different personas (Empathetic Listener or Fun Companion) based on how you feel.
-- **"Surprise Me" Module**: Instant, 20-word maximum random fact, joke, or micro-challenge for quick boredom relief.
-- **Robust Authentication**: Secure login, registration, and password reset flows powered by JWT.
+- **voice**: Luno assistant.
+- **music**: Spotify/Music.
+- **chat**: AI Friend companion.
+- **lockbox**: **End-to-End Encrypted (E2EE) Vault** for sensitive journal entries or personal notes, ensuring the server never sees the plaintext data.
 
-## 🛠 Tech Stack
-- **Frontend**: React (Vite), Tailwind CSS, Framer Motion, Recharts.
-- **Mobile**: Flutter.
-- **Backend**: Python FastAPI, SQLAlchemy (SQLite), Pydantic.
-- **AI/ML Infrastructure**:
-  - **Vector DB**: ChromaDB for RAG embeddings.
-  - **Emotion Model**: Hugging Face Transformers (`cardiffnlp/twitter-roberta-base-emotion`, fine-tuned).
-  - **LLM Integration**: OpenRouter (Mistral) for Agentic workflows.
+---
 
-## 🧠 AI & Architecture Deep Dive
+## 🌍 Multilingual & Cultural Awareness
+Unlike generic emotion models, our system is tuned for:
+*   **Gen Z / Internet Slang**: Interpets "cooked", "mid", "touch grass", and "no cap" to identify energy levels and emotional weight.
+*   **Multilingual Distress**: Includes hardcoded support for **Tamil** distress markers (e.g., "mudiyala", "enaku mudiyala") to prioritize safety in diverse user contexts.
+*   **Contextual Refusal**: Detects nonsensical inputs or "garbage" text (key-mashes) and gracefully asks for clarification instead of guessing an emotion.
 
-### 1. The Emotion AI Engine
-The system uses a hybrid classification engine for unparalleled accuracy and safety:
-- **Fine-Tuned RoBERTa Model**: Originally trained on social media data, the model was fine-tuned on a custom dataset of student expressions to recognize nuanced cognitive states like `restless_bored`, `overthinking`, and `focused`.
-- **Lexical/Rule-Based Overrides**:
-  - **Critical Distress Detection**: Bypasses the AI to immediately flag self-harm or deep crisis signals to ensure user safety.
-  - **Gen Z Slang Support**: Hardcoded rules for modern terminology ("cooked", "mid", "touch grass").
-  - **Garbage Detectors & Anti-Bias**: Prevents hallucinating emotions from key-mashes or neutral logistical text.
+---
 
-### 2. Multi-Agent Ecosystem
-- **Planner Agent**: Synthesizes the exact mood, energy level, and ChromaDB search results to build 3-step JSON action plans.
-- **AI Friend Chat Agent**: Provides warm, non-judgmental conversational support without explicitly stating it is an AI.
-- **Micro Task Agent**: Generates under-60-second actionable tasks matching the user's energy level.
-- **Surprise Agent**: Curates immediate feel-good micro-content (facts, jokes, motivational lines).
+## 🔒 Security & Privacy (The Lockbox)
+The project implements a **Digital Lockbox** system:
+1.  **Client-Side Encryption**: Data is encrypted locally using the user's keys.
+2.  **Encrypted Persistence**: The backend stores the Base64-encoded encrypted blob.
+3.  **Local Decryption**: Only a user-authenticated client can retrieve and decrypt the vault, ensuring total privacy.
 
-### 3. Resiliency
-- **Retry & Fallback Mechanism**: If external LLM providers experience downtime, the system fails over to precached "Offline Mode" responses to ensure zero UI crashes.
+---
 
-## 🚀 Setup Instructions
+## 🔄 Technical Workflow Summary
+1.  **User Input** (Text/Voice) -> 
+2.  **API Gateway** (FastAPI) -> 
+3.  **Pre-Processor** (Slang/Multilingual Check) -> 
+4.  **Semantic Fast-Path** (Keyword Match) -> 
+5.  **Transformer Ensemble** (Fine-Tuned RoBERTa v14) -> 
+6.  **Regulation Engine** (Safety Overrides) -> 
+7.  **Agentic Choice** (Planner/Luno/AI Friend) -> 
+8.  **Output** (3-Part Plan/Conversation/Arcade Game).
+
+---
+
+## 🚀 Getting Started
 
 ### 1. Backend Setup
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\\Scripts\\activate
+source venv/bin/activate
 pip install -r requirements.txt
+uvicorn app.main:app --reload
 ```
+*Note: The system will automatically download the ~500MB Transformer model on first boot.*
 
-### 2. Environment Variables
-Create a `backend/.env` file:
-```env
-SECRET_KEY=supersecret_dev_key
-SQLALCHEMY_DATABASE_URI=sqlite:///./boredom_breaker.db
-
-# Optional
-SPOTIFY_CLIENT_ID=your_client_id
-SPOTIFY_CLIENT_SECRET=your_client_secret
-```
-
-### 3. Run Backend Server
-```bash
-cd backend
-# This will automatically download the ~500MB HuggingFace model on the first run and create tables
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-### 4. Web Frontend Setup
+### 2. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### 5. Mobile App Setup (Flutter)
+### 3. Mobile Setup
 ```bash
 cd boredom_breaker_mobile
 flutter pub get
-flutter emulators --launch apple_ios_simulator  # Or your specific emulator
-flutter run --no-enable-impeller
+open -a Simulator
+flutter run -d EA66F2A1-0EE7-4017-8319-A09259A3E6D3 
 ```
 
-## 🔜 Roadmap & Next Steps
-- **Deep Spotify Integration**: Seamless connection to user accounts for mood-based direct playback control.
-- **Expanded Fine-Tuning Data**: Collect more real-world logs to expand the Transformer's accuracy across more obscure cognitive states.
-- **Gamification**: Implement streaks and badges for consistent journaling and mood management.
+---
+
+## 🔜 Roadmap
+*   **Active Learning**: Frontend "Feedback" button to allow users to correct emotion predictions, automatically expanding the fine-tuning dataset.
+*   **Spotify Deep Link**: Direct playback of "Boredom Buster" playlists based on energy levels.
+*   **Wearable Integration**: Syncing with heart-rate data for physiological stress detection.
+
