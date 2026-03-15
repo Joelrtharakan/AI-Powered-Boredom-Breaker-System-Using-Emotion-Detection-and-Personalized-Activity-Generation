@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -79,39 +80,24 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
 
       if (type != null && id != null && id.isNotEmpty) {
         id = id.split('?').first;
-        finalUrl = "https://open.spotify.com/embed/$type/$id";
+        finalUrl = "https://open.spotify.com/$type/$id";
       }
     }
 
-    debugPrint("DEBUG: Loading Spotify URL: $finalUrl");
+    late final PlatformWebViewControllerCreationParams params;
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+      params = WebKitWebViewControllerCreationParams(
+        allowsInlineMediaPlayback: true,
+      );
+    } else {
+      params = const PlatformWebViewControllerCreationParams();
+    }
 
-    final String htmlContent =
-        '''
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-          <style>
-            body { margin: 0; padding: 0; background-color: #000; overflow: hidden; height: 100vh; width: 100vw; }
-            iframe { border: none; width: 100%; height: 100%; }
-          </style>
-        </head>
-        <body>
-          <iframe 
-            src="$finalUrl?utm_source=generator" 
-            allowfullscreen="" 
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-            loading="lazy">
-          </iframe>
-        </body>
-      </html>
-    ''';
-
-    _controller = WebViewController()
+    _controller = WebViewController.fromPlatformCreationParams(params)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.black)
       ..setUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
       )
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -123,6 +109,10 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
           },
           onPageFinished: (String url) {
             setState(() => _isLoading = false);
+            // Periodic keep-alive pulse to prevent background audio sleep
+            _controller.runJavaScript(
+              "setInterval(function() { window.focus(); document.body.click(); }, 5000);",
+            );
             if (widget.isLoginOnly &&
                 !url.contains("accounts.spotify.com") &&
                 url.contains("spotify.com")) {
@@ -139,14 +129,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
         ),
       );
 
-    if (widget.isLoginOnly) {
-      _controller.loadRequest(Uri.parse(finalUrl));
-    } else {
-      _controller.loadHtmlString(
-        htmlContent,
-        baseUrl: "https://open.spotify.com",
-      );
-    }
+    _controller.loadRequest(Uri.parse(finalUrl));
   }
 
   @override
@@ -160,11 +143,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       canPop: true,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          try {
-            _controller.loadRequest(Uri.parse('about:blank'));
-          } catch (e) {
-            // Ignore if controller is already disposed
-          }
+          // Keep audio playing during transition if needed,
+          // but usually cleanup is handled in dispose if crucial.
+          // Removing about:blank to prevent sudden stops.
         }
       },
       child: Scaffold(
@@ -390,6 +371,31 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
             ),
             onPressed: () => _controller.reload(),
           ),
+          if (!widget.isLoginOnly)
+            IconButton(
+              icon: const Icon(
+                Icons.login_rounded,
+                color: Color(0xFF1DB954),
+                size: 24,
+              ),
+              onPressed: () async {
+                final success = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SpotifyPlayerScreen(
+                      title: "Spotify Login",
+                      spotifyUrl: "https://accounts.spotify.com/login",
+                      isLoginOnly: true,
+                    ),
+                    fullscreenDialog: true,
+                  ),
+                );
+                if (success == true) {
+                  _controller.reload();
+                }
+              },
+              tooltip: "Login to fix playback",
+            ),
           IconButton(
             icon: const Icon(
               Icons.open_in_new_rounded,

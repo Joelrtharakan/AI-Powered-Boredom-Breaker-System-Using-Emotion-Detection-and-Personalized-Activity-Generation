@@ -54,12 +54,17 @@ class PlannerAgent:
         loop = asyncio.get_event_loop()
         known_games = {
             "snake": "Snake Evolution",
+            "snake evolution": "Snake Evolution",
             "memory flip": "Memory Flip",
             "visual memory": "Visual Memory",
+            "chimp test": "Chimp Test",
             "chimp": "Chimp Test",
+            "aim trainer": "Aim Trainer",
             "aim": "Aim Trainer",
+            "reaction time": "Reaction Time",
             "reaction": "Reaction Time",
             "tic tac toe": "Tic Tac Toe",
+            "rock paper scissors": "Rock Paper Scissors",
             "rock paper": "Rock Paper Scissors",
             "guess number": "Guess Number",
             "number guess": "Guess Number"
@@ -83,14 +88,23 @@ class PlannerAgent:
                 except Exception as e:
                     self.logger.error(f"Spotify Injection Error: {e}")
 
-            # 2. Game Metadata Injection
-            if step.get("type") == "game":
-                desc_lower = step.get("description", "").lower()
-                for key, official_name in known_games.items():
-                    if key in desc_lower:
-                        if "metadata" not in step: step["metadata"] = {}
-                        step["metadata"]["game_name"] = official_name
-                        break
+            # 2. Game Metadata Injection (Search all steps for game matches with word boundaries)
+            desc_lower = step.get("description", "").lower()
+            
+            # Sort keys by length descending to match 'Snake Evolution' before 'Snake'
+            sorted_keys = sorted(known_games.keys(), key=len, reverse=True)
+            
+            for key in sorted_keys:
+                official_name = known_games[key]
+                # Use regex with word boundaries to avoid matching 'reaction' in 'reactions'
+                pattern = rf"\b{re.escape(key)}\b"
+                if re.search(pattern, desc_lower):
+                    if "metadata" not in step: step["metadata"] = {}
+                    step["metadata"]["game_name"] = official_name
+                    # Only override type to 'game' if it's not already a high-priority type like 'crisis'
+                    if step.get("type") not in ["crisis", "social", "music", "calming_audio"]:
+                        step["type"] = "game"
+                    break
         
         return plan
 
@@ -216,9 +230,11 @@ class PlannerAgent:
                 "Step 3: Uplifting Transition (Prescribe the music step as the final 'lift' to a better state)."
             )
         elif risk_level == "BOREDOM":
-            protocol_instruction = "DOPAMINE HIT: Focus on activation. Pick ONE game: Snake, Memory Flip, Visual Memory, Aim Trainer, Chimp Test, Reaction Time, or Tic Tac Toe."
+            protocol_instruction = "STIMULATION: Suggest ONE high-engagement game (Snake Evolution, Aim Trainer, or Reaction Time) and ONE upbeat music choice."
         elif risk_level == "FATIGUE":
-            protocol_instruction = "DEEP RECOVERY: Focus on sensory rest. Suggest one physical comfort (e.g., 'Wash your face with cold water') followed by ambient music."
+            protocol_instruction = "RESTORATION: Suggest sensory rest, then ONE ambient/chill music choice."
+        else: # LOW_NORMAL / JOY / NEUTRAL
+            protocol_instruction = "ENRICHMENT: Suggest ONE strategy/logic game (Chimp Test, Tic Tac Toe, or Memory Flip) or a creative journal prompt, ending with focus/joy music."
         
         task = Task(
             description=(
@@ -227,14 +243,15 @@ class PlannerAgent:
                 f"Intensity: {detected_intensity}\n"
                 f"User context: {text}\n"
                 f"User Interests: {interests}\n"
+                f"Music Recommendation Style: {music_info['description']} (Purpose: {music_info['purpose']})\n"
                 f"\nSTRICT EXECUTION RULES:\n"
-                f"1. COPE & LIFT: The plan must start with coping and end with a positive 'lift' for their situation.\n"
-                f"2. NO TRIVIAL CHORES/SNACKS: Never suggest making a snack, cooking a small meal, cleaning, or doing minor chores. These are distractions, not recovery.\n"
-                f"3. NO DRY TECHNICAL TASKS: Never suggest coding/debugging.\n"
-                f"4. NO CHOICES: Be the authority. Pick ONE concrete action.\n"
-                f"5. {protocol_instruction}\n"
+                f"1. DIRECT NAVIGATION: Use official game names (Snake Evolution, Memory Flip, Visual Memory, Chimp Test, Aim Trainer, Reaction Time, Tic Tac Toe, Rock Paper Scissors, Guess Number) to trigger direct buttons.\n"
+                f"2. COPE & LIFT: The plan must start with coping/grounding and end with a positive 'lift'.\n"
+                f"3. AUTHORITATIVE: Pick ONE concrete game or song. No lists or options.\n"
+                f"4. {protocol_instruction}\n"
+                f"5. NO TRIVIAL CHORES/SNACKS: No cooking, cleaning, or generic advice.\n"
                 f"6. MUSIC LINK: Always end with a 'music' or 'calming_audio' step.\n"
-                f"7. LIMIT: Exactly 3 steps total."
+                f"7. LIMIT: Exactly 3-4 steps total."
             ),
             expected_output="JSON array of objects with keys: 'type', 'description', 'time_minutes', and 'purpose'. 'description' must be a single, specific instruction, NO emojis.",
             agent=agent

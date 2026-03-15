@@ -865,14 +865,6 @@ class _GeneratedPlanCard extends ConsumerWidget {
       screen = const JournalScreen();
       icon = Icons.book_rounded;
       color = const Color(0xFF4FACFE);
-    } else if (type == 'crisis' || lowerDesc.contains('helpline')) {
-      label = "Emergency Help";
-      icon = Icons.emergency_share_rounded;
-      color = Colors.redAccent;
-    } else if (type == 'social' || lowerDesc.contains('call')) {
-      label = "Call Contact";
-      icon = Icons.phone_in_talk_rounded;
-      color = const Color(0xFF22C55E);
     } else if (type == 'grounding' || type == 'breathing') {
       label = "Start Grounding";
       screen = const ZenScreen();
@@ -932,14 +924,6 @@ class _GeneratedPlanCard extends ConsumerWidget {
               );
             }
             if (onTabSwitch != null) onTabSwitch(2); // Switch to Music Tab
-          } else if (type == 'crisis') {
-            // Support button could trigger dialer, for now just show info
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text("Please reach out to emergency services.")),
-            );
-          } else if (type == 'social') {
-            // Potential dialer logic or just show info
           } else {
             Navigator.push(context, MaterialPageRoute(builder: (_) => screen!));
           }
