@@ -24,27 +24,56 @@ class SpotifyService:
         else:
             print(f"DEBUG: Spotify Keys Missing! ID: {self.client_id}")
 
+    def search_items(self, query: str, type: str = 'track', limit: int = 1):
+        """Generalized search for tracks or playlists based on a text query."""
+        if not self.sp or not query: return []
+        try:
+            results = self.sp.search(q=query, type=type, limit=limit)
+            items = []
+            
+            key = 'tracks' if type == 'track' else 'playlists'
+            for item in results[key]['items']:
+                if not item: continue
+                
+                img = ""
+                if type == 'track':
+                    img = item['album']['images'][0]['url'] if item['album']['images'] else ""
+                else:
+                    img = item['images'][0]['url'] if item['images'] else ""
+
+                items.append({
+                    "name": item['name'],
+                    "uri": item['uri'],
+                    "image": img,
+                    "external_url": item['external_urls']['spotify'],
+                    "artist": item['artists'][0]['name'] if type == 'track' else None
+                })
+            return items
+        except Exception as e:
+            print(f"Spotify Search Error: {e}")
+            return []
+
     def get_mood_playlists(self, mood: str, limit: int = 12):
         if not self.sp:
             print("DEBUG: Spotify Client is None")
             return []
 
-        # Map moods to targeted, high-quality, and therapeutic search terms
+        # Map moods to modern, high-quality, and therapeutic search terms
         mood_queries = {
-            "chill": ["Ambient Relief", "Stress Relief Instrumental", "Calm Piano Solos", "Liquid Mind", "Deep Sleep Ambient"],
-            "energize": ["Positive Energy Boost", "Upbeat Morning", "Success Motivation", "High Performance Beats", "Confidence Boost"],
-            "happy": ["Serotonin Boost", "Sunny Day Vibes", "Feel Good Classics", "Pure Happiness", "Good Vibe Nation"],
-            "focus": ["Binaural Beats Focus", "Deep Flow State", "ADHD Focus Lofi", "Beta Waves Concentration", "Cinematic Study"],
-            "sad": ["Uplifting Instrumentals", "Hopeful Melodies", "Emotional Healing Piano", "Mood Booster Positive", "Light at the end of the tunnel"],
-            "angry": ["Cathartic Heavy Instrumental", "Boxing Power Training", "Aggressive Workout Beats", "Stress Release Industrial", "Rhythm of Resilience"],
-            "distress": ["Nervous System Regulation", "Panic Attack Relief Audio", "Vagus Nerve Healing", "Safe Space Ambient"]
+            "chill": ["Modern Ambient", "Stress Relief 2025", "Calm Piano 2024", "Deep Sleep Modern", "Aesthetic Chill"],
+            "energize": ["Modern Energy Boost", "Trending Upbeat", "Success Motivation 2025", "Fresh Performance Beats", "New Confidence Boost"],
+            "happy": ["Serotonin Boost 2025", "Trending Sunny Vibes", "Modern Feel Good", "Pure Happiness 2024", "New Positive Energy"],
+            "focus": ["Modern Binaural Beats", "Deep Flow State 2025", "ADHD Focus 2024", "Modern Concentration", "Fresh Study Vibes"],
+            "sad": ["Modern Uplifting", "New Hopeful Melodies", "Modern Healing Piano", "Mood Booster 2025", "Fresh Start Vibes"],
+            "angry": ["Modern Cathartic Beats", "New Power Training", "Modern Workout 2025", "Fresh Stress Release", "Modern Resilience"],
+            "distress": ["Modern Regulation Audio", "New Panic Relief", "Modern Ambient Healing", "Safe Space 2025"]
         }
         
         # Select search term based on mood
-        query_list = mood_queries.get(mood.lower(), ["Peaceful Instrumental"])
+        query_list = mood_queries.get(mood.lower(), ["Modern Instrumental"])
         search_query = random.choice(query_list)
         
-        # Add 'Playlist' to ensure we get curated collections
+        # Add 'Playlist' and ensure modern bias
         search_query = f"{search_query} Playlist"
         try:
             results = self.sp.search(q=search_query, type='playlist', limit=limit)

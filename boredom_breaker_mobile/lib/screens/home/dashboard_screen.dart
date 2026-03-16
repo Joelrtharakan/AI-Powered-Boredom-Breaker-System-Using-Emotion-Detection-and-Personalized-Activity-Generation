@@ -806,9 +806,12 @@ class _GeneratedPlanCard extends ConsumerWidget {
       label = "Open Music";
 
       if (metadata != null) {
-        if (metadata.containsKey('spotify_uri')) {
+        if (metadata.containsKey('spotify_url')) {
+          spotifyUrl = metadata['spotify_url'];
+        } else if (metadata.containsKey('spotify_uri')) {
           spotifyUrl = metadata['spotify_uri'];
         }
+        
         if (metadata.containsKey('playlist_name')) {
           playlistName = metadata['playlist_name'];
           trackName = playlistName;

@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class SpotifyPlayerScreen extends StatefulWidget {
   final String title;
@@ -97,7 +98,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.black)
       ..setUserAgent(
-        "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
       )
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -109,10 +110,9 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
           },
           onPageFinished: (String url) {
             setState(() => _isLoading = false);
-            // Periodic keep-alive pulse to prevent background audio sleep
-            _controller.runJavaScript(
-              "setInterval(function() { window.focus(); document.body.click(); }, 5000);",
-            );
+            // Prime the player focus
+            _controller.runJavaScript("document.body.click();");
+            
             if (widget.isLoginOnly &&
                 !url.contains("accounts.spotify.com") &&
                 url.contains("spotify.com")) {
@@ -243,70 +243,97 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
                     const SizedBox(height: 12),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1DB954).withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF1DB954).withValues(alpha: 0.1),
+                            const Color(0xFF191414).withValues(alpha: 0.05),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: const Color(0xFF1DB954).withValues(alpha: 0.2),
+                          color: const Color(0xFF1DB954).withValues(alpha: 0.3),
+                          width: 1.5,
                         ),
                       ),
-                      child: Row(
+                      child: Column(
                         children: [
-                          const Icon(
-                            Icons.info_outline_rounded,
-                            color: Color(0xFF16A34A),
-                            size: 18,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              "Preview only · Open in Spotify for full playback",
-                              style: GoogleFonts.inter(
-                                color: const Color(0xFF475569),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: _launchInFullApp,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF1DB954),
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFF1DB954,
-                                    ).withValues(alpha: 0.25),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                "Open",
-                                style: GoogleFonts.outfit(
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF1DB954),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.play_arrow_rounded,
                                   color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
+                                  size: 16,
                                 ),
                               ),
-                            ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Full Playback Mode",
+                                      style: GoogleFonts.outfit(
+                                        color: const Color(0xFF0F172A),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    Text(
+                                      "For non-stop music, use the full app.",
+                                      style: GoogleFonts.inter(
+                                        color: const Color(0xFF64748B),
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: _launchInFullApp,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1DB954),
+                                    borderRadius: BorderRadius.circular(30),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF1DB954)
+                                            .withValues(alpha: 0.3),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    "Open App",
+                                    style: GoogleFonts.outfit(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                   ],
                 ],
               ),
@@ -342,14 +369,23 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  widget.title.toUpperCase(),
-                  style: GoogleFonts.outfit(
-                    color: const Color(0xFF0F172A),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.5,
-                  ),
+                SizedBox(
+                  height: 22,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    physics: const BouncingScrollPhysics(),
+                    child: Text(
+                      widget.title.toUpperCase(),
+                      maxLines: 1,
+                      style: GoogleFonts.outfit(
+                        color: const Color(0xFF0F172A),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ).animate(onPlay: (controller) => controller.repeat())
+                   .shimmer(duration: const Duration(seconds: 3), color: Colors.white.withValues(alpha: 0.3)),
                 ),
                 if (_error.isNotEmpty)
                   Text(

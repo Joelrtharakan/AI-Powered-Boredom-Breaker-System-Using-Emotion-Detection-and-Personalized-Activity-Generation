@@ -71,25 +71,50 @@ class PlannerAgent:
         }
 
         for step in plan:
-            # 1. Spotify Injection
-            if step.get("type") in ["music", "calming_audio"]:
+            desc_lower = step.get("description", "").lower()
+            # 1. Spotify Injection (Smart Song Detection)
+            if step.get("type") in ["music", "calming_audio"] or "listen" in desc_lower or "spotify" in desc_lower:
                 try:
-                    playlists = await loop.run_in_executor(None, spotify_service.get_mood_playlists, mood_key, 1)
-                    if playlists:
+                    # Extraction Patterns
+                    patterns = [
+                        r"listen to '([^']+)' by ([^.]+)",
+                        r"listen to ([^']+) by ([^.]+)",
+                        r"listen to '([^']+)'"
+                    ]
+                    
+                    specific_match = None
+                    for p in patterns:
+                        match = re.search(p, step.get("description", ""), re.IGNORECASE)
+                        if match:
+                            query = " ".join(match.groups())
+                            results = await loop.run_in_executor(None, spotify_service.search_items, query, 'track', 1)
+                            if results:
+                                specific_match = results[0]
+                                break
+                    
+                    item = specific_match
+                    if not item:
+                        # Fallback to mood playlist if no specific song detected
+                        playlists = await loop.run_in_executor(None, spotify_service.get_mood_playlists, mood_key, 1)
+                        if playlists: item = playlists[0]
+                    
+                    if item:
                         step["metadata"] = {
-                            "spotify_uri": playlists[0]["uri"],
-                            "spotify_url": playlists[0]["external_url"],
-                            "playlist_name": playlists[0]["name"],
-                            "image": playlists[0].get("image")
+                            "spotify_uri": item.get("uri"),
+                            "spotify_url": item.get("external_url"),
+                            "playlist_name": item.get("name"),
+                            "image": item.get("image")
                         }
-                        # Force description to mentions Spotify to trigger mobile UI logic if needed
-                        if playlists[0]["name"] not in (step.get("description") or ""):
-                            step["description"] = f"{step.get('description', '')} (Listen to {playlists[0]['name']})"
+                        # If it's a specific track, update the type to ensure it triggers the music UI
+                        step["type"] = "music"
+                        
+                        # Ensure the button label on mobile uses the correct name
+                        if item.get("name") not in (step.get("description") or ""):
+                            step["description"] = f"{step.get('description', '')} (Listen to {item.get('name')})"
                 except Exception as e:
                     self.logger.error(f"Spotify Injection Error: {e}")
 
             # 2. Game Metadata Injection (Search all steps for game matches with word boundaries)
-            desc_lower = step.get("description", "").lower()
             
             # Sort keys by length descending to match 'Snake Evolution' before 'Snake'
             sorted_keys = sorted(known_games.keys(), key=len, reverse=True)
@@ -251,7 +276,8 @@ class PlannerAgent:
                 f"4. {protocol_instruction}\n"
                 f"5. NO TRIVIAL CHORES/SNACKS: No cooking, cleaning, or generic advice.\n"
                 f"6. MUSIC LINK: Always end with a 'music' or 'calming_audio' step.\n"
-                f"7. LIMIT: Exactly 3-4 steps total."
+                f"7. LIMIT: Exactly 3-4 steps total.\n"
+                f"8. MODERN ONLY: Do NOT suggest old 90s songs or 'Classics'. Focus on modern, fresh, and high-quality 2020-2025 content."
             ),
             expected_output="JSON array of objects with keys: 'type', 'description', 'time_minutes', and 'purpose'. 'description' must be a single, specific instruction, NO emojis.",
             agent=agent
