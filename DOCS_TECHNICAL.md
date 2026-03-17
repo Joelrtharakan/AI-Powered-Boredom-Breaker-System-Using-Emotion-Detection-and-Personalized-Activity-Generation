@@ -17,11 +17,14 @@ We utilized a **Transformer-based Architecture** (`RoBERTa-base`) and performed 
 *   **The Solution:** We trained a custom layer on a curated dataset of ~1,500 student-specific expressions (slang, stress markers, academic burnout cues).
 *   **Technique:** We used **Weighted Cross-Entropy Loss** to prioritize "high-risk" emotions (like Distress or Fatigue) and implemented **Layer Freezing** on the initial RoBERTa blocks to preserve general linguistic intelligence while specializing the final heads for 10 custom labels (e.g., `restless_bored`, `overthinking`, `focused`).
 
-### 2. Core Algorithms
+### 2. Core Algorithms & Intelligence Upgrades (Roadmap V2)
 *   **Emotion Detection:** `Transformer Ensemble (RoBERTa)`. Understands context, sarcasm, and complex emotional shifts.
-*   **Arcade Logic:** `Minimax Algorithm`. Powers the Tic-Tac-Toe AI with a recursive depth-first search, making it mathematically perfect and "unbeatable."
-*   **Agentic Decisions:** `ReAct (Reason + Act) Pattern`. Agents "think" about the user's state before selecting tools (Spotify/Games).
-*   **Metadata Integration:** `Regex Word-Boundary Heuristics`. Instantly extracts song/game titles from conversational text to inject deep-links.
+*   **Semantic Intent Detection:** `Sentence-Transformers (Embeddings)`. Replaced fragile regex with semantic similarity search to understand user intents.
+*   **Temporal Emotion Modeling:** `Trajectory Prediction Engine`. Tracks emotional trends over time to detect **burnout risk** using linear projection and sequence analysis.
+*   **Personalized Recommendation Bandit**: `Contextual Thompson Sampling`. The system now includes features like **Time of Day** and **Energy Levels** to refine intervention policies.
+*   **Intelligent Memory System**: `Vector DB + Ranking`. Memories are ranked by **Recency**, **Similarity**, and **Emotional Intensity** to provide the most relevant context to the AI companion.
+*   **Safety Level Escalation**: `L1/L2/L3 Risk Framework`. Production-grade safety that scales interventions based on distress severity, including automatic disabling of games during crises.
+*   **Arcade Logic:** `Minimax Algorithm`. Powers the Tic-Tac-Toe AI.
 
 ---
 
@@ -65,8 +68,9 @@ The system uses **CrewAI** to orchestrate specialized personas. Agents are built
 ## 📜 History & Personalization
 The **History Page** acts as a "Well-being Ledger":
 *   **Temporal Tracking**: Sessions are saved with timestamps, moods, and energy intensity.
+*   **Semantic Memory**: Uses **Vector Search** to retrieve relevant past context during conversations.
 *   **Real-Time Sync**: Uses a backend-to-frontend relay ensuring the "Total Logs" count is always accurate.
-*   **Personalized Analytics**: The system looks at your history to notice patterns (e.g., "You're often stressed on Tuesdays") and adjusts agent personas to be more supportive during those times.
+*   **Bandit-Driven Personalization**: The system uses a feedback loop to learn which activities have the highest success rate for you.
 *   **The Loop**: Your past history is fed back into the **Agent Context**, so Luno remembers your recent struggles and tailors her "Hey there!" to your current recovery progress.
 
 ---

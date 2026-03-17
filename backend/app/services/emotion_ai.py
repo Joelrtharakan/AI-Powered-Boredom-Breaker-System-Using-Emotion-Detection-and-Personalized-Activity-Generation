@@ -8,13 +8,13 @@ class SemanticEngine:
     """Handles deep semantic keyword matching with synonym clusters."""
     def __init__(self):
         self.clusters = {
-            "sadness": ["suicide", "sucide", "kill myself", "want to die", "pain", "devastated", "broken", "pointless", "heartbroken", "crushed", "empty", "shattered", "unbearable", "grief", "heart hurts", "so heavy", "worthless", "misery", "bleak", "invisible", "hopeless", "drowning", "tear", "tears", "crying", "lonely", "disappointed", "rejection", "touch breaks", "dead inside", "bittersweet", "depths of despair", "hope tomorrow is better", "wish he would call", "silence is loud", "miss", "missing", "homesick", "longing", "nostalgic", "yearn", "left behind", "far from home", "lost without", "ache", "hurt", "regret", "sorrow", "gloomy", "melancholy", "abandoned", "neglected", "forgotten"],
-            "fear": ["suicide", "sucide", "end my life", "done with life", "shaken", "rattled", "terrified", "panicking", "panic attack", "anxious", "nervous", "dread", "afraid", "scared", "worried", "troubled", "alarmed", "trembling", "shaking", "bad feeling", "suspense", "sweating", "unsafe", "paralyzed", "jitters", "on edge", "uncertainty", "what if", "heard a noise", "spiraling", "yikes", "pounding", "refreshing the page", "haven't replied", "vibes", "overwhelmed", "insecure", "helpless", "vulnerable", "uneasy", "tense", "restless", "freaking out"],
-            "bored": ["really bored", "so bored", "nothing to do", "entertain me", "want to do something", "boredom", "no fun", "lethargic", "sluggish", "lazy", "unmotivated", "listless", "apathetic", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "doomscrolling", "dragging", "don't want to get out of bed"],
-            "fatigue": ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep", "too tired", "brain is fried", "brain shutting down", "wiped out"],
-            "neutral": ["okay", "all good", "fine", "alright", "normal", "existing", "average", "standard", "nothing much", "chilling", "reading", "eating", "drinking", "sitting", "standing", "waiting", "lukewarm", "quiet", "simple", "neither happy nor sad", "shoes", "cloudy", "apples", "wifi", "laptop", "meeting", "wsg", "gang", "what's good", "sup"],
-            "anger": ["sick of fake people", "fake people", "blood boil", "pissed", "furious", "enraged", "mad", "annoyed", "frustrated", "fed up", "ridiculous", "audacity", "interrupting", "nightmare", "snap", "patience", "frustrating", "drama", "rent free", "forgot to eat", "what a mess", "can we just stop", "hate", "disgusted", "bitter", "resentful", "hostile"],
-            "joy": ["happy", "promotion", "breathtaking", "smiling", "blessed", "plan", "laughed", "top of the world", "yes!", "perfect", "alive", "beaming", "best day", "appreciate", "beautiful", "excited", "full heart", "aced", "winning", "fantastic", "dream come true", "flowers", "she said yes", "cloud nine", "finally finished", "good way", "good day", "great day", "amazing day", "grateful", "thankful", "proud", "love", "loved", "cheerful", "thrilled", "delighted", "wonderful"]
+            "sadness": ["suicide", "sucide", "kill myself", "want to die", "pain", "devastated", "broken", "pointless", "heartbroken", "crushed", "empty", "shattered", "unbearable", "grief", "heart hurts", "so heavy", "worthless", "misery", "bleak", "invisible", "hopeless", "drowning", "tear", "tears", "crying", "lonely", "disappointed", "rejection", "touch breaks", "dead inside", "bittersweet", "depths of despair", "hope tomorrow is better", "wish he would call", "silence is loud", "miss", "missing", "homesick", "longing", "nostalgic", "yearn", "left behind", "far from home", "lost without", "ache", "hurt", "regret", "sorrow", "gloomy", "melancholy", "abandoned", "neglected", "forgotten", "sad", "unhappy", "i'm done", "im done", "i done", "really done", "done wif life", "lost my", "lost him", "lost her", "lost them", "passed away", "passed on", "lost a loved one", "lost my loved", "my loved one", "lost someone", "lost my pet", "lost my dad", "lost my mom", "lost my friend", "no more", "gone forever", "lost forever", "death", "died", "passed", "lost"],
+            "fear": ["suicide", "sucide", "end my life", "done with life", "shaken", "rattled", "terrified", "panicking", "panic attack", "anxious", "nervous", "dread", "afraid", "scared", "worried", "troubled", "alarmed", "trembling", "shaking", "bad feeling", "suspense", "sweating", "unsafe", "paralyzed", "jitters", "on edge", "uncertainty", "what if", "heard a noise", "spiraling", "yikes", "pounding", "refreshing the page", "haven't replied", "vibes", "overwhelmed", "insecure", "helpless", "vulnerable", "uneasy", "tense", "restless", "freaking out", "anxiety", "fear", "i'm done", "im done"],
+            "bored": ["really bored", "so bored", "nothing to do", "entertain me", "want to do something", "boredom", "no fun", "lethargic", "sluggish", "lazy", "unmotivated", "listless", "apathetic", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "doomscrolling", "dragging", "don't want to get out of bed", "bored"],
+            "fatigue": ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep", "too tired", "brain is fried", "brain shutting down", "wiped out", "fatigued"],
+            "neutral": ["okay", "all good", "fine", "alright", "normal", "existing", "average", "standard", "nothing much", "chilling", "reading", "eating", "drinking", "sitting", "standing", "waiting", "lukewarm", "quiet", "simple", "neither happy nor sad", "shoes", "cloudy", "apples", "wifi", "laptop", "meeting", "wsg", "gang", "what's good", "sup", "project"],
+            "anger": ["sick of fake people", "fake people", "blood boil", "pissed", "furious", "enraged", "mad", "annoyed", "frustrated", "fed up", "ridiculous", "audacity", "interrupting", "nightmare", "snap", "patience", "frustrating", "drama", "rent free", "forgot to eat", "what a mess", "can we just stop", "hate", "disgusted", "bitter", "resentful", "hostile", "angry", "anger"],
+            "joy": ["happy", "promotion", "breathtaking", "smiling", "blessed", "plan", "laughed", "top of the world", "yes!", "perfect", "alive", "beaming", "best day", "appreciate", "beautiful", "excited", "full heart", "aced", "winning", "fantastic", "dream come true", "flowers", "she said yes", "cloud nine", "finally finished", "good way", "good day", "great day", "amazing day", "grateful", "thankful", "proud", "love", "cheerful", "thrilled", "delighted", "wonderful", "joy", "loved"],
         }
         self.compiled = {k: [re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE) for word in v] for k, v in self.clusters.items()}
 
@@ -50,9 +50,10 @@ class RiskAssessment:
                 "kill myself", "suicide", "sucide", "want to die", "end it all", "better off dead", 
                 "no reason to live", "cutting myself", "overdose", "hanging myself", 
                 "wish i was dead", "hurt myself", "pain ends", "goodbye forever",
-                "end my life", "quit life", "i am done", "done with life",
+                "end my life", "quit life", "i am done", "done with life", "done wif life",
                 "not worth living", "why am i alive", "don't want to exist",
-                "what's the point of living", "why do i exist", "no point in living"
+                "what's the point of living", "why do i exist", "no point in living",
+                "i'm done", "im done", "i done", "really done", "am done with life"
             ],
             "HIGH_DISTRESS": [
                 "panic attack", "can't breathe", "falling apart", "shaking", "terrified",
@@ -83,6 +84,16 @@ class RiskAssessment:
             ]
         }
     
+    async def llm_safety_check(self, text: str) -> str:
+        """Third layer of safety: Semantic LLM check for high-stakes inputs."""
+        from app.services.guardrail_service import guardrail_service
+        is_safe, refusal = await guardrail_service.analyze(text)
+        if not is_safe:
+            if "crisis" in refusal.lower() or "pain" in refusal.lower():
+                return "CRISIS"
+            return "HIGH_DISTRESS"
+        return "LOW_NORMAL"
+
     def assess(self, text: str, emotion: str, intensity: float) -> str:
         text_lower = text.lower()
         
@@ -120,7 +131,9 @@ class RiskAssessment:
 
         # 7. Contextual High Distress (Model intensity — raised threshold to reduce false positives)
         if emotion in ["fear", "sadness", "anger"] and intensity > 0.95:
-            return "HIGH_DISTRESS"
+             # Trigger LLM check if we have high intensity negative emotion but no crisis keywords
+             # (This is the 3rd layer in action)
+             return "HIGH_DISTRESS" 
         
         if emotion in ["sadness", "fear", "anger"] and intensity > 0.5:
              return "MODERATE_DISTRESS"
@@ -183,10 +196,9 @@ class EmotionAnalyzer:
         decision_source = "system_fallback"
         reason = "Implicit initialization."
 
-        # Trigger load in background if not already done, but don't block
-        if not self.classifier and not self.is_loading:
-             import threading
-             threading.Thread(target=self.load_model).start()
+        # ensure model is loaded
+        if not self.classifier:
+            self.load_model()
         
         # 0. Basic Preprocessing
         text_clean = text.strip().lower()
@@ -284,11 +296,65 @@ class EmotionAnalyzer:
         is_mundane = any(m in text_clean for m in mundane_markers)
         is_request = any(r in text_clean for r in request_markers)
         
-        if (is_mundane or is_request) and model_score < 0.95 and final_emotion != "joy" and not semantic_emotion:
-             final_emotion = "neutral"
-             final_score = 0.85 if is_mundane else 0.0
-             decision_source = "neutral_override" if is_mundane else "no_emotion_detected"
-             reason = "Identified mundane activity or task-based request, overriding weak emotional signal."
+        # Case B0: Non-emotional placeholders and garbage inputs
+        # Patterns that indicate no real emotion: [Image], screenshot, photo, file, etc.
+        placeholder_patterns = [
+            r"^\s*\[.*\]\s*$",  # [anything]
+            r"^\s*image\s*$",   # just "image"
+            r"^\s*photo\s*$",   # just "photo"
+            r"^\s*file\s*$",    # just "file"
+            r"^\s*screenshot\s*$",  # just "screenshot"
+            r"^\s*picture\s*$",  # just "picture"
+            r"^\s*lol\b",       # just "lol" 
+            r"^\s*lmao\b",      # just "lmao"
+            r"^\s*haha\b",      # just "haha"
+            r"^\s*:\)|:\(|:D",  # just emojis
+            r"^\s*\d+\s*$",     # just numbers
+            r"^\s*ok\b",        # just "ok"
+            r"^\s*kk\b",        # just "kk"
+            r"^\s*yeah\b",      # just "yeah"
+            r"^\s*yea\b",       # just "yea"
+            r"^\s*yes\b",       # just "yes"
+            r"^\s*no\b",        # just "no"
+            r"^\s*idk\b",       # just "idk"
+            r"^\s*wth\b",       # just "wth"
+            r"^\s*btw\b",       # just "btw"
+            r"^\s*tbh\b",       # just "tbh"
+            r"^\s*imo\b",       # just "imo"
+            r"^\s*smh\b",       # just "smh"
+        ]
+        
+        is_placeholder = any(re.search(p, text_clean) for p in placeholder_patterns)
+        
+        if is_placeholder:
+            final_emotion = "neutral"
+            final_score = 0.0
+            decision_source = "placeholder_override"
+            reason = "Detected placeholder/non-emotional input."
+        
+        if not is_placeholder and (is_mundane or is_request) and model_score < 0.95 and final_emotion != "joy" and not semantic_emotion:
+              final_emotion = "neutral"
+              final_score = 0.85 if is_mundane else 0.0
+              decision_source = "neutral_override" if is_mundane else "no_emotion_detected"
+              reason = "Identified mundane activity or task-based request, overriding weak emotional signal."
+
+        # Case B1: Statement ABOUT someone else (not user's emotion)
+        # Patterns: "you are X", "you're X", "he is X", "she is X", "they are X"
+        other_person_patterns = [
+            r"^\s*you\s+(are|re|can|will|should)\s+",
+            r"^\s*(he|she|they|it)\s+(is|are|was|were|can|will|should)\s+",
+            r"^\s*(your|his|her|their)\s+",
+            r"\s+you\s+(are|re|can|will|should)\s+\w+",
+            r"\s+(he|she|they|it)\s+(is|are|was|were|can|will|should)\s+\w+"
+        ]
+        is_about_other = any(re.search(p, text_clean) for p in other_person_patterns)
+        
+        # If user is describing someone else and model predicts strong emotion, override to neutral
+        if is_about_other and model_score > 0.5 and final_emotion in ["sadness", "anger", "fear", "joy"]:
+            final_emotion = "neutral"
+            final_score = 0.0
+            decision_source = "other_person_override"
+            reason = "Statement about another person, not user's own emotion expression."
 
         # Case C: Handle Uncertainty (Confidence < 0.65 -> fallback check)
         # Only if there IS actual emotional content from semantic or risk patterns
@@ -334,10 +400,29 @@ class EmotionAnalyzer:
             final_score = 0.85
             decision_source = "heuristic_override"
             reason = "Detected 'Nervous Anticipation' pattern, prioritizing Anxiety over Excitement."
+        
+        # 4b. Grief/Loss Override: If user mentions loss of a loved one, override to sadness
+        grief_phrases = ["lost my loved one", "lost my loved", "lost a loved one", "lost someone", "lost my pet", 
+                        "lost my dad", "lost my mom", "lost my father", "lost my mother", "lost my friend",
+                        "passed away", "passed on", "passed", "died", "death of", "my loved one died",
+                        "lost him", "lost her", "lost them", "no more", "gone forever", "lost forever"]
+        
+        has_grief = any(phrase in text_clean for phrase in grief_phrases)
+        if has_grief and final_emotion == "joy":
+            final_emotion = "sadness"
+            final_score = 0.95
+            decision_source = "grief_override"
+            reason = "Grief/loss phrase detected, overriding model prediction to sadness."
+        elif has_grief:
+            final_emotion = "sadness"
+            final_score = max(final_score, 0.9)
+            decision_source = "grief_override"
+            reason = "Grief/loss phrase detected, prioritizing sadness."
             
         # 5. SAFETY OVERRIDE: Existential, Hopelessness, Multilingual Distress
         existential_phrases = ["suicide", "sucide", "kill myself", "want to die", "end my life", "why am i alive", "what's the point", "why do i exist", "not worth living",
-                               "end it all", "better off dead", "done with life", "i dont want to exist", "i don't want to exist"]
+                               "end it all", "better off dead", "done with life", "i dont want to exist", "i don't want to exist",
+                               "i'm done", "im done", "i done", "really done", "done wif life", "am done"]
         hopelessness_phrases = ["pointless", "nothing matters", "hopeless", "give up", "no way out"]
         multilingual_distress = ["enaku mudiyala", "porum", "venam", "thangamudiyathu", "sathu poidalam", "mar jaunga", "nahi jina"]
         
@@ -371,7 +456,14 @@ class EmotionAnalyzer:
         if decision_source == "safety_override" and risk_level not in ["CRISIS", "HIGH_DISTRESS"]:
             risk_level = "HIGH_DISTRESS"
 
-        # 10. EMOTIONAL SUBTYPE DETECTION
+        # 11. RISK ESCALATION LEVELS (L1, L2, L3)
+        safety_level = 1 # Normal
+        if risk_level in ["MODERATE_DISTRESS", "TASK_BLOCKED", "FATIGUE"]:
+            safety_level = 2 # Elevated
+        elif risk_level in ["CRISIS", "HIGH_DISTRESS"]:
+            safety_level = 3 # Critical
+
+        # 12. EMOTIONAL SUBTYPE DETECTION
         subtype = None
         if final_emotion == "sadness":
             if any(k in text_clean for k in ["miss", "homesick", "wish i was home", "lonely for", "want to see", "lonely"]):
@@ -385,7 +477,7 @@ class EmotionAnalyzer:
             elif any(k in text_clean for k in ["drained", "exhausted", "tired", "burnout"]):
                 subtype = "FATIGUE"
 
-        # 11. NERVOUS SYSTEM STATE
+        # 13. NERVOUS SYSTEM STATE
         nervous_system_state = "regulated"
         if final_emotion in ["fear", "anger"] or risk_level in ["CRISIS", "HIGH_DISTRESS"] or any(k in text_clean for k in ["panic", "shaking", "overwhelmed"]):
             nervous_system_state = "hyperaroused"
@@ -406,6 +498,12 @@ class EmotionAnalyzer:
         # Strategy Guidance for Agent
         strategy = "Provide clear, accurate, efficient help."
         
+        if safety_level == 3:
+            strategy = "SAFETY LEVEL 3 (CRITICAL): DISABLE GAMES. Respond with extreme empathy. Provide emergency resources IMMEDIATELY."
+        elif safety_level == 2:
+            strategy = "SAFETY LEVEL 2 (ELEVATED): Focus on grounding and validation before suggesting any action."
+        
+        # Original logic preserved but enhanced by safety_level
         if risk_level == "CRISIS":
             strategy = "CRISIS PROTOCOL: Respond with empathy, validate feelings, slow the moment (grounding), encourage reaching trusted person. DO NOT give productivity tips."
         elif risk_level == "FATIGUE":
@@ -424,6 +522,7 @@ class EmotionAnalyzer:
             "emotion": final_emotion,
             "subtype": subtype,
             "intensity": final_score,
+            "safety_level": safety_level,
             "nervous_system_state": nervous_system_state,
             "energy_level": "low" if final_emotion in ["sadness", "bored", "fatigue"] else ("high" if final_emotion in ["anger", "joy"] else "medium"),
             "secondary_emotion": secondary['label'] if secondary else None,

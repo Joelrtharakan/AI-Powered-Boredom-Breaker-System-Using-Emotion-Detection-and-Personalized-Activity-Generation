@@ -1,0 +1,78 @@
+{
+    "metrics": {
+        "accuracy": 80.0,
+        "avg_latency": 0.053303885459899905
+    },
+    "details": [
+        {
+            "text": "I'm so stressed about my finals, I haven't slept in days.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.13544130325317383,
+            "correct": true
+        },
+        {
+            "text": "I aced my exam today! Feels so good.",
+            "expected": "joy",
+            "predicted": "joy",
+            "latency": 0.06766533851623535,
+            "correct": true
+        },
+        {
+            "text": "I'm so bored, I have nothing to do all afternoon.",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.08235406875610352,
+            "correct": true
+        },
+        {
+            "text": "I feel like I'm falling behind and everyone else is doing better.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.05183815956115723,
+            "correct": true
+        },
+        {
+            "text": "I'm so angry at my group partner for not doing their part.",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.011381149291992188,
+            "correct": true
+        },
+        {
+            "text": "I'm worried I won't get an internship this summer.",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.014919042587280273,
+            "correct": true
+        },
+        {
+            "text": "I just want to stay in bed all day, no energy.",
+            "expected": "fatigue",
+            "predicted": "fatigue",
+            "latency": 0.021461009979248047,
+            "correct": true
+        },
+        {
+            "text": "Let's play some music and chill.",
+            "expected": "neutral",
+            "predicted": "optimism",
+            "latency": 0.07216596603393555,
+            "correct": false
+        },
+        {
+            "text": "I don't know what to do with my life anymore.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.04127192497253418,
+            "correct": true
+        },
+        {
+            "text": "This project is actually coming along nicely.",
+            "expected": "joy",
+            "predicted": "neutral",
+            "latency": 0.03454089164733887,
+            "correct": false
+        }
+    ]
+}

@@ -234,8 +234,23 @@ class PlannerAgent:
                 "no_plan": True
             }]
 
-        # 3. Preparation for CrewAI
+        # 3. Preparation for CrewAI & Personalization
         music_info = self._get_emotion_music(emotion, risk_level, subtype)
+        
+        # Check for user-expressed desires in the text
+        text_lower = text.lower() if text else ""
+        user_wants = []
+        if "sing" in text_lower or "song" in text_lower or "music" in text_lower:
+            user_wants.append("music")
+        if "play" in text_lower and any(g in text_lower for g in ["game", "snake", "chess", "tic tac toe"]):
+            user_wants.append("game")
+        if "talk" in text_lower or "call" in text_lower or "text" in text_lower:
+            user_wants.append("social")
+        if "draw" in text_lower or "paint" in text_lower or "art" in text_lower:
+            user_wants.append("creative")
+        
+        from app.services.recommendation_bandit import bandit_service
+        preferred_intervention = bandit_service.select_action(user_id or 1, emotion)
         
         # 4. Agentic Execution
         # We offload Agent creation to a thread to avoid event loop conflicts
@@ -247,7 +262,18 @@ class PlannerAgent:
 
         # Context-rich Task with high specificity rules
         protocol_instruction = ""
-        if risk_level in ["CRISIS", "HIGH_DISTRESS", "MODERATE_DISTRESS"]:
+        
+        # First respect user-expressed desires - PRIORITY OVER EVERYTHING
+        if user_wants:
+            if "music" in user_wants:
+                protocol_instruction = f"🎵 MUSIC PRIORITY: The user explicitly said they want to sing/listen to music. Your plan MUST include a 'music' or 'calming_audio' step with a SPECIFIC song recommendation. DO NOT suggest games. DO NOT suggest breathing. Only suggest music."
+            elif "game" in user_wants:
+                protocol_instruction = f"🎮 GAME PRIORITY: The user explicitly said they want to play. Your plan MUST include ONE specific game (Snake Evolution, Chimp Test, Tic Tac Toe, Memory Flip). DO NOT suggest breathing or music unless user asks."
+            elif "social" in user_wants:
+                protocol_instruction = f"💬 SOCIAL PRIORITY: The user explicitly wants to talk/connect. Your plan MUST include a social connection step."
+            elif "creative" in user_wants:
+                protocol_instruction = f"🎨 CREATIVE PRIORITY: The user explicitly wants to create art. Your plan MUST include a creative activity."
+        elif risk_level in ["CRISIS", "HIGH_DISTRESS", "MODERATE_DISTRESS"]:
             protocol_instruction = (
                 "PROGRESSIVE RECOVERY: Your plan must have an arc. \n"
                 "Step 1: Immediate Grounding (Breathing/Micro-task). \n"
@@ -255,11 +281,11 @@ class PlannerAgent:
                 "Step 3: Uplifting Transition (Prescribe the music step as the final 'lift' to a better state)."
             )
         elif risk_level == "BOREDOM":
-            protocol_instruction = "STIMULATION: Suggest ONE high-engagement game (Snake Evolution, Aim Trainer, or Reaction Time) and ONE upbeat music choice."
+            protocol_instruction = f"STIMULATION: Suggest ONE high-engagement game (Snake Evolution, Aim Trainer, or Reaction Time). Personalization: Favor {preferred_intervention} as a secondary step."
         elif risk_level == "FATIGUE":
             protocol_instruction = "RESTORATION: Suggest sensory rest, then ONE ambient/chill music choice."
         else: # LOW_NORMAL / JOY / NEUTRAL
-            protocol_instruction = "ENRICHMENT: Suggest ONE strategy/logic game (Chimp Test, Tic Tac Toe, or Memory Flip) or a creative journal prompt, ending with focus/joy music."
+            protocol_instruction = f"ENRICHMENT: Suggest ONE strategy/logic game (Chimp Test, Tic Tac Toe, or Memory Flip). Personalization: The user responds well to {preferred_intervention}, so include a high-quality {preferred_intervention} step."
         
         task = Task(
             description=(
@@ -270,16 +296,17 @@ class PlannerAgent:
                 f"User Interests: {interests}\n"
                 f"Music Recommendation Style: {music_info['description']} (Purpose: {music_info['purpose']})\n"
                 f"\nSTRICT EXECUTION RULES:\n"
-                f"1. DIRECT NAVIGATION: Use official game names (Snake Evolution, Memory Flip, Visual Memory, Chimp Test, Aim Trainer, Reaction Time, Tic Tac Toe, Rock Paper Scissors, Guess Number) to trigger direct buttons.\n"
-                f"2. COPE & LIFT: The plan must start with coping/grounding and end with a positive 'lift'.\n"
-                f"3. AUTHORITATIVE: Pick ONE concrete game or song. No lists or options.\n"
-                f"4. {protocol_instruction}\n"
-                f"5. NO TRIVIAL CHORES/SNACKS: No cooking, cleaning, or generic advice.\n"
-                f"6. MUSIC LINK: Always end with a 'music' or 'calming_audio' step.\n"
-                f"7. LIMIT: Exactly 3-4 steps total.\n"
-                f"8. MODERN ONLY: Do NOT suggest old 90s songs or 'Classics'. Focus on modern, fresh, and high-quality 2020-2025 content."
+                f"1. TEXT-ONLY RESPONSE: NEVER mention, reference, or generate any image, file, screenshot, or attachment. Output only plain text.\n"
+                f"2. DIRECT NAVIGATION: Use official game names (Snake Evolution, Memory Flip, Visual Memory, Chimp Test, Aim Trainer, Reaction Time, Tic Tac Toe, Rock Paper Scissors, Guess Number) to trigger direct buttons.\n"
+                f"3. COPE & LIFT: The plan must start with coping/grounding and end with a positive 'lift'.\n"
+                f"4. AUTHORITATIVE: Pick ONE concrete game or song. No lists or options.\n"
+                f"5. {protocol_instruction}\n"
+                f"6. NO TRIVIAL CHORES/SNACKS: No cooking, cleaning, or generic advice.\n"
+                f"7. MUSIC LINK: Always end with a 'music' or 'calming_audio' step.\n"
+                f"8. LIMIT: Exactly 3-4 steps total.\n"
+                f"9. MODERN ONLY: Do NOT suggest old 90s songs or 'Classics'. Focus on modern, fresh, and high-quality 2020-2025 content."
             ),
-            expected_output="JSON array of objects with keys: 'type', 'description', 'time_minutes', and 'purpose'. 'description' must be a single, specific instruction, NO emojis.",
+            expected_output="JSON array of objects with keys: 'type', 'description', 'time_minutes', and 'purpose'. 'description' must be a single, specific instruction, NO emojis. NO images or files.",
             agent=agent
         )
 
@@ -311,16 +338,46 @@ class PlannerAgent:
 
             # 5. Post-Processing: Adaptive Modifiers & Metadata (Music/Games)
             plan = self._apply_adaptive_modifiers(plan, emotion, detected_intensity, text, risk_level, subtype)
+            
+            # 5b. Force user_wants into the plan - REPLACE with only what user wants
+            if user_wants:
+                if "music" in user_wants:
+                    # Only music, remove breathing/games
+                    plan = [{"type": "music", "description": "Listen to a song you've been wanting to sing!", "time_minutes": 10, "purpose": "amplification"}]
+                elif "game" in user_wants:
+                    # Only game, remove breathing
+                    plan = [{"type": "game", "description": "Play Snake Evolution!", "time_minutes": 15, "purpose": "engagement"}]
+                elif "social" in user_wants:
+                    plan = [{"type": "social", "description": "Reach out to someone you trust.", "time_minutes": 10, "purpose": "connection"}]
+                elif "creative" in user_wants:
+                    plan = [{"type": "creative", "description": "Express yourself through art!", "time_minutes": 20, "purpose": "creativity"}]
+            
             return await self._post_process_plan(plan, music_info['mood_key'])
 
         except Exception as e:
             self.logger.error(f"Agentic Planning Failed: {e}. Falling back to default protocol.")
             # Protocol Fallback for maximal system stability
-            fallback_plan = [
-                {"type": "breathing", "description": "Take 3 deep, slow breaths.", "time_minutes": 1, "purpose": "reset"},
-                {"type": "affirmation", "description": "You're handling this well. Small steps matter.", "time_minutes": 1, "purpose": "support"},
-                {"type": "music", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "regulation"}
-            ]
+            fallback_plan = []
+            
+            # Respect user_wants in fallback
+            if user_wants and "music" in user_wants:
+                fallback_plan = [
+                    {"type": "music", "description": "Listen to a song you've been wanting to sing!", "time_minutes": 10, "purpose": "amplification"}
+                ]
+            elif user_wants and "game" in user_wants:
+                fallback_plan = [
+                    {"type": "game", "description": "Play Snake Evolution!", "time_minutes": 15, "purpose": "engagement"}
+                ]
+            elif user_wants and "social" in user_wants:
+                fallback_plan = [
+                    {"type": "social", "description": "Reach out to someone you trust.", "time_minutes": 10, "purpose": "connection"}
+                ]
+            else:
+                fallback_plan = [
+                    {"type": "breathing", "description": "Take 3 deep, slow breaths.", "time_minutes": 1, "purpose": "reset"},
+                    {"type": "affirmation", "description": "You're handling this well. Small steps matter.", "time_minutes": 1, "purpose": "support"},
+                    {"type": "music", "description": f"{music_info['description']}.", "time_minutes": 10, "purpose": "regulation"}
+                ]
             return await self._post_process_plan(fallback_plan, music_info['mood_key'])
 
 planner_agent = PlannerAgent()

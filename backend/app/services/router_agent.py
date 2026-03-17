@@ -27,13 +27,18 @@ class RouterAgent:
         if source == "no_emotion_detected":
              return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="NO_EMOTION")
 
-        # 2. Fatigue Check
-        fatigue_keys = ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "low energy", "fatigued"]
-        is_fatigued = any(k in mood.lower() for k in fatigue_keys) or (text and any(k in text.lower() for k in fatigue_keys))
-
-        # Boredom Check
-        bored_keys = ["bored", "boring", "nothing to do", "unmotivated", "lack of interest", "meh"]
-        is_bored = any(k in mood.lower() for k in bored_keys) or (text and any(k in text.lower() for k in bored_keys))
+        # 2. Semantic & Temporal Intelligence
+        from app.services.semantic_intent_service import semantic_intent_service
+        from app.services.history_service import history_service
+        
+        intent = semantic_intent_service.detect_intent(text)
+        history_analysis = history_service.analyze_trajectory(user_id)
+        
+        is_fatigued = intent == "fatigue" or history_analysis.get("burnout_risk", False)
+        is_bored = intent == "game" or emotion == "boredom"
+        
+        # Log event to history for future temporal analysis
+        history_service.add_event(user_id, emotion, mood_data.get("risk_level", "LOW_NORMAL"), intensity)
 
         # 3. Path Routing based on Risk & Emotion
         detected_risk = mood_data.get("risk_level", "LOW_NORMAL")

@@ -43,7 +43,8 @@ class GuardrailService:
         self.crisis_patterns = [
             r"\b(suicide|sucide|kill myself|end my life|want to die|end it all)\b",
             r"\b(better off dead|hurt myself|no reason to live|wish i was dead)\b",
-            r"\b(done with life|goodbye forever|quit life|overdose)\b"
+            r"\b(done with life|goodbye forever|quit life|overdose)\b",
+            r"(i'?m done|i am done|im done|i done|really done|done wif|am done with)"
         ]
 
         # Compile regexes for speed

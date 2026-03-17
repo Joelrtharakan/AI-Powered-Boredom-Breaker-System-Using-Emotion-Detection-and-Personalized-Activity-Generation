@@ -73,8 +73,12 @@ async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: B
     
     # 1. Guardrail Check Result
     if not is_safe:
-        # Check if this was a crisis rejection
-        is_crisis = any(word in request.text.lower() for word in ["suicide", "sucide", "kill myself", "want to die", "end it all"])
+        # Check if this was a crisis rejection - expanded keywords
+        crisis_keywords = ["suicide", "sucide", "kill myself", "want to die", "end it all", "end my life", 
+                          "done with life", "i'm done", "im done", "i done", "really done", 
+                          "better off dead", "hurt myself", "no reason to live", "wish i was dead",
+                          "done wif", "am done with"]
+        is_crisis = any(word in request.text.lower() for word in crisis_keywords)
         
         if is_crisis:
             # Emergency Crisis Path: Even if guardrail blocked for security, we MUST provide help

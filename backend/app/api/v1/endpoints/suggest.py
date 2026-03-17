@@ -5,6 +5,7 @@ from app.db.session import SessionLocal
 from app.models.user import User
 from app.schemas.content import SuggestionRequest, SuggestionResponse, MicroTaskResponse
 from app.services.router_agent import router_agent
+from app.services.recommendation_bandit import bandit_service
 
 router = APIRouter()
 
@@ -68,3 +69,8 @@ async def surprise_me():
         "payload": result['surprise']
     }
 
+@router.post("/feedback")
+async def give_feedback(user_id: int, action: str, reward: float):
+    """Updates the personalization bandit with user feedback."""
+    bandit_service.update(user_id, action, reward)
+    return {"status": "success", "message": f"Updated model for {action}"}

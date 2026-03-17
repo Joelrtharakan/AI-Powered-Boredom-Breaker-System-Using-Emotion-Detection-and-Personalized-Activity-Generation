@@ -22,3 +22,4 @@ langchain-openai
 litellm
 spotipy
 sentence-transformers
+numpy
