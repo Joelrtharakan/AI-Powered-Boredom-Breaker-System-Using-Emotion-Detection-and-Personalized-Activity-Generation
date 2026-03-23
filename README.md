@@ -33,16 +33,26 @@ We performed **Domain Adaptation** on a `RoBERTa-base` architecture to transform
         *   ✅ **F1-Score**: **98.16%**
         *   ✅ **Convergence**: Best model saved at Checkpoint 92 (Epoch 1) with an eval loss of 0.12.
 
-### 2. Advanced Intelligence Upgrades (V2 Roadmap)
+### 2. Core Algorithms & AI Architecture
+The system uses a sophisticated "Multi-Engine" architecture, bridging deterministic logic with probabilistic learning.
+
+| Category | Algorithm / Model | Purpose |
+| :--- | :--- | :--- |
+| **Emotion AI** | **RoBERTa (V14 Final)** | Transformer-based classification with 98.16% F1-score for high-fidelity mood sensing. |
+| **Personalization** | **Thompson Sampling (Bandit)** | A Contextual Bandit learner that optimizes interventions (e.g., Games vs. Music) based on historical success. |
+| **Semantic Intent** | **Cosine Similarity (Embeddings)** | Uses Vector Space Analysis to identify user requests (e.g., "Give me a game") without fragile keyword matching. |
+| **Arcade AI** | **Minimax Algorithm** | Powers the optimal move selection in Tic-Tac-Toe, ensuring a "perfect" opponent. |
+| **Memory Extraction** | **Vector Search (ChromaDB)** | Retrieves the most relevant past interactions based on semantic distance and emotional intensity. |
+| **Trajectory Analysis** | **Linear Projection & Sequence Analysis** | Detects emotional "burnout paths" by analyzing the delta between the last 10 interactions. |
+| **Orchestration** | **Multi-Agent Systems (CrewAI)** | Autonomous agents (Router, Planner, Luno) performing task-decomposition and response planning. |
+| **Safety** | **L1/L2 Hard Blocking + LLM Verification** | A tiered hybrid of regex, transformers, and semantic scan for crisis prevention. |
+
+### 3. Advanced Intelligence Upgrades (V2 Roadmap)
 Beyond standard classification, the system implements **Principal-Level AI Patterns**:
 
-*   **Contextual Bandits (Personalization)**: Implemented **Thompson Sampling** with context features (Time of Day, Energy Levels, Emotion Group). The system learns which interventions (e.g., games vs. breathing) actually improve a *specific* user's mood over time.
 *   **Temporal Trajectory Prediction**: Uses **Linear Projection & Sequence Analysis** on the last 10 interactions to predict future emotional states (e.g., detecting if a user is on a "Burnout Path" before they reach it).
-*   **Semantic Intent Detection**: Replaced fragile regex with **Embedding-based Semantic Similarity** (using Sentence-Transformers). Understands the *intent* behind phrases like "I need a distraction" or "help me focus."
-*   **Intelligent Memory System**: Uses **ChromaDB Vector Search** coupled with a custom **Ranking Logic** (Similarity + Recency + Intensity) to provide Luno with relevant long-term context.
 *   **Embeddings Cache**: Implemented an in-memory LRU cache for text embeddings to reduce CPU/GPU latency for frequent student expressions.
-*   **Model Evaluation Suite**: A specialized benchmarking tool (`evaluate_emotion_model.py`) that verified a **98.16% F1-score** on domain-specific student test cases, outperforming the base RoBERTa model by over 15%.
-*   **Arcade Logic**: `Minimax Algorithm`. Powers the recursive search in Tic-Tac-Toe.
+*   **Arcade Logic**: `Minimax Algorithm`. Powers the recursive search in Tic-Tac-Toe to ensure a challenge.
 
 ---
 
