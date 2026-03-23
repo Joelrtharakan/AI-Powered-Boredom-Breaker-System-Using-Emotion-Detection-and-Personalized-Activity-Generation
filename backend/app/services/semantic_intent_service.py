@@ -34,40 +34,38 @@ class SemanticIntentService:
             ]
         }
         
-    def detect_intent(self, text: str, threshold: float = 0.4) -> str:
-        """Returns the most likely intent based on semantic similarity."""
+    def detect_intent(self, text: str) -> str:
+        """Returns the most likely intent using a weighted keyword approach."""
         if not text:
             return "neutral"
             
-        best_intent = "neutral"
-        best_score = 0.0
+        text_lower = text.lower()
         
-        # We can use Chroma to calculate similarity even without a persistent collection
-        # by querying a temporary one or just using the embedding function manually.
-        # However, for efficiency, let's just use the embedding function to compare.
+        # 1. HIGH PRIORITY KEYWORD MATCHING (Fast Path)
+        keyword_map = {
+            "game": ["play", "game", "gaming", "snake", "bored", "fun", "tiktok", "entertain", "something to do", "nothing to do", "give me"],
+            "music": ["music", "song", "playlist", "listen", "spotify", "vibes", "audio"],
+            "breathing": ["calm", "relax", "breathe", "breathing", "panic", "anxious", "stress", "meditat", "grounding"],
+            "journal": ["write", "journal", "thoughts", "prompt", "diarize", "record"],
+            "fatigue": ["tired", "exhausted", "sleepy", "energy", "burnt out", "break"]
+        }
         
-        try:
-            # Get embedding of the input text
-            query_embedding = chroma_service.embedding_fn([text])[0]
-            
-            for intent, examples in self.intent_prototypes.items():
-                example_embeddings = chroma_service.embedding_fn(examples)
-                
-                # Simple cosine similarity (or dot product if normalized)
-                # Chroma's default embedding function doesn't easily expose a similarity method,
-                # but we can use the 'query' method on a dummy collection or just compute it.
-                
-                # Shortcut: Query the 'activities' or 'microtasks' collection which already contains related terms
-                # Or better: Just check for direct matches first (fast path)
-                if any(ex.lower() in text.lower() for ex in examples):
-                    return intent
-                
-                # TODO: Implement full vector similarity if fast path fails
-                # For now, let's assume we'll use keyword highlights as a boost
-            
+        scores = {intent: 0 for intent in keyword_map}
+        for intent, keywords in keyword_map.items():
+            for kw in keywords:
+                if kw in text_lower:
+                    # Give higher weight to direct "play" and "game" words
+                    weight = 2 if kw in ["play", "game", "music", "breathe"] else 1
+                    scores[intent] += weight
+                    
+        # Find best intent from keywords
+        best_intent = max(scores, key=scores.get)
+        if scores[best_intent] > 0:
+            # Special case: 'game' intent is mapped to 'game_request' in the router
+            if best_intent == "game":
+                return "game_request"
             return best_intent
-        except Exception as e:
-            self.logger.error(f"Semantic Intent Detection Error: {e}")
-            return "neutral"
+            
+        return "neutral"
 
 semantic_intent_service = SemanticIntentService()

@@ -146,16 +146,23 @@ async def detect_and_plan(request: MoodDetectAndPlanRequest, background_tasks: B
             db.rollback()
             print(f"❌ Logging Failed: {e}")
 
-    # 4. Generate Plan (Fast Track)
-    plan = await planner_agent.generate_plan(
-        mood=f"{result['mood']} (Detected Emotion: {result['emotion']})",
-        intensity=result['intensity'],
+    # 4. Generate Plan (Intelligent Routing)
+    from app.services.router_agent import router_agent
+    
+    plan_mood_data = {
+        "mood": result['mood'],
+        "emotion": result['emotion'],
+        "intensity": result['intensity'],
+        "energy_level": result['energy_level'],
+        "risk_level": result.get('risk_level', 'low'),
+        "decision_source": result.get('decision_source')
+    }
+    
+    plan = await router_agent.route(
+        mood_data=plan_mood_data,
         user_id=request.user_id,
         interests=interests,
-        text=request.text,
-        subtype=result.get('subtype'),
-        ns_state=result.get('nervous_system_state'),
-        risk_level=result.get('risk_level')
+        text=request.text
     )
 
     duration = time.time() - start_time

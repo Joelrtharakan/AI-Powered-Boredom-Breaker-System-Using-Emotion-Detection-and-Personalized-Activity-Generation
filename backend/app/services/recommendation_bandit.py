@@ -12,7 +12,7 @@ class RecommendationBandit:
         self.actions = [
             "game", "breathing", "music", "journaling", "chat", "affirmation"
         ]
-        self.epsilon = 0.3 # 30% Exploration rate
+        self.epsilon = 0.2 # Stable exploration from redesign
 
     def _get_context_key(self, emotion, energy_level="medium", trajectory_state="stable"):
         """Discretizes features into a context key."""

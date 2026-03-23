@@ -57,41 +57,77 @@ class GameIntelligenceService:
 
         # 2. INTENT OVERRIDE
         if user_intent == "game_request" and risk_level == "low":
-            return self._format_game_selection(energy_level, "intent_override")
+            return self._format_game_selection(state, "intent_override")
 
-        # 3. BOREDOM PRIORITY RULE (50% Chance)
-        if emotion == "boredom" and energy_level in ["medium", "high"]:
-            if random.random() < 0.5:
-                return self._format_game_selection(energy_level, "boredom_priority")
+        # 3. BOREDOM PRIORITY RULE (REDESIGN APPROACH: 100% Guaranteed)
+        if emotion == "boredom":
+            return self._format_game_selection(state, "redesign_boredom_priority")
 
         # 4. EXPLORATION AND SCORING
-        # Exploration (30%) is handled inside bandit_service.select_action now
-        
+        # High base score for neutral+boredom triggers more often
         game_score = self.calculate_game_score(state)
         
-        # If score is very high, force game
-        if game_score > 0.8:
-            return self._format_game_selection(energy_level, "high_score_trigger")
+        # Reduced trigger threshold from 0.8 to 0.6 to align with redesign aggressiveness
+        if game_score > 0.6:
+            return self._format_game_selection(state, "high_score_trigger")
 
         # 5. Fallback to Bandit
         action = bandit_service.select_action(user_id, emotion, energy_level, trajectory)
         if action == "game":
-            return self._format_game_selection(energy_level, "bandit_selection")
+            return self._format_game_selection(state, "bandit_selection")
             
         return self._format_intervention(action, "standard_selection")
 
-    def _format_game_selection(self, energy_level: str, reason: str) -> Dict[str, Any]:
-        """Maps Energy to Game Types for safe execution."""
-        if energy_level == "high":
-            game_id = random.choice(["snake", "reaction", "aim"])
-        else: # medium or low
-            game_id = random.choice(["memory", "tic_tac_toe", "chimp"])
+    def _format_game_selection(self, state: Dict[str, Any], reason: str) -> Dict[str, Any]:
+        """Deeply maps emotion + energy + text to specific game categories."""
+        emotion = state.get("emotion", "neutral")
+        energy_level = state.get("energy_level", "medium")
+        text = (state.get("text") or "").lower()
+        
+        # 1. TEXT DIRECT OVERRIDE (If they asked for a specific game)
+        if "snake" in text:
+            game_name, game_id, description = ("Snake Evolution", "snake", "Time for some high-speed action with Snake!")
+        elif "memory" in text:
+            game_name, game_id, description = ("Memory Flip", "memory", "Exercise your brain with Memory Flip.")
+        elif "tic tac toe" in text:
+            game_name, game_id, description = ("Tic Tac Toe", "tic_tac_toe", "Keep it classic with a game of Tic Tac Toe.")
+        
+        # 2. EMOTION-BASED CATEGORIZATION
+        else:
+            # CATEGORY A: High Engagement/Dopamine (Best for Boredom/Neutral)
+            high_engagement = [
+                ("Snake Evolution", "snake", "Get into the flow and beat your high score in Snake!"),
+                ("Reaction Time", "reaction", "Wake up your brain with a quick reflex check!"),
+                ("Aim Trainer", "aim", "Sharp focus required—can you hit every target?")
+            ]
+            
+            # CATEGORY B: Low Friction/Grounding (Best for Stress/Anxiety/Anger)
+            grounding_logic = [
+                ("Memory Flip", "memory", "Focus on the patterns to clear your mind."),
+                ("Tic Tac Toe", "tic_tac_toe", "A simple challenge to reset your thoughts."),
+                ("Chimp Test", "chimp", "Test your short-term memory and find your center.")
+            ]
+
+            # REFINED MAPPING (Nervous System Alignment)
+            if emotion in ["boredom", "joy", "neutral"] and energy_level in ["medium", "high"]:
+                game_name, game_id, description = random.choice(high_engagement)
+            elif emotion in ["stress", "anxiety", "fatigue", "anger", "fear", "sadness"]:
+                game_name, game_id, description = random.choice(grounding_logic)
+            else:
+                # Default safety mix
+                game_name, game_id, description = random.choice(grounding_logic)
             
         return {
-            "type": "game", # Changed from 'intervention' to 'game' per user request
+            "type": "game",
+            "description": description,
             "game_id": game_id,
             "reason": reason,
-            "confidence": 0.85
+            "confidence": 0.95,
+            "metadata": {
+                "game_name": game_name,
+                "energy_category": energy_level,
+                "emotion_match": emotion
+            }
         }
 
     def _format_intervention(self, action: str, reason: str) -> Dict[str, Any]:
@@ -102,10 +138,11 @@ class GameIntelligenceService:
         name = display_names.get(action, action.capitalize())
         return {
             "type": "intervention",
+            "description": f"How about some {name} to help you reset?",
             "intervention": action,
             "reason": reason,
-            "description": f"Suggested intervention: {name}",
-            "confidence": 0.85
+            "confidence": 0.85,
+            "metadata": {}
         }
 
 game_intelligence_service = GameIntelligenceService()
