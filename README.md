@@ -154,6 +154,14 @@ uvicorn app.main:app --reload
 cd boredom_breaker_mobile
 flutter pub get
 flutter run
+# To run directly on the iPhone 17 Pro simulator
+flutter run -d "iPhone 17 Pro"
+flutter run -d 95D9C2C4-A38D-4C90-91F0-601927990D1B
+xcrun simctl boot 95D9C2C4-A38D-4C90-91F0-601927990D1B
+open -a Simulator
+
+
+
 ```
 
 ### 3. Frontend Setup (React/Vite - Optional)

@@ -18,55 +18,72 @@ class RouterAgent:
             return await planner_agent.generate_plan("neutral", 0.5, user_id, interests, text=text)
 
     async def _route_logic(self, mood_data: dict, user_id: int, interests: list = None, text: str = ""):
-        mood = mood_data.get("mood", "neutral")
-        emotion = mood_data.get("emotion", "neutral")
-        intensity = mood_data.get("intensity", 0.5)
-        source = mood_data.get("decision_source", "")
-        
-        # 1. NO EMOTION -> Planner (Prompt user)
-        if source == "no_emotion_detected":
-             return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="NO_EMOTION")
+        try:
+            mood = mood_data.get("mood", "neutral")
+            emotion = mood_data.get("emotion", "neutral")
+            intensity = mood_data.get("intensity", 0.5)
+            
+            # 1. NO EMOTION -> Planner (Prompt user)
+            if mood_data.get("decision_source") == "no_emotion_detected":
+                 return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="NO_EMOTION")
 
-        # 2. Semantic & Temporal Intelligence
-        from app.services.semantic_intent_service import semantic_intent_service
-        from app.services.history_service import history_service
-        
-        intent = semantic_intent_service.detect_intent(text)
-        history_analysis = history_service.analyze_trajectory(user_id)
-        
-        is_fatigued = intent == "fatigue" or history_analysis.get("burnout_risk", False)
-        is_bored = intent == "game" or emotion == "boredom"
-        
-        # Log event to history for future temporal analysis
-        history_service.add_event(user_id, emotion, mood_data.get("risk_level", "LOW_NORMAL"), intensity)
+            # 2. Intelligence Integration
+            from app.services.game_intelligence import game_intelligence_service
+            from app.services.history_service import history_service
+            from app.services.semantic_intent_service import semantic_intent_service
+            
+            # Context synthesis
+            intent = semantic_intent_service.detect_intent(text or "")
+            history_analysis = history_service.analyze_trajectory(user_id)
+            
+            state = {
+                "mood": mood,
+                "emotion": emotion,
+                "intensity": intensity,
+                "emotion_intensity": intensity,
+                "energy_level": mood_data.get("energy_level", "medium"),
+                "risk_level": mood_data.get("risk_level", "low"),
+                "user_intent": mood_data.get("user_intent", intent),
+                "trajectory_state": mood_data.get("trajectory_state", 
+                                                 "declining" if history_analysis.get("burnout_risk") else "stable")
+            }
+            
+            # Log event to history
+            history_service.add_event(user_id, emotion, state["risk_level"], intensity)
 
-        # 3. Path Routing based on Risk & Emotion
-        detected_risk = mood_data.get("risk_level", "LOW_NORMAL")
-        
-        # CRISIS always goes to Planner
-        if detected_risk == "CRISIS":
-             return await planner_agent.generate_plan(f"{mood}", intensity, user_id, interests, text=text, risk_level="CRISIS")
+            # 3. Path Routing
+            # CRISIS priority bypass
+            if state["risk_level"] == "CRISIS":
+                 return await planner_agent.generate_plan(f"{mood}", intensity, user_id, interests, text=text, risk_level="CRISIS")
 
-        # Negative Emotions -> Planner Agent
-        if emotion in ["sadness", "anger", "fear", "exhaustion", "stressed", "anxious", "sad"] or is_fatigued:
-             risk = "FATIGUE" if is_fatigued else detected_risk
-             if risk == "LOW_NORMAL": risk = "MODERATE_DISTRESS" # Default escalation for negative emotions
-             return await planner_agent.generate_plan(f"{mood}", intensity, user_id, interests, text=text, risk_level=risk)
-
-        # 4. Boredom -> Planner Agent (Game Injection)
-        elif emotion == "boredom" or is_bored:
-             return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="BOREDOM")
-
-        # 5. Neutral -> Surprise Agent (Spark Joy + Grounding)
-        elif emotion == "neutral":
-             surprise = await surprise_agent.generate()
-             return [
-                 {"type": "breathing", "description": "Take one slow, deep breath to center yourself.", "time_minutes": 1, "purpose": "grounding"},
-                 {"type": "surprise", "description": surprise['surprise'], "time_minutes": 1, "purpose": "spark_joy"}
-             ]
-
-        # 6. Default (Happy/Optimism) -> Planner
-        return await planner_agent.generate_plan(mood, intensity, user_id, interests, text=text, risk_level="LOW_NORMAL")
+            # Get structured intervention from Intelligence Service
+            intervention_data = await game_intelligence_service.decide_intervention(state, user_id)
+            
+            # 4. Multi-step Plan Generation (Psychological Arc)
+            plan = await planner_agent.generate_plan(
+                mood=mood, 
+                intensity=intensity, 
+                user_id=user_id, 
+                interests=interests, 
+                text=text,
+                risk_level=state["risk_level"]
+            )
+            
+            # Inject the structured intervention into the plan for the mobile UI
+            if plan and isinstance(plan, list):
+                # Ensure plan[0] is a dict before updating
+                if len(plan) > 0 and isinstance(plan[0], dict):
+                    plan[0].update(intervention_data)
+                else:
+                    plan.insert(0, intervention_data)
+            else:
+                plan = [intervention_data]
+                
+            return plan
+        except Exception as e:
+            self.logger.error(f"Error in _route_logic: {e}", exc_info=True)
+            # Re-raise to let route() handle it with fallback
+            raise
 
     async def _get_fallback_plan(self, mood_data, user_id, interests, text):
         return await planner_agent.generate_plan("neutral", 0.5, user_id, interests, text=text)
