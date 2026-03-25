@@ -7,6 +7,7 @@ from crewai import Agent, Task, Crew
 from app.services.llm_service import llm_service
 from app.services.spotify_service import spotify_service
 from app.services.emotion_ai import emotion_analyzer
+from app.services.chroma_service import chroma_service
 
 class PlannerAgent:
     def __init__(self):
@@ -77,40 +78,51 @@ class PlannerAgent:
                 try:
                     # Extraction Patterns
                     patterns = [
+                        r"listen to the '([^']+)' playlist",
+                        r"listen to ([^']+) playlist",
                         r"listen to '([^']+)' by ([^.]+)",
                         r"listen to ([^']+) by ([^.]+)",
                         r"listen to '([^']+)'"
                     ]
                     
                     specific_match = None
+                    search_type = 'track'
                     for p in patterns:
                         match = re.search(p, step.get("description", ""), re.IGNORECASE)
                         if match:
-                            query = " ".join(match.groups())
-                            results = await loop.run_in_executor(None, spotify_service.search_items, query, 'track', 1)
+                            query = match.group(1) if match.groups() else match.group(0)
+                            # If 'playlist' is in the matching pattern or description, search for playlist
+                            if "playlist" in p.lower() or "playlist" in desc_lower:
+                                search_type = 'playlist'
+                            
+                            results = await loop.run_in_executor(None, spotify_service.search_items, query, search_type, 1)
                             if results:
                                 specific_match = results[0]
                                 break
                     
                     item = specific_match
                     if not item:
-                        # Fallback to mood playlist if no specific song detected
+                        # Fallback to mood playlist if no specific item detected
                         playlists = await loop.run_in_executor(None, spotify_service.get_mood_playlists, mood_key, 1)
-                        if playlists: item = playlists[0]
+                        if playlists: 
+                            item = playlists[0]
+                            search_type = 'playlist'
                     
                     if item:
                         step["metadata"] = {
                             "spotify_uri": item.get("uri"),
                             "spotify_url": item.get("external_url"),
                             "playlist_name": item.get("name"),
-                            "image": item.get("image")
+                            "image": item.get("image"),
+                            "is_playlist": search_type == 'playlist'
                         }
-                        # If it's a specific track, update the type to ensure it triggers the music UI
+                        # If it's a specific track/playlist, update types
                         step["type"] = "music"
                         
                         # Ensure the button label on mobile uses the correct name
-                        if item.get("name") not in (step.get("description") or ""):
-                            step["description"] = f"{step.get('description', '')} (Listen to {item.get('name')})"
+                        if item.get("name") and item.get("name").lower() not in desc_lower:
+                            item_type = "Playlist" if search_type == 'playlist' else "Song"
+                            step["description"] = f"{step.get('description', '')} ({item_type}: {item.get('name')})"
                 except Exception as e:
                     self.logger.error(f"Spotify Injection Error: {e}")
 
@@ -234,9 +246,26 @@ class PlannerAgent:
                 "no_plan": True
             }]
 
-        # 3. Preparation for CrewAI & Personalization
+        # 3. Preparation for CrewAI & RAG
         music_info = self._get_emotion_music(emotion, risk_level, subtype)
         
+        # A. RETRIEVE FROM CHROMADB (RAG - Personalized)
+        canonical_activities = "None found."
+        try:
+            # Enhanced query including user interests for semantic alignment
+            interest_text = f" matching my interests: {', '.join(interests)}" if interests else ""
+            query_text = f"activity for {emotion} {risk_level}{interest_text}"
+            
+            # Semantic search across all indexed activities
+            raw_activities = chroma_service.query_activities(query_text=query_text, n_results=4)
+            
+            if raw_activities and raw_activities.get('documents') and raw_activities['documents'][0]:
+                docs = raw_activities['documents'][0]
+                canonical_activities = "\n".join([f"- {d}" for d in docs])
+                self.logger.info(f"Retrieved {len(docs)} personalized activities from ChromaDB.")
+        except Exception as e:
+            self.logger.error(f"ChromaDB Personalized Activity Retrieval Failed: {e}")
+
         # Check for user-expressed desires in the text
         text_lower = text.lower() if text else ""
         user_wants = []
@@ -293,16 +322,17 @@ class PlannerAgent:
                 f"User Emotion: {emotion}\n"
                 f"Intensity: {detected_intensity}\n"
                 f"User context: {text}\n"
+                f"CANONICAL ACTIVITIES (RAG Context): \n{canonical_activities}\n"
                 f"User Interests: {interests}\n"
                 f"Music Recommendation Style: {music_info['description']} (Purpose: {music_info['purpose']})\n"
                 f"\nSTRICT EXECUTION RULES:\n"
                 f"1. TEXT-ONLY RESPONSE: NEVER mention, reference, or generate any image, file, screenshot, or attachment. Output only plain text.\n"
                 f"2. DIRECT NAVIGATION: Use official game names (Snake Evolution, Memory Flip, Visual Memory, Chimp Test, Aim Trainer, Reaction Time, Tic Tac Toe, Rock Paper Scissors, Guess Number) to trigger direct buttons.\n"
                 f"3. COPE & LIFT: The plan must start with coping/grounding and end with a positive 'lift'.\n"
-                f"4. AUTHORITATIVE: Pick ONE concrete game or song. No lists or options.\n"
+                f"4. AUTHORITATIVE & UNIQUE: Pick EXACTLY ONE concrete game or song. NO duplicates. Each step MUST have a different 'type'.\n"
                 f"5. {protocol_instruction}\n"
                 f"6. NO TRIVIAL CHORES/SNACKS: No cooking, cleaning, or generic advice.\n"
-                f"7. MUSIC LINK: Always end with a 'music' or 'calming_audio' step.\n"
+                f"7. SINGLE MUSIC STEP: Exactly ONE 'music' or 'calming_audio' step allowed per plan, and it MUST be the final step.\n"
                 f"8. LIMIT: Exactly 3-4 steps total.\n"
                 f"9. MODERN ONLY: Do NOT suggest old 90s songs or 'Classics'. Focus on modern, fresh, and high-quality 2020-2025 content."
             ),
@@ -352,7 +382,28 @@ class PlannerAgent:
                 elif "creative" in user_wants:
                     plan = [{"type": "creative", "description": "Express yourself through art!", "time_minutes": 20, "purpose": "creativity"}]
             
-            return await self._post_process_plan(plan, music_info['mood_key'])
+            # 5c. STRICT DEDUPLICATION & ORDERING
+            # We must ensure NO activity type repeats.
+            seen_types = set()
+            deduplicated_plan = []
+            final_music_step = None
+            
+            for step in plan:
+                s_type = step.get("type")
+                if s_type in ["music", "calming_audio"]:
+                    # Keep the music step for the end
+                    final_music_step = step
+                    continue
+                
+                if s_type not in seen_types:
+                    deduplicated_plan.append(step)
+                    seen_types.add(s_type)
+            
+            # Re-attach music at the end if it existed
+            if final_music_step:
+                deduplicated_plan.append(final_music_step)
+
+            return await self._post_process_plan(deduplicated_plan, music_info['mood_key'])
 
         except Exception as e:
             self.logger.error(f"Agentic Planning Failed: {e}. Falling back to default protocol.")

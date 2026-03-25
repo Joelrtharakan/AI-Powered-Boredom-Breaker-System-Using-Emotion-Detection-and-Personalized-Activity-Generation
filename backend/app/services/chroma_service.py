@@ -4,7 +4,7 @@ import logging
 
 class ChromaService:
     def __init__(self):
-        self.client = chromadb.PersistentClient(path="./chroma_db")
+        self.client = chromadb.PersistentClient(path="./data/chroma_db")
         # Use default Sentence Transformer embedding
         self.embedding_fn = embedding_functions.DefaultEmbeddingFunction()
         self._embedding_cache = {} # Simple in-memory cache for speed

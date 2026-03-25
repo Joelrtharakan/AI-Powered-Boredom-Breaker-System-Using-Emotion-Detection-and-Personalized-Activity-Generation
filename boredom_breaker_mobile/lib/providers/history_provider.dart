@@ -28,12 +28,12 @@ class HistoryNotifier extends StateNotifier<AsyncValue<Map<String, dynamic>>> {
         final Map<String, dynamic> data = Map<String, dynamic>.from(
           response.data as Map,
         );
-        state = AsyncValue.data(data);
+        if (mounted) state = AsyncValue.data(data);
       } else {
-        state = const AsyncValue.data({'items': [], 'total': 0});
+        if (mounted) state = const AsyncValue.data({'items': [], 'total': 0});
       }
     } catch (e, stack) {
-      state = AsyncValue.error(e, stack);
+      if (mounted) state = AsyncValue.error(e, stack);
     }
   }
 }

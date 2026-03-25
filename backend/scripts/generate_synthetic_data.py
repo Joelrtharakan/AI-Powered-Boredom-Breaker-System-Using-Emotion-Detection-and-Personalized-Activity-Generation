@@ -5,7 +5,7 @@ import logging
 import asyncio
 
 # Add backend to path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), '..')))
 
 from app.services.llm_service import llm_service
 

@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./boredom_breaker.db"
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./data/boredom_breaker.db"
     
     # Optional Spotify
     SPOTIFY_CLIENT_ID: Optional[str] = None
@@ -28,3 +28,27 @@ class Settings(BaseSettings):
         extra = "ignore"
 
 settings = Settings()
+
+# 👑 GLOBAL ENVIRONMENT SETUP (Universal across API, Scripts, and Tests)
+import os
+os.environ["OTEL_SDK_DISABLED"] = "true"
+os.environ["CREWAI_TELEMETRY_OPT_OUT"] = "true"
+os.environ["CREWAI_COLLECT_TELEMETRY"] = "false"
+
+if settings.CREWAI_AUTH_TOKEN:
+    os.environ["CREWAI_AUTH_TOKEN"] = settings.CREWAI_AUTH_TOKEN
+    
+    # Patch CrewAI to use our token from environment instead of disk-based tokens.enc
+    try:
+        import crewai.utilities.agent_utils
+        from crewai.cli.plus_api import PlusAPI
+        def custom_plus_client():
+            return PlusAPI(api_key=settings.CREWAI_AUTH_TOKEN)
+        # Check if the hook exists in this version of CrewAI
+        if hasattr(crewai.utilities.agent_utils, "_create_plus_client_hook"):
+             crewai.utilities.agent_utils._create_plus_client_hook = custom_plus_client
+        elif hasattr(crewai.utilities.agent_utils, "get_plus_api_client"):
+             # Alternative hook for deeper patching
+             pass
+    except ImportError:
+        pass

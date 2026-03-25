@@ -129,14 +129,22 @@ class _InterestsScreenState extends State<InterestsScreen> {
                             duration: const Duration(milliseconds: 200),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.primary.withValues(alpha: 0.2)
-                                  : AppColors.surface.withValues(alpha: 0.6),
+                                  ? AppColors.primary
+                                  : Colors.white,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isSelected
                                     ? AppColors.primary
-                                    : Colors.white.withValues(alpha: 0.05),
+                                    : AppColors.border,
+                                width: 1.5,
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -144,10 +152,11 @@ class _InterestsScreenState extends State<InterestsScreen> {
                               style: GoogleFonts.inter(
                                 color: isSelected
                                     ? Colors.white
-                                    : AppColors.textSecondary,
+                                    : AppColors.textPrimary,
                                 fontWeight: isSelected
                                     ? FontWeight.bold
-                                    : FontWeight.w500,
+                                    : FontWeight.w600,
+                                fontSize: 16,
                               ),
                             ),
                           ),

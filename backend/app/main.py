@@ -1,21 +1,7 @@
 import os
 from app.core.config import settings
 
-# FORCE DISABLE CREWAI TELEMETRY AND SET AUTH
-os.environ["OTEL_SDK_DISABLED"] = "true"
-os.environ["CREWAI_TELEMETRY_OPT_OUT"] = "true"
-if settings.CREWAI_AUTH_TOKEN:
-    os.environ["CREWAI_AUTH_TOKEN"] = settings.CREWAI_AUTH_TOKEN
-    
-    # Patch CrewAI to use our token from environment instead of disk-based tokens.enc
-    try:
-        import crewai.utilities.agent_utils
-        from crewai.cli.plus_api import PlusAPI
-        def custom_plus_client():
-            return PlusAPI(api_key=settings.CREWAI_AUTH_TOKEN)
-        crewai.utilities.agent_utils._create_plus_client_hook = custom_plus_client
-    except ImportError:
-        pass
+# Global Environment Setup (Moved to config.py for universal access)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

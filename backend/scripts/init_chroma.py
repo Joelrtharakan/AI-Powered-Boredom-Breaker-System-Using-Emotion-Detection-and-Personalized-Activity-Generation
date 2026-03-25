@@ -18,7 +18,7 @@ def init_vectors():
         chroma_service.add_activity(
             activity_id=act.id,
             text=text,
-            metadata={"mood": act.mood, "time_minutes": act.time_minutes}
+            metadata={"mood": act.mood, "category": act.category, "time_minutes": act.time_minutes}
         )
         
     print(f"Indexing {len(microtasks)} microtasks...")

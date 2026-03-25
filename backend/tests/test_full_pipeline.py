@@ -3,7 +3,7 @@ COMPREHENSIVE 57-Sentence End-to-End Pipeline Test.
 Validates BOTH classification AND plan correctness against production spec.
 """
 import sys, os, asyncio, random
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from app.services.emotion_ai import emotion_analyzer
 from app.services.planner_agent import planner_agent
@@ -142,10 +142,17 @@ async def run_test():
 
         try:
             plan = await planner_agent.generate_plan(
-                mood=mood, intensity=intensity, user_id=1,
-                interests=["games", "music"], text=text
+                mood=mood, 
+                intensity=intensity, 
+                user_id=1,
+                interests=["games", "music"], 
+                text=text,
+                risk_level=actual_risk,
+                subtype=analysis.get("subtype"),
+                ns_state=analysis.get("nervous_system_state")
             )
         except Exception as e:
+            print(f"ERROR producing plan for '{text}': {e}")
             plan = [{"type": "error", "description": str(e)}]
 
         class_ok = actual_risk == expected_risk

@@ -4,7 +4,7 @@ Tests many sentences and produces a detailed report.
 """
 import sys
 import os
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 
 from app.services.emotion_ai import emotion_analyzer
 
