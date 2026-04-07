@@ -561,11 +561,15 @@ class _MainLayoutState extends State<MainLayout> {
     return GestureDetector(
       onTap: () async {
         if (index == 3) {
-          await Navigator.push(
+          final result = await Navigator.push(
             context,
             CupertinoPageRoute(builder: (_) => const ChatScreen()),
           );
-          _scrollDashboardToTop();
+          if (result is int) {
+            setState(() => _currentIndex = result);
+          } else {
+            _scrollDashboardToTop();
+          }
         } else {
           setState(() => _currentIndex = index);
           if (_scrollControllers[index].hasClients) {

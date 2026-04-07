@@ -102,7 +102,8 @@ class ChatAgent:
                 f"Recent Context:\n{transcript}\n"
                 f"Relevant Past:\n{semantic_memory_text}\n"
                 f"Rules: {self.persona_rules}\n"
-                f"STATE INSTRUCTION: If in 'validation', acknowledge feelings deeply. If 'activation', gently nudge towards a positive action. "
+                f"CRITICAL ANTI-REPETITION RULE: Look at the 'Recent Context'. Do NOT repeat the exact same phrases or suggestions. If you just suggested 'Focus playlist', suggest something ELSE like 'Zen Mode' or a different game. Vary your wording.\n"
+                f"STATE INSTRUCTION: If in 'validation', acknowledge feelings deeply. If 'activation', gently nudge towards a positive action."
             ),
             expected_output="A warm, text-style response (1-2 sentences max).",
             agent=agent

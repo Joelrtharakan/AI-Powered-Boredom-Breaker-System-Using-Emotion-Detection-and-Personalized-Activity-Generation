@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../services/api_client.dart';
 import '../../services/session_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/music_launch_provider.dart';
 import '../music/music_screen.dart';
 import '../games/games_screen.dart';
 import '../games/tic_tac_toe_screen.dart';
@@ -12,14 +14,14 @@ import '../games/aim_trainer_screen.dart';
 import '../games/memory_flip_screen.dart';
 import '../zen_screen.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, String>> _messages = [];
   bool _isLoading = false;
@@ -731,6 +733,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Icons.music_note_rounded,
           "Chill Playlist",
           const MusicScreen(initialPlaylistName: 'Chill'),
+          musicTitle: 'Chill',
+          musicUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4WYpdgoIcn6',
         ),
       );
     } else if (t.contains("focus playlist") || t.contains("focus music")) {
@@ -739,6 +743,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Icons.center_focus_strong_rounded,
           "Focus Playlist",
           const MusicScreen(initialPlaylistName: 'Focus'),
+          musicTitle: 'Focus',
+          musicUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ',
         ),
       );
     } else if (t.contains("energize playlist") ||
@@ -748,6 +754,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Icons.bolt_rounded,
           "Energize Playlist",
           const MusicScreen(initialPlaylistName: 'Energize'),
+          musicTitle: 'Energize',
+          musicUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0vHZ8elq0UK',
         ),
       );
     } else if (t.contains("sad playlist") || t.contains("sad music")) {
@@ -756,6 +764,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Icons.water_drop_rounded,
           "Sad Playlist",
           const MusicScreen(initialPlaylistName: 'Sad'),
+          musicTitle: 'Sad',
+          musicUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX7qK8ma5wgG1',
         ),
       );
     } else if (t.contains("happy playlist") || t.contains("happy music")) {
@@ -764,6 +774,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Icons.wb_sunny_rounded,
           "Happy Playlist",
           const MusicScreen(initialPlaylistName: 'Happy'),
+          musicTitle: 'Happy',
+          musicUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdPec7aLTmlC',
         ),
       );
     } else if (t.contains("christian playlist") || t.contains("worship")) {
@@ -772,6 +784,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Icons.auto_awesome_rounded,
           "Christian Playlist",
           const MusicScreen(initialPlaylistName: 'Christian'),
+          musicTitle: 'Christian',
+          musicUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXcb6CQIjdqKy',
         ),
       );
     } else if (t.contains("top hits")) {
@@ -780,6 +794,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Icons.star_rounded,
           "Top Hits Playlist",
           const MusicScreen(initialPlaylistName: 'Top Hits'),
+          musicTitle: 'Top Hits',
+          musicUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M',
         ),
       );
     } else if (t.contains("music") ||
@@ -858,7 +874,7 @@ class _ChatScreenState extends State<ChatScreen> {
     ];
   }
 
-  Widget _buildActionChip(IconData icon, String label, Widget screen) {
+  Widget _buildActionChip(IconData icon, String label, Widget screen, {String? musicTitle, String? musicUrl}) {
     return ActionChip(
       backgroundColor: Colors.white,
       side: BorderSide(color: const Color(0xFF6D4EFF).withValues(alpha: 0.15)),
@@ -873,7 +889,17 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
       onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+        if (musicTitle != null && musicUrl != null) {
+          ref.read(musicLaunchProvider.notifier).state = MusicLaunchData(title: musicTitle, url: musicUrl);
+          Navigator.pop(context, 2);
+        } else if (screen is MusicScreen) {
+          Navigator.pop(context, 2);
+        } else if (screen is GamesScreen || screen is SnakeGameScreen || screen is TicTacToeScreen || screen is MemoryFlipScreen || screen is AimTrainerScreen) {
+          Navigator.pop(context, 1);
+        } else {
+          // Zen Mode or others
+          Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+        }
       },
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       elevation: 0,

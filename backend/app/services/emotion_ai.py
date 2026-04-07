@@ -400,6 +400,20 @@ class EmotionAnalyzer:
             final_score = 0.85
             decision_source = "heuristic_override"
             reason = "Detected 'Nervous Anticipation' pattern, prioritizing Anxiety over Excitement."
+            
+        # 4.5 Negation of Positive Emotion Override
+        negation_tokens = ["not", "never", "dont", "don't", "hardly", "no", "isnt", "isn't", "arent", "aren't"]
+        positive_tokens = ["good", "happy", "great", "joy", "excited", "well", "fine", "okay", "ok", "awesome", "perfect", "mood", "glad"]
+        
+        words = text_clean.split()
+        has_neg = any(tok in words for tok in negation_tokens)
+        has_pos = any(tok in words for tok in positive_tokens)
+        
+        if final_emotion in ["joy", "neutral"] and has_neg and has_pos:
+            final_emotion = "sadness"
+            final_score = 0.85
+            decision_source = "negation_override"
+            reason = "Negation of positive/neutral emotion detected, overriding to sadness."
         
         # 4b. Grief/Loss Override: If user mentions loss of a loved one, override to sadness
         grief_phrases = ["lost my loved one", "lost my loved", "lost a loved one", "lost someone", "lost my pet", 

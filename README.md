@@ -71,14 +71,15 @@ The system uses **CrewAI** to orchestrate specialized personas that collaborate 
 
 ## ✨ Features Checklist
 *   ✅ **Real-time Mood Detection**: Fine-tuned RoBERTa transformer logic for nuanced student emotions.
+*   ✅ **Semantic Negation Override**: NLP layer detecting contradictory boolean expressions (e.g., "not in a good mood") to correct Transformer false-positives.
 *   ✅ **Contextual Personalization**: Thompson Sampling bandits for adaptive interventions.
 *   ✅ **Semantic Long-term Memory**: Vector-based recall ranked by recency and intensity.
 *   ✅ **Burnout Prediction**: Temporal trajectory analysis to detect emotional escalation.
 *   ✅ **Multi-layer Safety (L1/L2/L3)**: Production-grade crisis detection and escalation framework.
-*   ✅ **Smart Spotify Integration**: Auto-filtering of old music; only modern recovery tracks (2024-2025).
-*   ✅ **Direct Navigation**: Intelligent buttons that launch specific songs or games with one tap.
-*   ✅ **Lockbox Vault**: End-to-End Encrypted (E2EE) journaling for sensitive notes.
+*   ✅ **Smart Spotify WebView Integration**: Seamless Mobile embed DRM streaming enforcing mobile layout and zero-cookie user-flow sandboxing.
+*   ✅ **Deep-Link Riverpod Navigation**: Action-driven navigation moving from Chat context to nested Games and Media Tabs dynamically state-managing `BottomNavigationBar`.
 *   ✅ **Luno Voice Assistant**: Interactive bi-directional voice companion (STT/TTS).
+*   ✅ **Lockbox Vault**: End-to-End Encrypted (E2EE) journaling for sensitive notes.
 *   ✅ **Multilingual Support**: Distress detection in English and Tamil.
 
 ---
