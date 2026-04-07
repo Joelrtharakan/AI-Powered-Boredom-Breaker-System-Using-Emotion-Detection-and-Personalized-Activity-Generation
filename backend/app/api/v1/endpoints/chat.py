@@ -64,7 +64,8 @@ async def send_message(msg: MessageIn, background_tasks: BackgroundTasks, db: Se
     session_ctx = db.query(ChatSessionContext).filter(ChatSessionContext.session_id == sid).first()
     context_summary = session_ctx.context_summary if session_ctx else ""
     
-    response_text = await chat_agent.generate_response(msg.message, history=history, session_context=context_summary)
+    response_text = await chat_agent.generate_response(msg.user_id, msg.message, history=history, session_context=context_summary)
+
     
     # 3. Save AI message
     ai_entry = ChatHistory(

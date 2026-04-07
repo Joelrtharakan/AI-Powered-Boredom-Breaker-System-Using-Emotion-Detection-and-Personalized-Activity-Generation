@@ -14,32 +14,25 @@ os.environ["CREWAI_COLLECT_TELEMETRY"] = "false"
 class OpenRouterService:
     def __init__(self):
         self.api_key = settings.OPENROUTER_API_KEY
-        self.base_url = "https://openrouter.ai/api/v1/chat/completions"
+        self.base_url = "http://localhost:11434/v1/chat/completions"
         self.logger = logging.getLogger(__name__)
-        # Default model: Gemini 2.0 Flash (Stable)
-        self.model = "google/gemini-2.0-flash-001" 
-        self.crew_model = f"openrouter/{self.model}"
+        # Local fallback since OpenRouter API Key is failing with 401
+        self.model = "qwen2.5-coder:14b"
+        self.crew_model = f"ollama/{self.model}"
         
-        # CrewAI LLM instance 
-        api_key = self.api_key if self.api_key else "dummy_key"
+        # CrewAI LLM instance to target local Ollama
         self.crew_llm = LLM(
             model=self.crew_model,
-            base_url="https://openrouter.ai/api/v1",
-            api_key=api_key,
+            base_url="http://localhost:11434",
+            api_key="dummy_key", # Ollama doesn't require a key
             temperature=0.7,
-            timeout=20,
+            timeout=120, # Higher timeout for local inference
             max_retries=1
         )
         
     async def generate(self, system_prompt: str, user_prompt: str, model: str = None, timeout: float = 10.0) -> str:
-        if not self.api_key:
-            self.logger.warning("OPENROUTER_API_KEY not set. Returning mock response.")
-            return self._get_fallback_response(system_prompt)
-
+        # Local Ollama doesn't require an API key
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "HTTP-Referer": "http://localhost:8000",
-            "X-Title": settings.PROJECT_NAME,
             "Content-Type": "application/json"
         }
         

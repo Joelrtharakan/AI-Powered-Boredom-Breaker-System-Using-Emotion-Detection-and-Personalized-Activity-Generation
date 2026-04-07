@@ -81,7 +81,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
 
       if (type != null && id != null && id.isNotEmpty) {
         id = id.split('?').first;
-        finalUrl = "https://open.spotify.com/$type/$id";
+        finalUrl = "https://open.spotify.com/embed/$type/$id?utm_source=generator";
       }
     }
 
@@ -89,6 +89,7 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       params = WebKitWebViewControllerCreationParams(
         allowsInlineMediaPlayback: true,
+        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
       );
     } else {
       params = const PlatformWebViewControllerCreationParams();
@@ -97,9 +98,6 @@ class _SpotifyPlayerScreenState extends State<SpotifyPlayerScreen> {
     _controller = WebViewController.fromPlatformCreationParams(params)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.black)
-      ..setUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {

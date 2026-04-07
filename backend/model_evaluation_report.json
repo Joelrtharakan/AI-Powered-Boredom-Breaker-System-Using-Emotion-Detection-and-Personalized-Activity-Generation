@@ -1,0 +1,358 @@
+{
+    "metrics": {
+        "accuracy": 100.0,
+        "avg_latency": 0.029118003845214843
+    },
+    "details": [
+        {
+            "text": "I'm so stressed about my finals, I haven't slept in days.",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.4122028350830078,
+            "correct": true
+        },
+        {
+            "text": "I aced my exam today! Feels so good.",
+            "expected": "joy",
+            "predicted": "joy",
+            "latency": 0.0670468807220459,
+            "correct": true
+        },
+        {
+            "text": "I'm so bored, I have nothing to do all afternoon.",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.052773237228393555,
+            "correct": true
+        },
+        {
+            "text": "I feel like I'm falling behind and everyone else is doing better.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.06416916847229004,
+            "correct": true
+        },
+        {
+            "text": "I'm so angry at my group partner for not doing their part.",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.012061119079589844,
+            "correct": true
+        },
+        {
+            "text": "I'm worried I won't get an internship this summer.",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.01243901252746582,
+            "correct": true
+        },
+        {
+            "text": "I just want to stay in bed all day, no energy.",
+            "expected": "fatigue",
+            "predicted": "fatigue",
+            "latency": 0.014256000518798828,
+            "correct": true
+        },
+        {
+            "text": "Let's play some music and chill.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.03958320617675781,
+            "correct": true
+        },
+        {
+            "text": "I don't know what to do with my life anymore.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.011235237121582031,
+            "correct": true
+        },
+        {
+            "text": "This project is actually coming along nicely.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.008592844009399414,
+            "correct": true
+        },
+        {
+            "text": "literally no energy lately",
+            "expected": "fatigue",
+            "predicted": "fatigue",
+            "latency": 0.03378915786743164,
+            "correct": true
+        },
+        {
+            "text": "extremely scared...",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.03275799751281738,
+            "correct": true
+        },
+        {
+            "text": "literally makes my blood boil",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.05281996726989746,
+            "correct": true
+        },
+        {
+            "text": "very fed up right now",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.017976999282836914,
+            "correct": true
+        },
+        {
+            "text": "literally panic attack at the moment",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.043875932693481445,
+            "correct": true
+        },
+        {
+            "text": "Doomscrolling twitter and I can't stop.",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.044004201889038086,
+            "correct": true
+        },
+        {
+            "text": "really unmotivated today",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.007682085037231445,
+            "correct": true
+        },
+        {
+            "text": "i am all good!",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.009174108505249023,
+            "correct": true
+        },
+        {
+            "text": "Why did I say that stupid thing earlier?",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.04210305213928223,
+            "correct": true
+        },
+        {
+            "text": "Everything I touch breaks.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.008059978485107422,
+            "correct": true
+        },
+        {
+            "text": "I just failed my driver's test again.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.009073019027709961,
+            "correct": true
+        },
+        {
+            "text": "Found a $20 bill in my old jeans!",
+            "expected": "joy",
+            "predicted": "joy",
+            "latency": 0.18065476417541504,
+            "correct": true
+        },
+        {
+            "text": "My roommate is blasting music at 3 AM.",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.01290273666381836,
+            "correct": true
+        },
+        {
+            "text": "What if I never find a job in this field?",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.014636039733886719,
+            "correct": true
+        },
+        {
+            "text": "Staring at a blank screen for three hours.",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.011792182922363281,
+            "correct": true
+        },
+        {
+            "text": "I finally finished the project! Victory!",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.009621143341064453,
+            "correct": true
+        },
+        {
+            "text": "My computer crashed and I lost my work.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.011595010757446289,
+            "correct": true
+        },
+        {
+            "text": "I feel so lonely in this big city.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.008868217468261719,
+            "correct": true
+        },
+        {
+            "text": "The weather is just okay today.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.03774285316467285,
+            "correct": true
+        },
+        {
+            "text": "I am so hyped for the concert tonight!",
+            "expected": "joy",
+            "predicted": "joy",
+            "latency": 0.00870823860168457,
+            "correct": true
+        },
+        {
+            "text": "Just chilling on the couch.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.008845090866088867,
+            "correct": true
+        },
+        {
+            "text": "I'm terrified of public speaking.",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.008158206939697266,
+            "correct": true
+        },
+        {
+            "text": "They cancelled my favorite show.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.008554220199584961,
+            "correct": true
+        },
+        {
+            "text": "I've been stuck in traffic for an hour.",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.008424043655395508,
+            "correct": true
+        },
+        {
+            "text": "Just scrolling through my phone.",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.008450746536254883,
+            "correct": true
+        },
+        {
+            "text": "My pet passed away this morning.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.007898092269897461,
+            "correct": true
+        },
+        {
+            "text": "I got the promotion!",
+            "expected": "joy",
+            "predicted": "joy",
+            "latency": 0.007913827896118164,
+            "correct": true
+        },
+        {
+            "text": "I forgot to study for the quiz.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.007915019989013672,
+            "correct": true
+        },
+        {
+            "text": "Stop touching my stuff!",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.008064985275268555,
+            "correct": true
+        },
+        {
+            "text": "I have no plans for the weekend.",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.007606029510498047,
+            "correct": true
+        },
+        {
+            "text": "The coffee shop was closed.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.008412837982177734,
+            "correct": true
+        },
+        {
+            "text": "I'm going to fail this class.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.008031129837036133,
+            "correct": true
+        },
+        {
+            "text": "I can't wait for summer break!",
+            "expected": "joy",
+            "predicted": "joy",
+            "latency": 0.009012937545776367,
+            "correct": true
+        },
+        {
+            "text": "This movie was so slow and dull.",
+            "expected": "bored",
+            "predicted": "bored",
+            "latency": 0.008053064346313477,
+            "correct": true
+        },
+        {
+            "text": "My friend hasn't texted me back in days.",
+            "expected": "sadness",
+            "predicted": "sadness",
+            "latency": 0.009200811386108398,
+            "correct": true
+        },
+        {
+            "text": "Who ate my leftovers?!",
+            "expected": "anger",
+            "predicted": "anger",
+            "latency": 0.007771968841552734,
+            "correct": true
+        },
+        {
+            "text": "I'm just sitting here waiting.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.00895380973815918,
+            "correct": true
+        },
+        {
+            "text": "The dark is really spooky.",
+            "expected": "fear",
+            "predicted": "fear",
+            "latency": 0.007766008377075195,
+            "correct": true
+        },
+        {
+            "text": "I won the lottery!",
+            "expected": "joy",
+            "predicted": "joy",
+            "latency": 0.007812738418579102,
+            "correct": true
+        },
+        {
+            "text": "I just need a nap.",
+            "expected": "neutral",
+            "predicted": "neutral",
+            "latency": 0.006857395172119141,
+            "correct": true
+        }
+    ]
+}
