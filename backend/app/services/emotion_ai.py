@@ -11,9 +11,9 @@ class SemanticEngine:
             "sadness": ["suicide", "sucide", "kill myself", "want to die", "pain", "devastated", "broken", "pointless", "heartbroken", "crushed", "empty", "shattered", "unbearable", "grief", "heart hurts", "so heavy", "worthless", "misery", "bleak", "invisible", "hopeless", "drowning", "tear", "tears", "crying", "lonely", "disappointed", "rejection", "touch breaks", "dead inside", "bittersweet", "depths of despair", "hope tomorrow is better", "wish he would call", "silence is loud", "miss", "missing", "homesick", "longing", "nostalgic", "yearn", "left behind", "far from home", "lost without", "ache", "hurt", "regret", "sorrow", "gloomy", "melancholy", "abandoned", "neglected", "forgotten", "sad", "unhappy", "i'm done", "im done", "i done", "really done", "done wif life", "lost my", "lost him", "lost her", "lost them", "passed away", "passed on", "lost a loved one", "lost my loved", "my loved one", "lost someone", "lost my pet", "lost my dad", "lost my mom", "lost my friend", "no more", "gone forever", "lost forever", "death", "died", "passed", "lost"],
             "fear": ["suicide", "sucide", "end my life", "done with life", "shaken", "rattled", "terrified", "panicking", "panic attack", "anxious", "nervous", "dread", "afraid", "scared", "worried", "troubled", "alarmed", "trembling", "shaking", "bad feeling", "suspense", "sweating", "unsafe", "paralyzed", "jitters", "on edge", "uncertainty", "what if", "heard a noise", "spiraling", "yikes", "pounding", "refreshing the page", "haven't replied", "vibes", "overwhelmed", "insecure", "helpless", "vulnerable", "uneasy", "tense", "restless", "freaking out", "anxiety", "fear", "i'm done", "im done"],
             "bored": ["really bored", "so bored", "nothing to do", "entertain me", "want to do something", "boredom", "no fun", "lethargic", "sluggish", "lazy", "unmotivated", "listless", "apathetic", "i feel nothing", "monotony", "dull", "staring at the wall", "bothered to move", "dragging on", "watching paint dry", "just existing", "waiting for the day to end", "blah", "whatever", "flat", "routine", "zero motivation", "doomscrolling", "dragging", "don't want to get out of bed", "bored"],
-            "fatigue": ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep", "too tired", "brain is fried", "brain shutting down", "wiped out", "fatigued"],
+            "fatigue": ["sleepy", "tired", "exhausted", "fatigue", "drained", "burnout", "no energy", "cant do anything", "can't do anything", "can't keep eyes open", "falling asleep", "too tired", "brain is fried", "brain shutting down", "wiped out", "fatigued", "pressure", "taxing day", "taxing"],
             "neutral": ["okay", "all good", "fine", "alright", "normal", "existing", "average", "standard", "nothing much", "chilling", "reading", "eating", "drinking", "sitting", "standing", "waiting", "lukewarm", "quiet", "simple", "neither happy nor sad", "shoes", "cloudy", "apples", "wifi", "laptop", "meeting", "wsg", "gang", "what's good", "sup", "project"],
-            "anger": ["sick of fake people", "fake people", "blood boil", "pissed", "furious", "enraged", "mad", "annoyed", "frustrated", "fed up", "ridiculous", "audacity", "interrupting", "nightmare", "snap", "patience", "frustrating", "drama", "rent free", "forgot to eat", "what a mess", "can we just stop", "hate", "disgusted", "bitter", "resentful", "hostile", "angry", "anger"],
+            "anger": ["sick of fake people", "fake people", "blood boil", "pissed", "furious", "enraged", "mad", "annoyed", "frustrated", "fed up", "ridiculous", "audacity", "interrupting", "nightmare", "snap", "patience", "frustrating", "drama", "rent free", "forgot to eat", "what a mess", "can we just stop", "hate", "disgusted", "bitter", "resentful", "hostile", "angry", "anger", "too much pressure"],
             "joy": ["happy", "promotion", "breathtaking", "smiling", "blessed", "plan", "laughed", "top of the world", "yes!", "perfect", "alive", "beaming", "best day", "appreciate", "beautiful", "excited", "full heart", "aced", "winning", "fantastic", "dream come true", "flowers", "she said yes", "cloud nine", "finally finished", "good way", "good day", "great day", "amazing day", "grateful", "thankful", "proud", "love", "cheerful", "thrilled", "delighted", "wonderful", "joy", "loved"],
         }
         self.compiled = {k: [re.compile(rf"\b{re.escape(word)}\b", re.IGNORECASE) for word in v] for k, v in self.clusters.items()}
@@ -64,7 +64,7 @@ class RiskAssessment:
             ],
             "MODERATE_DISTRESS": [
                 "stressed", "anxious", "worried", "sad", "lonely", "frustrated", 
-                "annoyed", "fed up", "crying"
+                "annoyed", "fed up", "crying", "pressure", "too much of pressure", "feeling heavy"
             ],
             "FATIGUE": [
                 "brain is fried", "brain fog", "exhausted", "sleepy", "drained", "no energy",
@@ -76,7 +76,7 @@ class RiskAssessment:
                 "too much to do", "writer's block", "can't start", "distracted", 
                 "losing focus", "brain dead", "can't complete", "can't finish", 
                 "frustrated with work", "stuck on work", "hard to focus", "not making progress",
-                "overwhelming", "can't do this assignment"
+                "overwhelming", "can't do this assignment", "long day", "taxing day"
             ],
             "BOREDOM": [
                 "bored", "nothing to do", "so dull", "entertain me", "killing time",

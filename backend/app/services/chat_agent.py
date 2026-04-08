@@ -11,14 +11,19 @@ class ChatAgent:
         self.logger = logging.getLogger(__name__)
         # Your specific persona constraints
         self.persona_rules = """
+        EMPATHY-FIRST PROTOCOL:
+        1. LISTEN & VALIDATE: Acknowledge the user's specific emotion. Mirror their feelings to show you truly understand.
+        2. CONVERSE: Ask meaningful, open-ended follow-up questions to keep them sharing (e.g., "What's been the hardest part of your day?" or "How are you holding up with all that?").
+        3. DELAY SUGGESTIONS: Never suggest a task or activity in the first few turns unless the user explicitly asks for one. Let them vent first.
+
         STRICT FORMATTING RULE:
-        Keep responses EXTREMELY concise (1-2 sentences). Act like you are text messaging a friend.
-        
-        MAPPING RULES:
-        - If anxious/scared: Suggest 'Chill playlist' or 'Zen Mode'.
-        - If sad/lonely: Suggest 'Happy', 'Christian', or 'Chill' playlist.
-        - If bored/unmotivated: Suggest 'Energize' or 'Top Hits' playlist, or 'Snake'/'Memory Flip'.
-        - If angry/frustrated: Suggest 'Focus playlist', 'Zen Mode', or 'Tic Tac Toe'.
+        Keep responses warm, concise (1-2 sentences), and conversational. You are a listener first, a guide second.
+
+        TASK SUGGESTION PROTOCOL (ONLY FOR 'ACTIVATION' STATE):
+        - ANXIOUS/OVERWHELMED: Suggest 'Zen Mode' or a 'Chill' playlist as a quiet escape.
+        - SAD/LONELY/TIRED: Suggest 'Happy' or 'Chill' playlists for comfort.
+        - BORED/UNMOTIVATED: Suggest 'Snake', 'Memory Flip', or an 'Energize' playlist.
+        - ANGRY/FRUSTRATED: Suggest 'Tic Tac Toe' for a distraction or 'Zen Mode' to vent.
         """
 
     async def _rank_memories(self, memories: dict, current_intensity: float) -> str:
@@ -82,11 +87,11 @@ class ChatAgent:
         chroma_service.add_user_memory(user_id=user_id, text=summary, metadata={"emotion": emotion, "intensity": intensity})
 
         # 4. Conversation State Logic
-        # Simple states: Validation -> Exploration -> Activation
+        # Deepened states: Validation -> Exploration -> Activation
         state = "validation"
-        if history and len(history) > 4:
+        if history and len(history) > 6:
             state = "activation"
-        elif history and len(history) > 2:
+        elif history and len(history) > 3:
             state = "exploration"
 
         # 5. CrewAI Call with Emotion-Conditioned Prompting
@@ -103,9 +108,12 @@ class ChatAgent:
                 f"Relevant Past:\n{semantic_memory_text}\n"
                 f"Rules: {self.persona_rules}\n"
                 f"CRITICAL ANTI-REPETITION RULE: Look at the 'Recent Context'. Do NOT repeat the exact same phrases or suggestions. If you just suggested 'Focus playlist', suggest something ELSE like 'Zen Mode' or a different game. Vary your wording.\n"
-                f"STATE INSTRUCTION: If in 'validation', acknowledge feelings deeply. If 'activation', gently nudge towards a positive action."
+                f"STATE INSTRUCTION: \n"
+                f"- If in 'validation', focus 100% on listening. Ask a gentle follow-up question to learn more. Do NOT suggest any activities.\n"
+                f"- If in 'exploration', continue the conversation. You can mention that you have tools to help, but keep the focus on their story.\n"
+                f"- If in 'activation' or if they ALREADY asked for something to do, suggest a specific activity from the 'TASK SUGGESTION PROTOCOL'."
             ),
-            expected_output="A warm, text-style response (1-2 sentences max).",
+            expected_output="A deeply empathetic, high-EQ response that sounds like a supportive friend's text (1-2 sentences).",
             agent=agent
         )
 
